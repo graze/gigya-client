@@ -74,21 +74,13 @@ use Graze\Gigya\Model\ModelInterface;
  * @method ModelInterface verifyLogin(array $params) @link
  *         http://developers.gigya.com/display/GD/accounts.verifyLogin+REST
  */
-class Accounts extends NamespaceClient
+class Accounts extends Client
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getNamespace()
-    {
-        return static::NAMESPACE_ACCOUNTS;
-    }
-
     /**
      * @return AccountsTfa
      */
     public function tfa()
     {
-        return new AccountsTfa($this->options, $this->dataCenter);
+        return new AccountsTfa(Client::NAMESPACE_ACCOUNTS, $this->options, $this->dataCenter);
     }
 }

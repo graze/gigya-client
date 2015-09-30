@@ -2,6 +2,7 @@
 
 namespace Graze\Gigya\Endpoints;
 
+use Graze\Gigya\Gigya;
 use Graze\Gigya\Model\ModelInterface;
 
 /**
@@ -24,21 +25,13 @@ use Graze\Gigya\Model\ModelInterface;
  * @method ModelInterface unregisterDevice(array $params) @link
  *         http://developers.gigya.com/display/GD/accounts.tfa.unregisterDevice+REST
  */
-class AccountsTfa extends NamespaceClient
+class AccountsTfa extends Client
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getNamespace()
-    {
-        return static::NAMESPACE_ACCOUNTS;
-    }
-
     /**
      * {@inheritdoc}
      */
     public function getMethodNamespace()
     {
-        return static::NAMESPACE_ACCOUNTS_TFA;
+        return Gigya::NAMESPACE_ACCOUNTS_TFA;
     }
 }

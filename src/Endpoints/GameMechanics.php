@@ -43,13 +43,5 @@ use Graze\Gigya\Model\ModelInterface;
  * @method ModelInterface setGlobalConfig(array $params) @link
  *         http://developers.gigya.com/display/GD/gm.setGlobalConfig+REST
  */
-class GameMechanics extends NamespaceClient
-{
-    /**
-     * @return string
-     */
-    public function getNamespace()
-    {
-        return static::NAMESPACE_GAME_MECHANICS;
-    }
-}
+class GameMechanics extends Client
+{}

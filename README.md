@@ -7,7 +7,7 @@
 [![Quality Score](https://img.shields.io/scrutinizer/g/graze/gigya-client.svg?style=flat-square)](https://scrutinizer-ci.com/g/graze/gigya-client)
 [![Total Downloads](https://img.shields.io/packagist/dt/graze/gigya-client.svg?style=flat-square)](https://packagist.org/packages/graze/gigya-client)
 
-Client for Gigya API
+Gigya for Gigya API
 
 ## Install
 
@@ -20,7 +20,7 @@ $ composer require graze/gigya-client
 ## Usage
 
 ``` php
-$client = new \Graze\Gigya\Client($key, $secret);
+$client = new \Graze\Gigya\Gigya($key, $secret, Gigya::DC_EU);
 $account = $client->accounts()->getAccountInfo(['uid' => $uid]);
 ```
 

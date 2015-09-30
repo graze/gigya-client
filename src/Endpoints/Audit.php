@@ -13,21 +13,6 @@ use Graze\Gigya\Model\ModelInterface;
  *
  * @method ModelInterface search(array $params) @link http://developers.gigya.com/display/GD/audit.search
  */
-class Audit extends NamespaceClient
+class Audit extends Client
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getNamespace()
-    {
-        return static::NAMESPACE_AUDIT;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getMethodNamespace()
-    {
-        return static::NAMESPACE_AUDIT;
-    }
 }

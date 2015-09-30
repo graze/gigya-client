@@ -33,13 +33,5 @@ use Graze\Gigya\Model\ModelInterface;
  * @method ModelInterface unregisterCounters(array $params) @link
  *         http://developers.gigya.com/display/GD/ids.unregisterCounters+REST
  */
-class IdentityStorage extends NamespaceClient
-{
-    /**
-     * @return string
-     */
-    public function getNamespace()
-    {
-        return static::NAMESPACE_IDENTITY_STORAGE;
-    }
-}
+class IdentityStorage extends Client
+{}

@@ -33,13 +33,5 @@ use Graze\Gigya\Model\ModelInterface;
  * @method ModelInterface getSocializeStats(array $params) @link
  *         http://developers.gigya.com/display/GD/reports.getSocializeStats+REST
  */
-class Reports extends NamespaceClient
-{
-    /**
-     * @return string
-     */
-    public function getNamespace()
-    {
-        return static::NAMESPACE_REPORTS;
-    }
-}
+class Reports extends Client
+{}

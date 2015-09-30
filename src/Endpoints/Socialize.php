@@ -70,13 +70,5 @@ use Graze\Gigya\Model\ModelInterface;
  * @method ModelInterface shortenURL(array $params) @link
  *         http://developers.gigya.com/display/GD/socialize.shortenURL+REST
  */
-class Socialize extends NamespaceClient
-{
-    /**
-     * @return string
-     */
-    public function getNamespace()
-    {
-        return static::NAMESPACE_SOCIALIZE;
-    }
-}
+class Socialize extends Client
+{}

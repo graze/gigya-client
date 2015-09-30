@@ -2,6 +2,7 @@
 
 namespace Graze\Gigya\Endpoints;
 
+use Graze\Gigya\Gigya;
 use Graze\Gigya\Model\ModelInterface;
 
 /**
@@ -23,21 +24,13 @@ use Graze\Gigya\Model\ModelInterface;
  * @method ModelInterface setConfig(array $params) @link
  *         http://developers.gigya.com/display/GD/fidm.saml.idp.setConfig+REST
  */
-class SamlIdp extends NamespaceClient
+class SamlIdp extends Client
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getNamespace()
-    {
-        return static::NAMESPACE_FIDM;
-    }
-
     /**
      * {@inheritdoc}
      */
     public function getMethodNamespace()
     {
-        return static::NAMESPACE_FIDM_SAML_IDP;
+        return Gigya::NAMESPACE_FIDM_SAML_IDP;
     }
 }

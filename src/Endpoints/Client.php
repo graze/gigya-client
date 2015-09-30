@@ -3,29 +3,18 @@
 namespace Graze\Gigya\Endpoints;
 
 use Exception;
+use Graze\Gigya\Exceptions\UnknownResponseException;
 use Graze\Gigya\Model\ModelFactory;
 use Graze\Gigya\Model\ModelInterface;
+use Graze\Gigya\SignatureValidation;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ResponseInterface;
 
-abstract class NamespaceClient
+class Client
 {
     const DOMAIN = 'gigya.com';
-
-    const NAMESPACE_AUDIT            = 'audit';
-    const NAMESPACE_ACCOUNTS         = 'accounts';
-    const NAMESPACE_ACCOUNTS_TFA     = 'accounts.tfa';
-    const NAMESPACE_SOCIALIZE        = 'socialize';
-    const NAMESPACE_COMMENTS         = 'comments';
-    const NAMESPACE_GAME_MECHANICS   = 'gameMechanics';
-    const NAMESPACE_REPORTS          = 'reports';
-    const NAMESPACE_DATA_STORE       = 'ds';
-    const NAMESPACE_IDENTITY_STORAGE = 'ids';
-    const NAMESPACE_FIDM             = 'fidm';
-    const NAMESPACE_FIDM_SAML        = 'fidm.saml';
-    const NAMESPACE_FIDM_SAML_IDP    = 'fidm.saml.idp';
 
     /**
      * @var string (Default: eu1)
@@ -43,11 +32,13 @@ abstract class NamespaceClient
     protected $factory;
 
     /**
+     * @param string $namespace
      * @param array  $options [:apiKey,:secret,:userKey]
      * @param string $dataCenter
      */
-    public function __construct(array $options, $dataCenter)
+    public function __construct($namespace, array $options, $dataCenter)
     {
+        $this->namespace = $namespace;
         $this->options = $options;
         $this->dataCenter = $dataCenter;
         $this->client = new GuzzleClient();
@@ -55,22 +46,15 @@ abstract class NamespaceClient
     }
 
     /**
-     * Get the top level namespace (for the hostname)
-     *
-     * @return string
-     */
-    abstract public function getNamespace();
-
-    /**
      * Get the method namespace for each method call
      *
-     * By default this is the hostname namespace
+     * Overload this to handle different method namespaces
      *
      * @return mixed
      */
     public function getMethodNamespace()
     {
-        return $this->getNamespace();
+        return $this->namespace;
     }
 
     /**
@@ -84,7 +68,7 @@ abstract class NamespaceClient
     {
         return sprintf(
             'https://%s.%s.%s/%s.%s',
-            $this->getNamespace(),
+            $this->namespace,
             $this->dataCenter,
             static::DOMAIN,
             $this->getMethodNamespace(),
@@ -103,6 +87,7 @@ abstract class NamespaceClient
         try {
             $options['query'] = array_merge($this->options, $arguments);
             $response = $this->client->get($this->getEndpoint($method), $options);
+            $this->validateResponse($response);
             return $this->factory->getModel($response);
         } catch (ClientException $e) {
             throw new Exception($e->getResponse()->getBody());
@@ -113,6 +98,34 @@ abstract class NamespaceClient
             }
             throw new Exception($e->getMessage());
         }
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @return bool
+     * @throws UnknownResponseException
+     */
+    private function validateResponse(ResponseInterface $response)
+    {
+        $data = json_decode($response->getBody(), true);
+        if (!(is_array($data) && array_key_exists('statusCode', $data))) {
+            throw new UnknownResponseException($response);
+        }
+
+        if ((array_key_exists('UID', $data)) &&
+            (array_key_exists('UIDSignature', $data)) &&
+            (array_key_exists('timestamp', $data))
+        ) {
+            $validator = new SignatureValidation();
+            return $validator->assertUid(
+                $data['UID'],
+                $data['timestamp'],
+                $this->options['secret'],
+                $data['UIDSignature']
+            );
+        }
+
+        return true;
     }
 
     /**

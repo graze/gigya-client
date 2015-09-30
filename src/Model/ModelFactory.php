@@ -12,15 +12,15 @@ class ModelFactory
      *
      * @param ResponseInterface $response
      * @return ModelInterface
+     * @throws UnknownResponseException
      */
     public function getModel(ResponseInterface $response)
     {
-        $text = $response->getBody();
-        if (!$this->validBody($text)) {
+        $body = json_decode($response->getBody(), true);
+        if (!$this->validBody($body)) {
             throw new UnknownResponseException($response);
         }
-        $body = json_decode($response->getBody(), true);
-        if (is_array($body) && array_key_exists('results', $body)) {
+        if (array_key_exists('results', $body)) {
             return new ModelCollection($response);
         } else {
             return new Model($response);
@@ -28,12 +28,11 @@ class ModelFactory
     }
 
     /**
-     * @param string $body
+     * @param array $data
      * @return bool
      */
-    private function validBody($body)
+    private function validBody($data)
     {
-        $object = json_decode($body);
-        return (is_object($object) && property_exists($object, 'statusCode'));
+        return (is_array($data) && array_key_exists('statusCode', $data));
     }
 }

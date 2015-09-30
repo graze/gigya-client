@@ -63,13 +63,5 @@ use Graze\Gigya\Model\ModelInterface;
  *         http://developers.gigya.com/display/GD/comments.updateComment+REST
  * @method ModelInterface vote(array $params) @link http://developers.gigya.com/display/GD/comments.vote+REST
  */
-class Comments extends NamespaceClient
-{
-    /**
-     * @return string
-     */
-    public function getNamespace()
-    {
-        return static::NAMESPACE_SOCIALIZE;
-    }
-}
+class Comments extends Client
+{}

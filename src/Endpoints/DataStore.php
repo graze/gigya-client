@@ -18,13 +18,5 @@ use Graze\Gigya\Model\ModelInterface;
  * @method ModelInterface setSchema(array $params) @link http://developers.gigya.com/display/GD/ds.setSchema+REST
  * @method ModelInterface store(array $params) @link http://developers.gigya.com/display/GD/ds.store+REST
  */
-class DataStore extends NamespaceClient
-{
-    /**
-     * @return string
-     */
-    public function getNamespace()
-    {
-        return static::NAMESPACE_DATA_STORE;
-    }
-}
+class DataStore extends Client
+{}

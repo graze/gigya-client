@@ -2,7 +2,7 @@
 
 namespace Graze\Gigya\Test\Unit;
 
-use Graze\Gigya\Client;
+use Graze\Gigya\Gigya;
 use Graze\Gigya\Test\TestCase;
 use Graze\Gigya\Test\TestFixtures;
 use Mockery as m;
@@ -12,7 +12,7 @@ use Mockery\MockInterface;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-class ClientTest extends TestCase
+class GigyaTest extends TestCase
 {
     /**
      * @var MockInterface|\GuzzleHttp\Client
@@ -36,20 +36,19 @@ class ClientTest extends TestCase
     }
 
     /**
-     * @return Client
+     * @param string|null $dc
+     * @return Gigya
      */
-    public function createClient()
+    public function createClient($dc = null)
     {
-        return (new Client('key', 'secret'))
-            ->setDataCenter(Client::DC_EU);
+        return new Gigya('key', 'secret', $dc ?: Gigya::DC_EU, null);
     }
 
     public function testSettingKeyAndSecretWillPassToGuzzleClient()
     {
         $key = 'key'.rand(1,1000);
         $secret = 'secret'.rand(1001,2000002);
-        $client = new Client($key, $secret);
-        $client->setDataCenter(Client::DC_EU);
+        $client = new Gigya($key, $secret, Gigya::DC_EU, null);
 
         $response = m::mock('Psr\Http\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.getAccountInfo'));
@@ -80,8 +79,7 @@ class ClientTest extends TestCase
 
     public function testSettingDataCenterToAuWillCallAuUri()
     {
-        $client = $this->createClient();
-        $client->setDataCenter(Client::DC_AU);
+        $client = $this->createClient(Gigya::DC_AU);
 
         $response = m::mock('Psr\Http\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.getAccountInfo'));
@@ -112,8 +110,7 @@ class ClientTest extends TestCase
 
     public function testSettingDataCenterToUsWillCallUsUri()
     {
-        $client = $this->createClient();
-        $client->setDataCenter(Client::DC_US);
+        $client = $this->createClient(Gigya::DC_US);
 
         $response = m::mock('Psr\Http\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.getAccountInfo'));
@@ -144,7 +141,7 @@ class ClientTest extends TestCase
 
     public function testSettingTheUserKeyWillPassItThroughToGuzzle()
     {
-        $client = new Client('key', 'userSecret', 'userKey');
+        $client = new Gigya('key', 'userSecret', Gigya::DC_EU, 'userKey');
 
         $response = m::mock('Psr\Http\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.getAccountInfo'));

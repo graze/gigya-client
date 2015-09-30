@@ -8,9 +8,11 @@ use Graze\Gigya\Model\ModelCollectionInterface;
 use Graze\Gigya\Model\ModelFactory;
 use Graze\Gigya\Test\TestCase;
 use Graze\Gigya\Test\TestFixtures;
+use GuzzleHttp\Message\ResponseInterface;
 use Mockery as m;
 use Mockery\MockInterface;
-use Psr\Http\Message\ResponseInterface;
+
+// use Psr\Http\Message\ResponseInterface; Guzzle v6
 
 class ModelFactoryTest extends TestCase
 {
@@ -42,7 +44,7 @@ class ModelFactoryTest extends TestCase
 
     public function testAccountModel()
     {
-        $response = m::mock('Psr\Http\Message\ResponseInterface');
+        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.getAccountInfo'));
         $this->expectResponse($response);
 
@@ -60,7 +62,7 @@ class ModelFactoryTest extends TestCase
 
     public function testCollectionModel()
     {
-        $response = m::mock('Psr\Http\Message\ResponseInterface');
+        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.search_simple'));
         $this->expectResponse($response);
 
@@ -81,7 +83,7 @@ class ModelFactoryTest extends TestCase
 
     public function testError403()
     {
-        $response = m::mock('Psr\Http\Message\ResponseInterface');
+        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('failure_403'));
         $this->expectResponse($response);
 
@@ -96,7 +98,7 @@ class ModelFactoryTest extends TestCase
 
     public function testNoBody()
     {
-        $response = m::mock('Psr\Http\Message\ResponseInterface');
+        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn('');
 
         $this->validator->shouldReceive('assert')

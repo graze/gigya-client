@@ -27,7 +27,7 @@ class ResponseValidatorTest extends TestCase
 
     public function testValidResponse()
     {
-        $response = m::mock('Psr\Http\Message\ResponseInterface');
+        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.search_simple'));
 
         static::assertTrue($this->validator->validate($response));
@@ -57,7 +57,7 @@ class ResponseValidatorTest extends TestCase
             $timestamp
         );
 
-        $response = m::mock('Psr\Http\Message\ResponseInterface');
+        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn($body);
 
         static::assertTrue($this->validator->validate($response));
@@ -87,7 +87,7 @@ class ResponseValidatorTest extends TestCase
             $timestamp
         );
 
-        $response = m::mock('Psr\Http\Message\ResponseInterface');
+        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn($body);
 
         static::assertFalse($this->validator->validate($response));
@@ -124,7 +124,7 @@ class ResponseValidatorTest extends TestCase
             $timestamp
         );
 
-        $response = m::mock('Psr\Http\Message\ResponseInterface');
+        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn($body);
 
         static::assertFalse($this->validator->validate($response));
@@ -141,7 +141,7 @@ class ResponseValidatorTest extends TestCase
 
     public function testNoBodyWillFail()
     {
-        $response = m::mock('Psr\Http\Message\ResponseInterface');
+        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn('');
 
         static::assertFalse($this->validator->validate($response));
@@ -156,7 +156,7 @@ class ResponseValidatorTest extends TestCase
 
     public function testInvalidBody()
     {
-        $response = m::mock('Psr\Http\Message\ResponseInterface');
+        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('invalid_json'));
 
         static::assertFalse($this->validator->validate($response));

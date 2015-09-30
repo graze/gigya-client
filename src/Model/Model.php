@@ -4,8 +4,10 @@ namespace Graze\Gigya\Model;
 
 use DateTimeImmutable;
 use DateTimeInterface;
+use GuzzleHttp\Message\ResponseInterface;
 use Illuminate\Support\Collection;
-use Psr\Http\Message\ResponseInterface;
+
+// use Psr\Http\Message\ResponseInterface; Guzzle v6
 
 class Model implements ModelInterface
 {

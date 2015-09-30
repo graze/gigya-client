@@ -3,7 +3,9 @@
 namespace Graze\Gigya\Model;
 
 use Graze\Gigya\Validation\ResponseValidatorInterface;
-use Psr\Http\Message\ResponseInterface;
+use GuzzleHttp\Message\ResponseInterface;
+
+// use Psr\Http\Message\ResponseInterface; Guzzle v6
 
 class ModelFactory
 {

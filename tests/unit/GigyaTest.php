@@ -50,7 +50,7 @@ class GigyaTest extends TestCase
         $secret = 'secret' . rand(1001, 2000002);
         $client = new Gigya($key, $secret, Gigya::DC_EU, null);
 
-        $response = m::mock('Psr\Http\Message\ResponseInterface');
+        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.getAccountInfo'));
 
         $this->guzzleClient
@@ -81,7 +81,7 @@ class GigyaTest extends TestCase
     {
         $client = $this->createClient(Gigya::DC_AU);
 
-        $response = m::mock('Psr\Http\Message\ResponseInterface');
+        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.getAccountInfo'));
 
         $this->guzzleClient
@@ -112,7 +112,7 @@ class GigyaTest extends TestCase
     {
         $client = $this->createClient(Gigya::DC_US);
 
-        $response = m::mock('Psr\Http\Message\ResponseInterface');
+        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.getAccountInfo'));
 
         $this->guzzleClient
@@ -143,7 +143,7 @@ class GigyaTest extends TestCase
     {
         $client = new Gigya('key', 'userSecret', Gigya::DC_EU, 'userKey');
 
-        $response = m::mock('Psr\Http\Message\ResponseInterface');
+        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.getAccountInfo'));
 
         $this->guzzleClient
@@ -175,7 +175,7 @@ class GigyaTest extends TestCase
     {
         $client = $this->createClient();
 
-        $response = m::mock('Psr\Http\Message\ResponseInterface');
+        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.getAccountInfo'));
 
         $this->guzzleClient
@@ -207,7 +207,7 @@ class GigyaTest extends TestCase
     {
         $client = $this->createClient();
 
-        $response = m::mock('Psr\Http\Message\ResponseInterface');
+        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.getAccountInfo'));
 
         $this->guzzleClient

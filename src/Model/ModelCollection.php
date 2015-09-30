@@ -2,8 +2,10 @@
 
 namespace Graze\Gigya\Model;
 
+use GuzzleHttp\Message\ResponseInterface;
 use Illuminate\Support\Collection;
-use Psr\Http\Message\ResponseInterface;
+
+// use Psr\Http\Message\ResponseInterface; Guzzle v6
 
 class ModelCollection extends Model implements ModelCollectionInterface
 {

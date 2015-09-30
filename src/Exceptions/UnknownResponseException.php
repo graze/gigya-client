@@ -3,7 +3,9 @@
 namespace Graze\Gigya\Exceptions;
 
 use Exception;
-use Psr\Http\Message\ResponseInterface;
+use GuzzleHttp\Message\ResponseInterface;
+
+// use Psr\Http\Message\ResponseInterface; Guzzle v6
 
 class UnknownResponseException extends Exception
 {

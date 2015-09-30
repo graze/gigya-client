@@ -4,7 +4,9 @@ namespace Graze\Gigya\Validation;
 
 use Graze\Gigya\Exceptions\InvalidTimestampException;
 use Graze\Gigya\Exceptions\UnknownResponseException;
-use Psr\Http\Message\ResponseInterface;
+use GuzzleHttp\Message\ResponseInterface;
+
+// use Psr\Http\Message\ResponseInterface; Guzzle v6
 
 class ResponseValidator implements ResponseValidatorInterface
 {

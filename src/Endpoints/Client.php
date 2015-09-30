@@ -3,15 +3,15 @@
 namespace Graze\Gigya\Endpoints;
 
 use Exception;
-use Graze\Gigya\Exceptions\UnknownResponseException;
 use Graze\Gigya\Model\ModelFactory;
 use Graze\Gigya\Model\ModelInterface;
-use Graze\Gigya\SignatureValidation;
 use Graze\Gigya\Validation\ResponseValidator;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
-use Psr\Http\Message\ResponseInterface;
+use GuzzleHttp\Message\ResponseInterface;
+
+// use Psr\Http\Message\ResponseInterface; Guzzle v6
 
 class Client
 {

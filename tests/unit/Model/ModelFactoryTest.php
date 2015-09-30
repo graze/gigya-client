@@ -3,11 +3,14 @@
 namespace Graze\Gigya\Test\Unit\Model;
 
 use DateTimeImmutable;
+use Graze\Gigya\Exceptions\UnknownResponseException;
 use Graze\Gigya\Model\ModelCollectionInterface;
 use Graze\Gigya\Model\ModelFactory;
 use Graze\Gigya\Test\TestCase;
 use Graze\Gigya\Test\TestFixtures;
 use Mockery as m;
+use Mockery\MockInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class ModelFactoryTest extends TestCase
 {
@@ -16,15 +19,32 @@ class ModelFactoryTest extends TestCase
      */
     private $factory;
 
+    /**
+     * @var MockInterface|\Graze\Gigya\Validation\ResponseValidatorInterface
+     */
+    private $validator;
+
     public function setUp()
     {
-        $this->factory = new ModelFactory();
+        $this->validator = m::mock('Graze\Gigya\Validation\ResponseValidatorInterface');
+        $this->factory = new ModelFactory($this->validator);
+    }
+
+    /**
+     * @param ResponseInterface $response
+     */
+    private function expectResponse(ResponseInterface $response)
+    {
+        $this->validator->shouldReceive('assert')
+                        ->with($response)
+                        ->andReturn(true);
     }
 
     public function testAccountModel()
     {
         $response = m::mock('Psr\Http\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.getAccountInfo'));
+        $this->expectResponse($response);
 
         $model = $this->factory->getModel($response);
 
@@ -42,6 +62,7 @@ class ModelFactoryTest extends TestCase
     {
         $response = m::mock('Psr\Http\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.search_simple'));
+        $this->expectResponse($response);
 
         /** @var ModelCollectionInterface $model */
         $model = $this->factory->getModel($response);
@@ -62,6 +83,7 @@ class ModelFactoryTest extends TestCase
     {
         $response = m::mock('Psr\Http\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('failure_403'));
+        $this->expectResponse($response);
 
         $model = $this->factory->getModel($response);
 
@@ -77,18 +99,9 @@ class ModelFactoryTest extends TestCase
         $response = m::mock('Psr\Http\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn('');
 
-        static::setExpectedException(
-            'Graze\Gigya\Exceptions\UnknownResponseException',
-            'The contents of the response could not be determined'
-        );
-
-        $this->factory->getModel($response);
-    }
-
-    public function testInvalidBody()
-    {
-        $response = m::mock('Psr\Http\Message\ResponseInterface');
-        $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('invalid_json'));
+        $this->validator->shouldReceive('assert')
+                        ->with($response)
+                        ->andThrow(new UnknownResponseException($response));
 
         static::setExpectedException(
             'Graze\Gigya\Exceptions\UnknownResponseException',

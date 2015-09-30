@@ -7,6 +7,7 @@ use Graze\Gigya\Exceptions\UnknownResponseException;
 use Graze\Gigya\Model\ModelFactory;
 use Graze\Gigya\Model\ModelInterface;
 use Graze\Gigya\SignatureValidation;
+use Graze\Gigya\Validation\ResponseValidator;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
@@ -42,7 +43,9 @@ class Client
         $this->options = $options;
         $this->dataCenter = $dataCenter;
         $this->client = new GuzzleClient();
-        $this->factory = new ModelFactory();
+        $this->factory = new ModelFactory(new ResponseValidator(
+            isset($this->options['secret']) ? $this->options['secret'] : ''
+        ));
     }
 
     /**
@@ -87,7 +90,6 @@ class Client
         try {
             $options['query'] = array_merge($this->options, $arguments);
             $response = $this->client->get($this->getEndpoint($method), $options);
-            $this->validateResponse($response);
             return $this->factory->getModel($response);
         } catch (ClientException $e) {
             throw new Exception($e->getResponse()->getBody());
@@ -98,34 +100,6 @@ class Client
             }
             throw new Exception($e->getMessage());
         }
-    }
-
-    /**
-     * @param ResponseInterface $response
-     * @return bool
-     * @throws UnknownResponseException
-     */
-    private function validateResponse(ResponseInterface $response)
-    {
-        $data = json_decode($response->getBody(), true);
-        if (!(is_array($data) && array_key_exists('statusCode', $data))) {
-            throw new UnknownResponseException($response);
-        }
-
-        if ((array_key_exists('UID', $data)) &&
-            (array_key_exists('UIDSignature', $data)) &&
-            (array_key_exists('timestamp', $data))
-        ) {
-            $validator = new SignatureValidation();
-            return $validator->assertUid(
-                $data['UID'],
-                $data['timestamp'],
-                $this->options['secret'],
-                $data['UIDSignature']
-            );
-        }
-
-        return true;
     }
 
     /**

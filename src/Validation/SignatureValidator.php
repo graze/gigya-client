@@ -1,11 +1,11 @@
 <?php
 
-namespace Graze\Gigya;
+namespace Graze\Gigya\Validation;
 
 use Graze\Gigya\Exceptions\InvalidUidSignatureException;
 use Graze\Gigya\Exceptions\InvalidTimestampException;
 
-class SignatureValidation
+class SignatureValidator
 {
     const TIMESTAMP_OFFSET = 180;
 

@@ -1,20 +1,20 @@
 <?php
 
-namespace Graze\Gigya\Test\Unit;
+namespace Graze\Gigya\Test\Unit\Validation;
 
-use Graze\Gigya\SignatureValidation;
 use Graze\Gigya\Test\TestCase;
+use Graze\Gigya\Validation\SignatureValidator;
 
-class SignatureValidationTest extends TestCase
+class SignatureValidatorTest extends TestCase
 {
     /**
-     * @var SignatureValidation
+     * @var SignatureValidator
      */
     private $validator;
 
     public function setUp()
     {
-        $this->validator = new SignatureValidation();
+        $this->validator = new SignatureValidator();
     }
 
     /**

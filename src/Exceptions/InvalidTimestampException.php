@@ -3,7 +3,7 @@
 namespace Graze\Gigya\Exceptions;
 
 use Exception;
-use Graze\Gigya\SignatureValidation;
+use Graze\Gigya\Validation\SignatureValidator;
 
 class InvalidTimestampException extends Exception
 {
@@ -16,7 +16,7 @@ class InvalidTimestampException extends Exception
         $message = sprintf(
             "The supplied timestamp: %d is more than %d seconds different to now: %d",
             $timestamp,
-            SignatureValidation::TIMESTAMP_OFFSET,
+            SignatureValidator::TIMESTAMP_OFFSET,
             time()
         );
 

@@ -46,8 +46,8 @@ class GigyaTest extends TestCase
 
     public function testSettingKeyAndSecretWillPassToGuzzleClient()
     {
-        $key = 'key'.rand(1,1000);
-        $secret = 'secret'.rand(1001,2000002);
+        $key = 'key' . rand(1, 1000);
+        $secret = 'secret' . rand(1001, 2000002);
         $client = new Gigya($key, $secret, Gigya::DC_EU, null);
 
         $response = m::mock('Psr\Http\Message\ResponseInterface');
@@ -218,7 +218,7 @@ class GigyaTest extends TestCase
                     'query' => [
                         'apiKey' => 'key',
                         'secret' => 'secret',
-                        'params'  => 'passedThrough'
+                        'params' => 'passedThrough'
                     ],
                 ]
             )

@@ -43,14 +43,14 @@ class ResponseValidatorTest extends TestCase
         $signature = $signatureValidator->calculateSignature($timestamp . '_' . $uid, 'secret');
 
         $body = sprintf('{
-          "UID": "%s",
-          "UIDSignature": "%s",
-           "signatureTimestamp": "%d",
-          "statusCode": 200,
-          "errorCode": 0,
-          "statusReason": "OK",
-          "callId": "123456",
-          "time": "2015-03-22T11:42:25.943Z"
+            "UID": "%s",
+            "UIDSignature": "%s",
+            "signatureTimestamp": "%d",
+            "statusCode": 200,
+            "errorCode": 0,
+            "statusReason": "OK",
+            "callId": "123456",
+            "time": "2015-03-22T11:42:25.943Z"
         }',
             $uid,
             $signature,
@@ -73,14 +73,14 @@ class ResponseValidatorTest extends TestCase
         $signature = $signatureValidator->calculateSignature($timestamp . '_' . $uid, 'secret');
 
         $body = sprintf('{
-          "UID": "%s",
-          "UIDSignature": "%s",
-           "signatureTimestamp": "%d",
-          "statusCode": 200,
-          "errorCode": 0,
-          "statusReason": "OK",
-          "callId": "123456",
-          "time": "2015-03-22T11:42:25.943Z"
+            "UID": "%s",
+            "UIDSignature": "%s",
+            "signatureTimestamp": "%d",
+            "statusCode": 200,
+            "errorCode": 0,
+            "statusReason": "OK",
+            "callId": "123456",
+            "time": "2015-03-22T11:42:25.943Z"
         }',
             $uid,
             $signature,
@@ -111,14 +111,14 @@ class ResponseValidatorTest extends TestCase
         $signature = $signatureValidator->calculateSignature($timestamp . '_' . $uid, 'secret');
 
         $body = sprintf('{
-          "UID": "%s",
-          "UIDSignature": "invalidSignature",
-           "signatureTimestamp": "%d",
-          "statusCode": 200,
-          "errorCode": 0,
-          "statusReason": "OK",
-          "callId": "123456",
-          "time": "2015-03-22T11:42:25.943Z"
+            "UID": "%s",
+            "UIDSignature": "invalidSignature",
+            "signatureTimestamp": "%d",
+            "statusCode": 200,
+            "errorCode": 0,
+            "statusReason": "OK",
+            "callId": "123456",
+            "time": "2015-03-22T11:42:25.943Z"
         }',
             $uid,
             $timestamp

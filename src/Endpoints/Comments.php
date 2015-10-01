@@ -2,66 +2,67 @@
 
 namespace Graze\Gigya\Endpoints;
 
-use Graze\Gigya\Model\ModelInterface;
+use Graze\Gigya\Response\ResponseInterface;
 
 /**
  * Class Comments
  *
- * @package Graze\Gigya\Endpoints
+ * @package  Graze\Gigya\Endpoints
  *
  * @link     http://developers.gigya.com/display/GD/Comments+REST
  *
- * @method ModelInterface analyzeMediaItem(array $params) @link
+ * @method ResponseInterface analyzeMediaItem(array $params = []) @link
  *         http://developers.gigya.com/display/GD/comments.analyzeMediaItem+REST
- * @method ModelInterface deleteComment(array $params) @link
+ * @method ResponseInterface deleteComment(array $params = []) @link
  *         http://developers.gigya.com/display/GD/comments.deleteComment+REST
- * @method ModelInterface deleteModerators(array $params) @link
+ * @method ResponseInterface deleteModerators(array $params = []) @link
  *         http://developers.gigya.com/display/GD/comments.deleteModerators+REST
- * @method ModelInterface flagComment(array $params) @link
+ * @method ResponseInterface flagComment(array $params = []) @link
  *         http://developers.gigya.com/display/GD/comments.flagComment+REST
- * @method ModelInterface getCategories(array $params) @link
+ * @method ResponseInterface getCategories(array $params = []) @link
  *         http://developers.gigya.com/display/GD/comments.getCategories+REST
- * @method ModelInterface getCategoryInfo(array $params) @link
+ * @method ResponseInterface getCategoryInfo(array $params = []) @link
  *         http://developers.gigya.com/display/GD/comments.getCategoryInfo+REST
- * @method ModelInterface getComments(array $params) @link
+ * @method ResponseInterface getComments(array $params = []) @link
  *         http://developers.gigya.com/display/GD/comments.getComments+REST
- * @method ModelInterface getModerators(array $params) @link
+ * @method ResponseInterface getModerators(array $params = []) @link
  *         http://developers.gigya.com/display/GD/comments.getModerators+REST
- * @method ModelInterface getRelatedUsers(array $params) @link
+ * @method ResponseInterface getRelatedUsers(array $params = []) @link
  *         http://developers.gigya.com/display/GD/comments.getRelatedUsers+REST
- * @method ModelInterface getStreamInfo(array $params) @link
+ * @method ResponseInterface getStreamInfo(array $params = []) @link
  *         http://developers.gigya.com/display/GD/comments.getStreamInfo+REST
- * @method ModelInterface getTopRatedStreams(array $params) @link
+ * @method ResponseInterface getTopRatedStreams(array $params = []) @link
  *         http://developers.gigya.com/display/GD/comments.getTopRatedStreams+REST
- * @method ModelInterface getTopStreams(array $params) @link
+ * @method ResponseInterface getTopStreams(array $params = []) @link
  *         http://developers.gigya.com/display/GD/comments.getTopStreams+REST
- * @method ModelInterface getUserComments(array $params) @link
+ * @method ResponseInterface getUserComments(array $params = []) @link
  *         http://developers.gigya.com/display/GD/comments.getUserComments+REST
- * @method ModelInterface getUserHighlighting(array $params) @link
+ * @method ResponseInterface getUserHighlighting(array $params = []) @link
  *         http://developers.gigya.com/display/GD/comments.getUserHighlighting+REST
- * @method ModelInterface getUserOptions(array $params) @link
+ * @method ResponseInterface getUserOptions(array $params = []) @link
  *         http://developers.gigya.com/display/GD/comments.getUserOptions+REST
- * @method ModelInterface highlightUser(array $params) @link
+ * @method ResponseInterface highlightUser(array $params = []) @link
  *         http://developers.gigya.com/display/GD/comments.highlightUser+REST
- * @method ModelInterface moveComments(array $params) @link
+ * @method ResponseInterface moveComments(array $params = []) @link
  *         http://developers.gigya.com/display/GD/comments.moveComments+REST
- * @method ModelInterface postComment(array $params) @link
+ * @method ResponseInterface postComment(array $params = []) @link
  *         http://developers.gigya.com/display/GD/comments.postComment+REST
- * @method ModelInterface setCategoryInfo(array $params) @link
+ * @method ResponseInterface setCategoryInfo(array $params = []) @link
  *         http://developers.gigya.com/display/GD/comments.setCategoryInfo+REST
- * @method ModelInterface setModerators(array $params) @link
+ * @method ResponseInterface setModerators(array $params = []) @link
  *         http://developers.gigya.com/display/GD/comments.setModerators+REST
- * @method ModelInterface setStreamInfo(array $params) @link
+ * @method ResponseInterface setStreamInfo(array $params = []) @link
  *         http://developers.gigya.com/display/GD/comments.setStreamInfo+REST
- * @method ModelInterface setUserOptions(array $params) @link
+ * @method ResponseInterface setUserOptions(array $params = []) @link
  *         http://developers.gigya.com/display/GD/comments.setUserOptions+REST
- * @method ModelInterface subscribe(array $params) @link
+ * @method ResponseInterface subscribe(array $params = []) @link
  *         http://developers.gigya.com/display/GD/comments.subscribe+REST
- * @method ModelInterface unsubscribe(array $params) @link
+ * @method ResponseInterface unsubscribe(array $params = []) @link
  *         http://developers.gigya.com/display/GD/comments.unsubscribe+REST
- * @method ModelInterface updateComment(array $params) @link
+ * @method ResponseInterface updateComment(array $params = []) @link
  *         http://developers.gigya.com/display/GD/comments.updateComment+REST
- * @method ModelInterface vote(array $params) @link http://developers.gigya.com/display/GD/comments.vote+REST
+ * @method ResponseInterface vote(array $params = []) @link http://developers.gigya.com/display/GD/comments.vote+REST
  */
 class Comments extends Client
-{}
+{
+}

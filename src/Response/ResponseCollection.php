@@ -1,13 +1,13 @@
 <?php
 
-namespace Graze\Gigya\Model;
+namespace Graze\Gigya\Response;
 
-use GuzzleHttp\Message\ResponseInterface;
+use GuzzleHttp\Message\ResponseInterface as GuzzleResponseInterface;
 use Illuminate\Support\Collection;
 
 // use Psr\Http\Message\ResponseInterface; Guzzle v6
 
-class ModelCollection extends Model implements ModelCollectionInterface
+class ResponseCollection extends Response implements ResponseCollectionInterface
 {
     /**
      * @var int
@@ -32,7 +32,7 @@ class ModelCollection extends Model implements ModelCollectionInterface
     /**
      * {@inheritdoc}
      */
-    public function __construct(ResponseInterface $response)
+    public function __construct(GuzzleResponseInterface $response)
     {
         parent::__construct($response);
         $this->count = (int)$this->popField('objectsCount');

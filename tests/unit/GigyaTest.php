@@ -20,14 +20,14 @@ class GigyaTest extends TestCase
     private $guzzleClient;
 
     /**
-     * @var MockInterface|\Graze\Gigya\Model\ModelFactory
+     * @var MockInterface|\Graze\Gigya\Response\ResponseFactory
      */
     private $factory;
 
     public function setUp()
     {
         $this->guzzleClient = m::mock('overload:GuzzleHttp\Client');
-        $this->factory = m::mock('overload:Graze\Gigya\Model\ModelFactory');
+        $this->factory = m::mock('overload:Graze\Gigya\Response\ResponseFactory');
     }
 
     public function tearDown()
@@ -66,7 +66,7 @@ class GigyaTest extends TestCase
             )
             ->andReturn($response);
 
-        $model = m::mock('Graze\Gigya\Model\ModelInterface');
+        $model = m::mock('Graze\Gigya\Response\ModelInterface');
 
         $this->factory->shouldReceive('getModel')
                       ->with($response)
@@ -97,7 +97,7 @@ class GigyaTest extends TestCase
             )
             ->andReturn($response);
 
-        $model = m::mock('Graze\Gigya\Model\ModelInterface');
+        $model = m::mock('Graze\Gigya\Response\ModelInterface');
 
         $this->factory->shouldReceive('getModel')
                       ->with($response)
@@ -128,7 +128,7 @@ class GigyaTest extends TestCase
             )
             ->andReturn($response);
 
-        $model = m::mock('Graze\Gigya\Model\ModelInterface');
+        $model = m::mock('Graze\Gigya\Response\ModelInterface');
 
         $this->factory->shouldReceive('getModel')
                       ->with($response)
@@ -160,7 +160,7 @@ class GigyaTest extends TestCase
             )
             ->andReturn($response);
 
-        $model = m::mock('Graze\Gigya\Model\ModelInterface');
+        $model = m::mock('Graze\Gigya\Response\ModelInterface');
 
         $this->factory->shouldReceive('getModel')
                       ->with($response)
@@ -192,7 +192,7 @@ class GigyaTest extends TestCase
             )
             ->andReturn($response);
 
-        $model = m::mock('Graze\Gigya\Model\ModelInterface');
+        $model = m::mock('Graze\Gigya\Response\ModelInterface');
 
         $this->factory->shouldReceive('getModel')
                       ->with($response)
@@ -224,7 +224,7 @@ class GigyaTest extends TestCase
             )
             ->andReturn($response);
 
-        $model = m::mock('Graze\Gigya\Model\ModelInterface');
+        $model = m::mock('Graze\Gigya\Response\ModelInterface');
 
         $this->factory->shouldReceive('getModel')
                       ->with($response)

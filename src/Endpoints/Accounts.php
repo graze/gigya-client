@@ -2,76 +2,80 @@
 
 namespace Graze\Gigya\Endpoints;
 
-use Graze\Gigya\Model\ModelInterface;
+use Graze\Gigya\Gigya;
+use Graze\Gigya\Response\ResponseInterface;
 
 /**
  * Class Accounts
  *
- * @package Graze\Gigya\Endpoints
+ * @package  Graze\Gigya\Endpoints
  *
  * @link     http://developers.gigya.com/display/GD/Accounts+REST
  *
- * @method ModelInterface deleteAccount(array $params) @link
+ * @method ResponseInterface deleteAccount(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.deleteAccount+REST
- * @method ModelInterface deleteScreenSet(array $params) @link
+ * @method ResponseInterface deleteScreenSet(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.deleteScreenSet+REST
- * @method ModelInterface exchangeUIDSignature(array $params) @link
+ * @method ResponseInterface exchangeUIDSignature(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.exchangeUIDSignature+REST
- * @method ModelInterface finalizeRegistration(array $params) @link
+ * @method ResponseInterface finalizeRegistration(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.finalizeRegistration+REST
- * @method ModelInterface getAccountInfo(array $params) @link
+ * @method ResponseInterface getAccountInfo(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.getAccountInfo+REST
- * @method ModelInterface getConflictingAccount(array $params) @link
+ * @method ResponseInterface getConflictingAccount(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.getConflictingAccount+REST
- * @method ModelInterface getCounters(array $params) @link
+ * @method ResponseInterface getCounters(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.getCounters+REST
- * @method ModelInterface getPolicies(array $params) @link
+ * @method ResponseInterface getPolicies(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.getPolicies+REST
- * @method ModelInterface getRegisteredCounters(array $params) @link
+ * @method ResponseInterface getRegisteredCounters(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.getRegisteredCounters+REST
- * @method ModelInterface getSchema(array $params) @link
+ * @method ResponseInterface getSchema(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.getSchema+REST
- * @method ModelInterface getScreenSets(array $params) @link
+ * @method ResponseInterface getScreenSets(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.getScreenSets+REST
- * @method ModelInterface importProfilePhoto(array $params) @link
+ * @method ResponseInterface importProfilePhoto(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.importProfilePhoto+REST
- * @method ModelInterface incrementCounters(array $params) @link
+ * @method ResponseInterface incrementCounters(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.incrementCounters+REST
- * @method ModelInterface initRegistration(array $params) @link
+ * @method ResponseInterface initRegistration(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.initRegistration+REST
- * @method ModelInterface isAvailableLoginID(array $params) @link
+ * @method ResponseInterface isAvailableLoginID(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.isAvailableLoginID+REST
- * @method ModelInterface linkAccounts(array $params) @link
+ * @method ResponseInterface linkAccounts(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.linkAccounts+REST
- * @method ModelInterface login(array $params) @link http://developers.gigya.com/display/GD/accounts.login+REST
- * @method ModelInterface logout(array $params) @link http://developers.gigya.com/display/GD/accounts.logout+REST
- * @method ModelInterface notifyLogin(array $params) @link
+ * @method ResponseInterface login(array $params = []) @link http://developers.gigya.com/display/GD/accounts.login+REST
+ * @method ResponseInterface logout(array $params = []) @link
+ *         http://developers.gigya.com/display/GD/accounts.logout+REST
+ * @method ResponseInterface notifyLogin(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.notifyLogin+REST
- * @method ModelInterface publicProfilePhoto(array $params) @link
+ * @method ResponseInterface publicProfilePhoto(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.publicProfilePhoto+REST
- * @method ModelInterface registerCounters(array $params) @link
+ * @method ResponseInterface registerCounters(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.registerCounters+REST
- * @method ModelInterface register(array $params) @link http://developers.gigya.com/display/GD/accounts.register+REST
- * @method ModelInterface resendVerificationCode(array $params) @link
+ * @method ResponseInterface register(array $params = []) @link
+ *         http://developers.gigya.com/display/GD/accounts.register+REST
+ * @method ResponseInterface resendVerificationCode(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.resendVerificationCode+REST
- * @method ModelInterface resetPassword(array $params) @link
+ * @method ResponseInterface resetPassword(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.resetPassword+REST
- * @method ModelInterface search(array $params) @link http://developers.gigya.com/display/GD/accounts.search+REST
- * @method ModelInterface setAccountInfo(array $params) @link
+ * @method ResponseInterface search(array $params = []) @link
+ *         http://developers.gigya.com/display/GD/accounts.search+REST
+ * @method ResponseInterface setAccountInfo(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.setAccountInfo+REST
- * @method ModelInterface setPolicies(array $params) @link
+ * @method ResponseInterface setPolicies(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.setPolicies+REST
- * @method ModelInterface setProfilePhoto(array $params) @link
+ * @method ResponseInterface setProfilePhoto(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.setProfilePhoto+REST
- * @method ModelInterface setSchema(array $params) @link
+ * @method ResponseInterface setSchema(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.setSchema+REST
- * @method ModelInterface setScreenSet(array $params) @link
+ * @method ResponseInterface setScreenSet(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.setScreenSet+REST
- * @method ModelInterface socialLogin(array $params) @link
+ * @method ResponseInterface socialLogin(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.socialLogin+REST
- * @method ModelInterface unregisterCounters(array $params) @link
+ * @method ResponseInterface unregisterCounters(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.unregisterCounters+REST
- * @method ModelInterface verifyLogin(array $params) @link
+ * @method ResponseInterface verifyLogin(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.verifyLogin+REST
  */
 class Accounts extends Client
@@ -81,6 +85,6 @@ class Accounts extends Client
      */
     public function tfa()
     {
-        return new AccountsTfa(Client::NAMESPACE_ACCOUNTS, $this->options, $this->dataCenter);
+        return new AccountsTfa(Gigya::NAMESPACE_ACCOUNTS, $this->options, $this->dataCenter);
     }
 }

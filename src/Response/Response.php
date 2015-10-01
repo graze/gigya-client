@@ -1,15 +1,15 @@
 <?php
 
-namespace Graze\Gigya\Model;
+namespace Graze\Gigya\Response;
 
 use DateTimeImmutable;
 use DateTimeInterface;
-use GuzzleHttp\Message\ResponseInterface;
+use GuzzleHttp\Message\ResponseInterface as GuzzleResponseInterface;
 use Illuminate\Support\Collection;
 
 // use Psr\Http\Message\ResponseInterface; Guzzle v6
 
-class Model implements ModelInterface
+class Response implements ResponseInterface
 {
     /**
      * @var array
@@ -57,9 +57,9 @@ class Model implements ModelInterface
     protected $data;
 
     /**
-     * @param ResponseInterface $response
+     * @param GuzzleResponseInterface $response
      */
-    public function __construct(ResponseInterface $response)
+    public function __construct(GuzzleResponseInterface $response)
     {
         $this->response = $response;
         $this->body = json_decode($response->getBody());
@@ -156,7 +156,7 @@ class Model implements ModelInterface
     }
 
     /**
-     * @return ResponseInterface
+     * @return GuzzleResponseInterface
      */
     public function getOriginalResponse()
     {

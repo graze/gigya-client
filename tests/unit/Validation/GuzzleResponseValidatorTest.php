@@ -4,25 +4,25 @@ namespace Graze\Gigya\Test\Unit\Validation;
 
 use Graze\Gigya\Test\TestCase;
 use Graze\Gigya\Test\TestFixtures;
-use Graze\Gigya\Validation\ResponseValidator;
+use Graze\Gigya\Validation\GuzzleResponseValidator;
 use Graze\Gigya\Validation\SignatureValidator;
 use Mockery as m;
 
-class ResponseValidatorTest extends TestCase
+class GuzzleResponseValidatorTest extends TestCase
 {
     /**
-     * @var ResponseValidator
+     * @var GuzzleResponseValidator
      */
     private $validator;
 
     public function setUp()
     {
-        $this->validator = new ResponseValidator('secret');
+        $this->validator = new GuzzleResponseValidator('secret');
     }
 
     public function testInstanceOf()
     {
-        static::assertInstanceOf('Graze\Gigya\Validation\ResponseValidatorInterface', $this->validator);
+        static::assertInstanceOf('Graze\Gigya\Validation\GuzzleResponseValidatorInterface', $this->validator);
     }
 
     public function testValidResponse()

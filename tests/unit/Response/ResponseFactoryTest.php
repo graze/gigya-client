@@ -1,41 +1,41 @@
 <?php
 
-namespace Graze\Gigya\Test\Unit\Model;
+namespace Graze\Gigya\Test\Unit\Response;
 
 use DateTimeImmutable;
 use Graze\Gigya\Exceptions\UnknownResponseException;
-use Graze\Gigya\Model\ModelCollectionInterface;
-use Graze\Gigya\Model\ModelFactory;
+use Graze\Gigya\Response\ResponseCollectionInterface;
+use Graze\Gigya\Response\ResponseFactory;
 use Graze\Gigya\Test\TestCase;
 use Graze\Gigya\Test\TestFixtures;
-use GuzzleHttp\Message\ResponseInterface;
+use GuzzleHttp\Message\ResponseInterface as GuzzleResponseInterface;
 use Mockery as m;
 use Mockery\MockInterface;
 
 // use Psr\Http\Message\ResponseInterface; Guzzle v6
 
-class ModelFactoryTest extends TestCase
+class ResponseFactoryTest extends TestCase
 {
     /**
-     * @var ModelFactory
+     * @var ResponseFactory
      */
     private $factory;
 
     /**
-     * @var MockInterface|\Graze\Gigya\Validation\ResponseValidatorInterface
+     * @var MockInterface|\Graze\Gigya\Validation\GuzzleResponseValidatorInterface
      */
     private $validator;
 
     public function setUp()
     {
-        $this->validator = m::mock('Graze\Gigya\Validation\ResponseValidatorInterface');
-        $this->factory = new ModelFactory($this->validator);
+        $this->validator = m::mock('Graze\Gigya\Validation\GuzzleResponseValidatorInterface');
+        $this->factory = new ResponseFactory($this->validator);
     }
 
     /**
-     * @param ResponseInterface $response
+     * @param GuzzleResponseInterface $response
      */
-    private function expectResponse(ResponseInterface $response)
+    private function expectResponse(GuzzleResponseInterface $response)
     {
         $this->validator->shouldReceive('assert')
                         ->with($response)
@@ -50,7 +50,7 @@ class ModelFactoryTest extends TestCase
 
         $model = $this->factory->getModel($response);
 
-        static::assertInstanceOf('Graze\Gigya\Model\Model', $model);
+        static::assertInstanceOf('Graze\Gigya\Response\Response', $model);
         static::assertEquals(200, $model->getStatusCode());
         static::assertEquals(0, $model->getErrorCode());
         static::assertEquals("OK", $model->getStatusReason());
@@ -66,10 +66,10 @@ class ModelFactoryTest extends TestCase
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.search_simple'));
         $this->expectResponse($response);
 
-        /** @var ModelCollectionInterface $model */
+        /** @var ResponseCollectionInterface $model */
         $model = $this->factory->getModel($response);
 
-        static::assertInstanceOf('Graze\Gigya\Model\ModelCollection', $model);
+        static::assertInstanceOf('Graze\Gigya\Response\ResponseCollection', $model);
         static::assertEquals(200, $model->getStatusCode());
         static::assertEquals(1840, $model->getTotal());
         static::assertEquals(5, $model->getCount());
@@ -89,7 +89,7 @@ class ModelFactoryTest extends TestCase
 
         $model = $this->factory->getModel($response);
 
-        static::assertInstanceOf('Graze\Gigya\Model\Model', $model);
+        static::assertInstanceOf('Graze\Gigya\Response\Response', $model);
         static::assertEquals(403, $model->getStatusCode());
         static::assertEquals(403005, $model->getErrorCode());
         static::assertEquals("Forbidden", $model->getStatusReason());

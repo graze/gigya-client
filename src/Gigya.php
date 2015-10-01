@@ -3,9 +3,9 @@
 namespace Graze\Gigya;
 
 use BadMethodCallException;
-use Graze\Gigya\Endpoints\Client;
 use Graze\Gigya\Endpoints\Accounts;
 use Graze\Gigya\Endpoints\Audit;
+use Graze\Gigya\Endpoints\Client;
 use Graze\Gigya\Endpoints\Comments;
 use Graze\Gigya\Endpoints\DataStore;
 use Graze\Gigya\Endpoints\GameMechanics;

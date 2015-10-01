@@ -3,26 +3,26 @@
 namespace Graze\Gigya\Endpoints;
 
 use Graze\Gigya\Gigya;
-use Graze\Gigya\Model\ModelInterface;
+use Graze\Gigya\Response\ResponseInterface;
 
 /**
  * Class Accounts
  *
- * @package Graze\Gigya\Endpoints
+ * @package  Graze\Gigya\Endpoints
  *
  * @link     http://developers.gigya.com/display/GD/Accounts+REST
  *
- * @method ModelInterface deactivateProvider(array $params) @link
+ * @method ResponseInterface deactivateProvider(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.tfa.deactivateProvider+REST
- * @method ModelInterface finalizeTFA(array $params) @link
+ * @method ResponseInterface finalizeTFA(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.tfa.finalizeTFA+REST
- * @method ModelInterface getCertificate(array $params) @link
+ * @method ResponseInterface getCertificate(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.tfa.getCertificate+REST
- * @method ModelInterface getProviders(array $params) @link
+ * @method ResponseInterface getProviders(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.tfa.getProviders+REST
- * @method ModelInterface initTFA(array $params) @link
+ * @method ResponseInterface initTFA(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.tfa.initTFA+REST
- * @method ModelInterface unregisterDevice(array $params) @link
+ * @method ResponseInterface unregisterDevice(array $params = []) @link
  *         http://developers.gigya.com/display/GD/accounts.tfa.unregisterDevice+REST
  */
 class AccountsTfa extends Client

@@ -1,14 +1,14 @@
 <?php
 
-namespace Graze\Gigya\Model;
+namespace Graze\Gigya\Response;
 
 use DateTimeInterface;
-use GuzzleHttp\Message\ResponseInterface;
+use GuzzleHttp\Message\ResponseInterface as GuzzleResponseInterface;
 use Illuminate\Support\Collection;
 
 // use Psr\Http\Message\ResponseInterface; Guzzle v6
 
-interface ModelInterface
+interface ResponseInterface
 {
     /**
      * @return int
@@ -51,7 +51,7 @@ interface ModelInterface
     public function getData();
 
     /**
-     * @return ResponseInterface
+     * @return GuzzleResponseInterface
      */
     public function getOriginalResponse();
 }

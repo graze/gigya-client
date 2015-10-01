@@ -4,11 +4,11 @@ namespace Graze\Gigya\Validation;
 
 use Graze\Gigya\Exceptions\InvalidTimestampException;
 use Graze\Gigya\Exceptions\UnknownResponseException;
-use GuzzleHttp\Message\ResponseInterface;
+use GuzzleHttp\Message\ResponseInterface as GuzzleResponseInterface;
 
 // use Psr\Http\Message\ResponseInterface; Guzzle v6
 
-class ResponseValidator implements ResponseValidatorInterface
+class GuzzleResponseValidator implements GuzzleResponseValidatorInterface
 {
     /**
      * @var string
@@ -30,12 +30,12 @@ class ResponseValidator implements ResponseValidatorInterface
     }
 
     /**
-     * @param ResponseInterface $response
+     * @param GuzzleResponseInterface $response
      * @return bool
      * @throws InvalidTimestampException
      * @throws UnknownResponseException
      */
-    public function assert(ResponseInterface $response)
+    public function assert(GuzzleResponseInterface $response)
     {
         $data = json_decode($response->getBody(), true);
         if (!(is_array($data) && array_key_exists('statusCode', $data))) {
@@ -58,10 +58,10 @@ class ResponseValidator implements ResponseValidatorInterface
     }
 
     /**
-     * @param ResponseInterface $response
+     * @param GuzzleResponseInterface $response
      * @return bool
      */
-    public function validate(ResponseInterface $response)
+    public function validate(GuzzleResponseInterface $response)
     {
         $data = json_decode($response->getBody(), true);
         if (!(is_array($data) && array_key_exists('statusCode', $data))) {

@@ -3,13 +3,13 @@
 namespace Graze\Gigya\Endpoints;
 
 use Exception;
-use Graze\Gigya\Model\ModelFactory;
-use Graze\Gigya\Model\ModelInterface;
-use Graze\Gigya\Validation\ResponseValidator;
+use Graze\Gigya\Response\ResponseFactory;
+use Graze\Gigya\Response\ResponseInterface;
+use Graze\Gigya\Validation\GuzzleResponseValidator;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Message\ResponseInterface;
+use GuzzleHttp\Message\ResponseInterface as GuzzleResponseInterface;
 
 // use Psr\Http\Message\ResponseInterface; Guzzle v6
 
@@ -18,7 +18,7 @@ class Client
     const DOMAIN = 'gigya.com';
 
     /**
-     * @var string (Default: eu1)
+     * @var string
      */
     protected $dataCenter;
 
@@ -28,7 +28,7 @@ class Client
     protected $options;
 
     /**
-     * @var ModelFactory
+     * @var ResponseFactory
      */
     protected $factory;
 
@@ -43,7 +43,7 @@ class Client
         $this->options = $options;
         $this->dataCenter = $dataCenter;
         $this->client = new GuzzleClient();
-        $this->factory = new ModelFactory(new ResponseValidator(
+        $this->factory = new ResponseFactory(new GuzzleResponseValidator(
             isset($this->options['secret']) ? $this->options['secret'] : ''
         ));
     }
@@ -82,7 +82,7 @@ class Client
     /**
      * @param string $method
      * @param array  $arguments
-     * @return ModelInterface
+     * @return ResponseInterface
      * @throws Exception
      */
     public function request($method, $arguments)
@@ -95,7 +95,7 @@ class Client
             throw new Exception($e->getResponse()->getBody());
         } catch (RequestException $e) {
             $response = $e->getResponse();
-            if ($response instanceof ResponseInterface) {
+            if ($response instanceof GuzzleResponseInterface) {
                 throw new Exception($e->getResponse()->getBody());
             }
             throw new Exception($e->getMessage());
@@ -105,7 +105,7 @@ class Client
     /**
      * @param string $method
      * @param array  $arguments
-     * @return ModelInterface
+     * @return ResponseInterface
      * @throws Exception
      */
     public function __call($method, $arguments)

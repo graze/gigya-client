@@ -1,8 +1,8 @@
 <?php
 
-namespace Graze\Gigya\Model;
+namespace Graze\Gigya\Response;
 
-interface ModelCollectionInterface extends ModelInterface
+interface ResponseCollectionInterface extends ResponseInterface
 {
     /**
      * @return int

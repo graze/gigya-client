@@ -3,25 +3,26 @@
 namespace Graze\Gigya\Endpoints;
 
 use Graze\Gigya\Gigya;
-use Graze\Gigya\Model\ModelInterface;
+use Graze\Gigya\Response\ResponseInterface;
 
 /**
  * Class Saml
  *
- * @package Graze\Gigya\Endpoints
+ * @package  Graze\Gigya\Endpoints
  *
  * @link     http://developers.gigya.com/display/GD/FIdM+SAML+REST
  *
- * @method ModelInterface delIdP(array $params) @link http://developers.gigya.com/display/GD/fidm.saml.delIdP+REST
- * @method ModelInterface getConfig(array $params) @link
+ * @method ResponseInterface delIdP(array $params = []) @link
+ *         http://developers.gigya.com/display/GD/fidm.saml.delIdP+REST
+ * @method ResponseInterface getConfig(array $params = []) @link
  *         http://developers.gigya.com/display/GD/fidm.saml.getConfig+REST
- * @method ModelInterface getRegisteredIdPs(array $params) @link
+ * @method ResponseInterface getRegisteredIdPs(array $params = []) @link
  *         http://developers.gigya.com/display/GD/fidm.saml.getRegisteredIdPs+REST
- * @method ModelInterface importIdPMetadata(array $params) @link
+ * @method ResponseInterface importIdPMetadata(array $params = []) @link
  *         http://developers.gigya.com/display/GD/fidm.saml.importIdPMetadata+REST
- * @method ModelInterface registerIdP(array $params) @link
+ * @method ResponseInterface registerIdP(array $params = []) @link
  *         http://developers.gigya.com/display/GD/fidm.saml.registerIdP+REST
- * @method ModelInterface setConfig(array $params) @link
+ * @method ResponseInterface setConfig(array $params = []) @link
  *         http://developers.gigya.com/display/GD/fidm.saml.setConfig+REST
  */
 class Saml extends Client

@@ -7,6 +7,10 @@ use Graze\Gigya\Validation\SignatureValidator;
 
 class SignatureValidatorTest extends TestCase
 {
+    const UID        = "g8f7d6gd7s6t23t4gekfs";
+    const FRIEND_UID = "890fd7tg97d08sbg";
+    const SECRET     = "8j9h0g-opko;dk]=id0f[sjo";
+
     /**
      * @var SignatureValidator
      */
@@ -28,76 +32,70 @@ class SignatureValidatorTest extends TestCase
         static::assertEquals($expected, $this->validator->calculateSignature($base, $secret));
     }
 
-    public function testUidSignature()
+    /**
+     * @param int $time
+     * @return array
+     */
+    private function getUidSignature($time)
     {
-        $uid = "g8f7d6gd7s6t23t4gekfs";
-        $secret = "8j9h0g-opko;dk]=id0f[sjo";
-        $time = time();
+        $uid = static::UID;
+        $secret = static::SECRET;
         $base = $time . "_" . $uid;
         $expected = $this->validator->calculateSignature($base, $secret);
+        return [$uid, $secret, $expected];
+    }
+
+    public function testUidSignature()
+    {
+        $time = time();
+        list($uid, $secret, $expected) = $this->getUidSignature($time);
         static::assertTrue($this->validator->validateUid($uid, $time, $secret, $expected));
     }
 
     public function testInvalidUidSignature()
     {
-        $uid = "g8f7d6gd7s6t23t4gekfs";
-        $secret = "8j9h0g-opko;dk]=id0f[sjo";
         $time = time();
+        list($uid, $secret, $expected) = $this->getUidSignature($time);
         static::assertFalse($this->validator->validateUid($uid, $time, $secret, "invalidSignature"));
     }
 
     public function testUidSignatureAccepts180secondDifferencesToNowInTimestamp()
     {
-        $uid = "g8f7d6gd7s6t23t4gekfs";
-        $secret = "8j9h0g-opko;dk]=id0f[sjo";
         $time = time() - 180;
-        $base = $time . "_" . $uid;
-        $expected = $this->validator->calculateSignature($base, $secret);
+        list($uid, $secret, $expected) = $this->getUidSignature($time);
         static::assertTrue($this->validator->validateUid($uid, $time, $secret, $expected));
 
         $time = time() + 180;
-        $base = $time . "_" . $uid;
-        $expected = $this->validator->calculateSignature($base, $secret);
+        list($uid, $secret, $expected) = $this->getUidSignature($time);
         static::assertTrue($this->validator->validateUid($uid, $time, $secret, $expected));
     }
 
     public function testUidSignatureDoesNotAccept181secondDifferentToNowInTimestamp()
     {
-        $uid = "g8f7d6gd7s6t23t4gekfs";
-        $secret = "8j9h0g-opko;dk]=id0f[sjo";
         $time = time() - 181;
-        $base = $time . "_" . $uid;
-        $expected = $this->validator->calculateSignature($base, $secret);
+        list($uid, $secret, $expected) = $this->getUidSignature($time);
         static::assertFalse($this->validator->validateUid($uid, $time, $secret, $expected));
 
-        $uid = "g8f7d6gd7s6t23t4gekfs";
-        $secret = "8j9h0g-opko;dk]=id0f[sjo";
         $time = time() + 181;
-        $base = $time . "_" . $uid;
-        $expected = $this->validator->calculateSignature($base, $secret);
+        list($uid, $secret, $expected) = $this->getUidSignature($time);
         static::assertFalse($this->validator->validateUid($uid, $time, $secret, $expected));
     }
 
     public function testAssertUidWillNotThrowExceptionForValidSignature()
     {
-        $uid = "g8f7d6gd7s6t23t4gekfs";
-        $secret = "8j9h0g-opko;dk]=id0f[sjo";
         $time = time();
-        $base = $time . "_" . $uid;
-        $expected = $this->validator->calculateSignature($base, $secret);
+        list($uid, $secret, $expected) = $this->getUidSignature($time);
         static::assertTrue($this->validator->assertUid($uid, $time, $secret, $expected));
     }
 
     public function testAssertUidWillThrowExceptionForInvalidSignature()
     {
-        $uid = "g8f7d6gd7s6t23t4gekfs";
-        $secret = "8j9h0g-opko;dk]=id0f[sjo";
         $time = time();
-        $base = $time . "_" . $uid;
-        $expected = $this->validator->calculateSignature($base, $secret);
+        list($uid, $secret, $expected) = $this->getUidSignature($time);
         static::setExpectedException(
             'Graze\Gigya\Exceptions\InvalidUidSignatureException',
-            sprintf("The supplied signature for uid: g8f7d6gd7s6t23t4gekfs does not match.\n Expected '%s'\n Supplied 'invalidSignature'",
+            sprintf("The supplied signature for uid: %s does not match.\n Expected '%s'\n Supplied 'invalidSignature'",
+                static::UID,
                 $expected
             )
         );
@@ -107,11 +105,8 @@ class SignatureValidatorTest extends TestCase
 
     public function testAssertUidWillThrowExceptionForTimestampOutOfRange()
     {
-        $uid = "g8f7d6gd7s6t23t4gekfs";
-        $secret = "8j9h0g-opko;dk]=id0f[sjo";
         $time = time() - 181;
-        $base = $time . "_" . $uid;
-        $expected = $this->validator->calculateSignature($base, $secret);
+        list($uid, $secret, $expected) = $this->getUidSignature($time);
 
         static::setExpectedException(
             'Graze\Gigya\Exceptions\InvalidTimestampException',
@@ -121,6 +116,94 @@ class SignatureValidatorTest extends TestCase
         );
 
         $this->validator->assertUid($uid, $time, $secret, $expected);
+    }
+
+    /**
+     * @param int $time
+     * @return array
+     */
+    private function getFriendSignature($time)
+    {
+        $uid = static::UID;
+        $friendUid = static::FRIEND_UID;
+        $secret = static::SECRET;
+        $base = $time . "_" . $friendUid . "_" . $uid;
+        $expected = $this->validator->calculateSignature($base, $secret);
+        return [$uid, $friendUid, $secret, $expected];
+    }
+
+    public function testFriendUidSignature()
+    {
+        $time = time();
+        list($uid, $friendUid, $secret, $expected) = $this->getFriendSignature($time);
+        static::assertTrue($this->validator->validateFriendUid($uid, $friendUid, $time, $secret, $expected));
+    }
+
+    public function testInvalidFriendUidSignature()
+    {
+        $time = time();
+        list($uid, $friendUid, $secret, $expected) = $this->getFriendSignature($time);
+        static::assertFalse($this->validator->validateFriendUid($uid, $friendUid, $time, $secret, "invalidSignature"));
+    }
+
+    public function testFriendUidSignatureAccepts180secondDifferencesToNowInTimestamp()
+    {
+        $time = time() - 180;
+        list($uid, $friendUid, $secret, $expected) = $this->getFriendSignature($time);
+        static::assertTrue($this->validator->validateFriendUid($uid, $friendUid, $time, $secret, $expected));
+
+        $time = time() + 180;
+        list($uid, $friendUid, $secret, $expected) = $this->getFriendSignature($time);
+        static::assertTrue($this->validator->validateFriendUid($uid, $friendUid, $time, $secret, $expected));
+    }
+
+    public function testFriendUidSignatureDoesNotAccept181secondDifferentToNowInTimestamp()
+    {
+        $time = time() - 181;
+        list($uid, $friendUid, $secret, $expected) = $this->getFriendSignature($time);
+        static::assertFalse($this->validator->validateFriendUid($uid, $friendUid, $time, $secret, $expected));
+
+        $time = time() + 181;
+        list($uid, $friendUid, $secret, $expected) = $this->getFriendSignature($time);
+        static::assertFalse($this->validator->validateFriendUid($uid, $friendUid, $time, $secret, $expected));
+    }
+
+    public function testAssertFriendUidWillNotThrowExceptionForValidSignature()
+    {
+        $time = time();
+        list($uid, $friendUid, $secret, $expected) = $this->getFriendSignature($time);
+        static::assertTrue($this->validator->assertFriendUid($uid, $friendUid, $time, $secret, $expected));
+    }
+
+    public function testAssertFriendUidWillThrowExceptionForInvalidSignature()
+    {
+        $time = time();
+        list($uid, $friendUid, $secret, $expected) = $this->getFriendSignature($time);
+        static::setExpectedException(
+            'Graze\Gigya\Exceptions\InvalidFriendUidSignatureException',
+            sprintf("The supplied signature for uid: %s and friendUid: %s does not match.\n Expected '%s'\n Supplied 'invalidSignature'",
+                static::UID,
+                static::FRIEND_UID,
+                $expected
+            )
+        );
+
+        $this->validator->assertFriendUid($uid, $friendUid, $time, $secret, "invalidSignature");
+    }
+
+    public function testAssertFriendUidWillThrowExceptionForTimestampOutOfRange()
+    {
+        $time = time() - 181;
+        list($uid, $friendUid, $secret, $expected) = $this->getFriendSignature($time);
+
+        static::setExpectedException(
+            'Graze\Gigya\Exceptions\InvalidTimestampException',
+            sprintf("The supplied timestamp: %d is more than 180 seconds different to now: %d",
+                $time, time()
+            )
+        );
+
+        $this->validator->assertFriendUid($uid, $friendUid, $time, $secret, $expected);
     }
 
     public function signatureTests()

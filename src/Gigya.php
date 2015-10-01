@@ -62,10 +62,10 @@ class Gigya
     /**
      * @param string $apiKey
      * @param string $secretKey
-     * @param string $dataCenter Default: eu1
-     * @param string $userKey
+     * @param string|null $dataCenter
+     * @param string|null $userKey
      */
-    public function __construct($apiKey, $secretKey, $dataCenter = 'eu1', $userKey = null)
+    public function __construct($apiKey, $secretKey, $dataCenter = null, $userKey = null)
     {
         $this->options = [
             'apiKey' => $apiKey,
@@ -74,7 +74,7 @@ class Gigya
         if ($userKey) {
             $this->options['userKey'] = $userKey;
         }
-        $this->dataCenter = $dataCenter;
+        $this->dataCenter = $dataCenter ?: Gigya::DC_EU;
     }
 
     /**

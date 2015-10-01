@@ -3,6 +3,12 @@
 test:
 	@./vendor/bin/phpunit
 
+lint:
+	@./vendor/bin/phpcs -p --standard=PSR2 --warning-severity=0 src/ tests/
+
+lint-auto-fix:
+	@./vendor/bin/phpcbf -p --standard=PSR2 src/ tests/
+
 test-coverage:
 	@./vendor/bin/phpunit --coverage-text --coverage-html ./tests/report
 

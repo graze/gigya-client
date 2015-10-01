@@ -42,7 +42,8 @@ class GuzzleResponseValidatorTest extends TestCase
         $signatureValidator = new SignatureValidator();
         $signature = $signatureValidator->calculateSignature($timestamp . '_' . $uid, 'secret');
 
-        $body = sprintf('{
+        $body = sprintf(
+            '{
             "UID": "%s",
             "UIDSignature": "%s",
             "signatureTimestamp": "%d",
@@ -72,7 +73,8 @@ class GuzzleResponseValidatorTest extends TestCase
         $signatureValidator = new SignatureValidator();
         $signature = $signatureValidator->calculateSignature($timestamp . '_' . $uid, 'secret');
 
-        $body = sprintf('{
+        $body = sprintf(
+            '{
             "UID": "%s",
             "UIDSignature": "%s",
             "signatureTimestamp": "%d",
@@ -94,8 +96,10 @@ class GuzzleResponseValidatorTest extends TestCase
 
         static::setExpectedException(
             'Graze\Gigya\Exceptions\InvalidTimestampException',
-            sprintf("The supplied timestamp: %d is more than 180 seconds different to now: %d",
-                $timestamp, time()
+            sprintf(
+                "The supplied timestamp: %d is more than 180 seconds different to now: %d",
+                $timestamp,
+                time()
             )
         );
 
@@ -110,7 +114,8 @@ class GuzzleResponseValidatorTest extends TestCase
         $signatureValidator = new SignatureValidator();
         $signature = $signatureValidator->calculateSignature($timestamp . '_' . $uid, 'secret');
 
-        $body = sprintf('{
+        $body = sprintf(
+            '{
             "UID": "%s",
             "UIDSignature": "invalidSignature",
             "signatureTimestamp": "%d",
@@ -131,7 +136,8 @@ class GuzzleResponseValidatorTest extends TestCase
 
         static::setExpectedException(
             'Graze\Gigya\Exceptions\InvalidUidSignatureException',
-            sprintf("The supplied signature for uid: diofu90ifgdf does not match.\n Expected '%s'\n Supplied 'invalidSignature'",
+            sprintf(
+                "The supplied signature for uid: diofu90ifgdf does not match.\n Expected '%s'\n Supplied 'invalidSignature'",
                 $signature
             )
         );

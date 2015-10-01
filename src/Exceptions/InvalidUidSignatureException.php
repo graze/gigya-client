@@ -14,8 +14,11 @@ class InvalidUidSignatureException extends Exception
      */
     public function __construct($uid, $expected, $signature, Exception $e = null)
     {
-        $message = sprintf("The supplied signature for uid: %s does not match.\n Expected '%s'\n Supplied '%s'",
-            $uid, $expected, $signature
+        $message = sprintf(
+            "The supplied signature for uid: %s does not match.\n Expected '%s'\n Supplied '%s'",
+            $uid,
+            $expected,
+            $signature
         );
 
         parent::__construct($message, 0, $e);

@@ -17,7 +17,10 @@ class InvalidFriendUidSignatureException extends Exception
     {
         $message = sprintf(
             "The supplied signature for uid: %s and friendUid: %s does not match.\n Expected '%s'\n Supplied '%s'",
-            $uid, $friendUid, $expected, $signature
+            $uid,
+            $friendUid,
+            $expected,
+            $signature
         );
 
         parent::__construct($message, 0, $e);

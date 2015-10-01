@@ -42,7 +42,6 @@ Or run individual suites using:
 
 ```shell
 $ make test-unit
-$ make test-functional
 ```
 
 You can get a coverage report in text and HTML by running:
@@ -50,5 +49,16 @@ You can get a coverage report in text and HTML by running:
 ```shell
 $ make test-coverage
 $ make test-unit-coverage
-$ make test-functional-coverage
+```
+
+You can lint the code by running:
+
+```shell
+$ make lint
+```
+
+And auto-fix errors using:
+
+```shell
+$ make lint-auto-fix
 ```

@@ -2,22 +2,7 @@
 
 All Notable changes to `gigya-client` will be documented in this file
 
-## [Version] - YYYY-MM-DD
+## 0.1 - 2015-10-03
 
 ### Added
-- Nothing
-
-### Changed
-- Nothing
-
-### Fixed
-- Nothing
-
-### Deprecated
-- Nothing
-
-### Removed
-- Nothing
-
-### Security
-- Nothing
+- initial Release

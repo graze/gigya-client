@@ -94,7 +94,8 @@ class SignatureValidatorTest extends TestCase
         list($uid, $secret, $expected) = $this->getUidSignature($time);
         static::setExpectedException(
             'Graze\Gigya\Exceptions\InvalidUidSignatureException',
-            sprintf("The supplied signature for uid: %s does not match.\n Expected '%s'\n Supplied 'invalidSignature'",
+            sprintf(
+                "The supplied signature for uid: %s does not match.\n Expected '%s'\n Supplied 'invalidSignature'",
                 static::UID,
                 $expected
             )
@@ -110,8 +111,10 @@ class SignatureValidatorTest extends TestCase
 
         static::setExpectedException(
             'Graze\Gigya\Exceptions\InvalidTimestampException',
-            sprintf("The supplied timestamp: %d is more than 180 seconds different to now: %d",
-                $time, time()
+            sprintf(
+                "The supplied timestamp: %d is more than 180 seconds different to now: %d",
+                $time,
+                time()
             )
         );
 
@@ -181,7 +184,8 @@ class SignatureValidatorTest extends TestCase
         list($uid, $friendUid, $secret, $expected) = $this->getFriendSignature($time);
         static::setExpectedException(
             'Graze\Gigya\Exceptions\InvalidFriendUidSignatureException',
-            sprintf("The supplied signature for uid: %s and friendUid: %s does not match.\n Expected '%s'\n Supplied 'invalidSignature'",
+            sprintf(
+                "The supplied signature for uid: %s and friendUid: %s does not match.\n Expected '%s'\n Supplied 'invalidSignature'",
                 static::UID,
                 static::FRIEND_UID,
                 $expected
@@ -198,8 +202,10 @@ class SignatureValidatorTest extends TestCase
 
         static::setExpectedException(
             'Graze\Gigya\Exceptions\InvalidTimestampException',
-            sprintf("The supplied timestamp: %d is more than 180 seconds different to now: %d",
-                $time, time()
+            sprintf(
+                "The supplied timestamp: %d is more than 180 seconds different to now: %d",
+                $time,
+                time()
             )
         );
 

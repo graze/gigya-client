@@ -4,25 +4,25 @@ namespace Graze\Gigya\Test\Unit\Validation;
 
 use Graze\Gigya\Test\TestCase;
 use Graze\Gigya\Test\TestFixtures;
-use Graze\Gigya\Validation\GuzzleResponseValidator;
+use Graze\Gigya\Validation\GigyaResponseValidator;
 use Graze\Gigya\Validation\SignatureValidator;
 use Mockery as m;
 
-class GuzzleResponseValidatorTest extends TestCase
+class GigyaResponseValidatorTest extends TestCase
 {
     /**
-     * @var GuzzleResponseValidator
+     * @var GigyaResponseValidator
      */
     private $validator;
 
     public function setUp()
     {
-        $this->validator = new GuzzleResponseValidator('secret');
+        $this->validator = new GigyaResponseValidator('secret');
     }
 
     public function testInstanceOf()
     {
-        static::assertInstanceOf('Graze\Gigya\Validation\GuzzleResponseValidatorInterface', $this->validator);
+        static::assertInstanceOf('Graze\Gigya\Validation\GigyaResponseValidatorInterface', $this->validator);
     }
 
     public function testValidResponse()
@@ -62,6 +62,21 @@ class GuzzleResponseValidatorTest extends TestCase
         $response->shouldReceive('getBody')->andReturn($body);
 
         static::assertTrue($this->validator->validate($response));
+        $this->validator->assert($response);
+    }
+
+    public function testMissingFieldWillThrowAnException()
+    {
+        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
+        $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('missing_field'));
+
+        static::assertFalse($this->validator->validate($response));
+
+        static::setExpectedException(
+            'Graze\Gigya\Exceptions\UnknownResponseException',
+            "The contents of the response could not be determined. Missing required field: 'statusReason'"
+        );
+
         $this->validator->assert($response);
     }
 
@@ -169,7 +184,7 @@ class GuzzleResponseValidatorTest extends TestCase
 
         static::setExpectedException(
             'Graze\Gigya\Exceptions\UnknownResponseException',
-            'The contents of the response could not be determined'
+            "The contents of the response could not be determined. Could not decode the body"
         );
 
         $this->validator->assert($response);

@@ -2,7 +2,7 @@
 
 namespace Graze\Gigya\Response;
 
-use Graze\Gigya\Validation\GuzzleResponseValidatorInterface;
+use Graze\Gigya\Validation\GigyaResponseValidatorInterface;
 use GuzzleHttp\Message\ResponseInterface as GuzzleResponseInterface;
 
 // use Psr\Http\Message\ResponseInterface; Guzzle v6
@@ -10,14 +10,14 @@ use GuzzleHttp\Message\ResponseInterface as GuzzleResponseInterface;
 class ResponseFactory
 {
     /**
-     * @var GuzzleResponseValidatorInterface
+     * @var GigyaResponseValidatorInterface
      */
     private $validator;
 
     /**
-     * @param GuzzleResponseValidatorInterface $validator
+     * @param GigyaResponseValidatorInterface $validator
      */
-    public function __construct(GuzzleResponseValidatorInterface $validator)
+    public function __construct(GigyaResponseValidatorInterface $validator)
     {
         $this->validator = $validator;
     }

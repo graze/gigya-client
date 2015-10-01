@@ -142,7 +142,16 @@ class TestFixtures
 "errorDetails": "The user billyBob cannot login",
 "statusCode": 403,
 "statusReason": "Forbidden",
-"callId": "d8b041336e354a789553830705203779"
+"callId": "d8b041336e354a789553830705203779",
+"time": "2015-03-22T11:42:25.943Z"
+}',
+      'missing_field' => '{
+"errorCode": 403005,
+"errorMessage": "Unauthorized user",
+"errorDetails": "The user billyBob cannot login",
+"statusCode": 403,
+"callId": "d8b041336e354a789553830705203779",
+"time": "2015-03-22T11:42:25.943Z"
 }',
         'invalid_json' => '{
 "errorCode": 403005,

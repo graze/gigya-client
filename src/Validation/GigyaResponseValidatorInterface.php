@@ -5,7 +5,7 @@ namespace Graze\Gigya\Validation;
 // use Psr\Http\Message\ResponseInterface; Guzzle v6
 use GuzzleHttp\Message\ResponseInterface as GuzzleResponseInterface;
 
-interface GuzzleResponseValidatorInterface
+interface GigyaResponseValidatorInterface
 {
     /**
      * Throws exceptions if any errors are found

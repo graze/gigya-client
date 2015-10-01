@@ -8,7 +8,7 @@ use GuzzleHttp\Message\ResponseInterface as GuzzleResponseInterface;
 
 // use Psr\Http\Message\ResponseInterface; Guzzle v6
 
-class GuzzleResponseValidator implements GuzzleResponseValidatorInterface
+class GigyaResponseValidator implements GigyaResponseValidatorInterface
 {
     /**
      * @var string
@@ -19,6 +19,14 @@ class GuzzleResponseValidator implements GuzzleResponseValidatorInterface
      * @var SignatureValidator
      */
     private $signatureValidator;
+
+    private $requiredFields = [
+        'errorCode',
+        'statusCode',
+        'statusReason',
+        'callId',
+        'time'
+    ];
 
     /**
      * @param string $secret
@@ -38,8 +46,14 @@ class GuzzleResponseValidator implements GuzzleResponseValidatorInterface
     public function assert(GuzzleResponseInterface $response)
     {
         $data = json_decode($response->getBody(), true);
-        if (!(is_array($data) && array_key_exists('statusCode', $data))) {
-            throw new UnknownResponseException($response);
+        if (!is_array($data)) {
+            throw new UnknownResponseException($response, "Could not decode the body");
+        }
+
+        foreach ($this->requiredFields as $field) {
+            if (!array_key_exists($field, $data)) {
+                throw new UnknownResponseException($response, "Missing required field: '{$field}'");
+            }
         }
 
         if ((array_key_exists('UID', $data)) &&
@@ -64,8 +78,14 @@ class GuzzleResponseValidator implements GuzzleResponseValidatorInterface
     public function validate(GuzzleResponseInterface $response)
     {
         $data = json_decode($response->getBody(), true);
-        if (!(is_array($data) && array_key_exists('statusCode', $data))) {
+        if (!is_array($data)) {
             return false;
+        }
+
+        foreach ($this->requiredFields as $field) {
+            if (!array_key_exists($field, $data)) {
+                return false;
+            }
         }
 
         if ((array_key_exists('UID', $data)) &&

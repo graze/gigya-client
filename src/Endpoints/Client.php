@@ -5,7 +5,7 @@ namespace Graze\Gigya\Endpoints;
 use Exception;
 use Graze\Gigya\Response\ResponseFactory;
 use Graze\Gigya\Response\ResponseInterface;
-use Graze\Gigya\Validation\GuzzleResponseValidator;
+use Graze\Gigya\Validation\GigyaResponseValidator;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
@@ -43,7 +43,7 @@ class Client
         $this->options = $options;
         $this->dataCenter = $dataCenter;
         $this->client = new GuzzleClient();
-        $this->factory = new ResponseFactory(new GuzzleResponseValidator(
+        $this->factory = new ResponseFactory(new GigyaResponseValidator(
             isset($this->options['secret']) ? $this->options['secret'] : ''
         ));
         $this->certificate = __DIR__ . '/' . static::CERTIFICATE_FILE;

@@ -24,13 +24,13 @@ class ResponseFactoryTest extends TestCase
     private $factory;
 
     /**
-     * @var MockInterface|\Graze\Gigya\Validation\GuzzleResponseValidatorInterface
+     * @var MockInterface|\Graze\Gigya\Validation\GigyaResponseValidatorInterface
      */
     private $validator;
 
     public function setUp()
     {
-        $this->validator = m::mock('Graze\Gigya\Validation\GuzzleResponseValidatorInterface');
+        $this->validator = m::mock('Graze\Gigya\Validation\GigyaResponseValidatorInterface');
         $this->factory = new ResponseFactory($this->validator);
     }
 
@@ -50,17 +50,17 @@ class ResponseFactoryTest extends TestCase
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.getAccountInfo'));
         $this->expectResponse($response);
 
-        $model = $this->factory->getResponse($response);
+        $gigyaResponse = $this->factory->getResponse($response);
 
-        static::assertInstanceOf('Graze\Gigya\Response\Response', $model);
-        static::assertEquals(200, $model->getStatusCode());
-        static::assertEquals(0, $model->getErrorCode());
-        static::assertEquals("OK", $model->getStatusReason());
-        static::assertEquals("e6f891ac17f24810bee6eb533524a152", $model->getCallId());
-        static::assertEquals(DateTimeImmutable::createFromFormat(DateTime::ATOM, "2015-03-22T11:42:25.943Z"), $model->getTime());
-        $data = $model->getData();
+        static::assertInstanceOf('Graze\Gigya\Response\Response', $gigyaResponse);
+        static::assertEquals(200, $gigyaResponse->getStatusCode());
+        static::assertEquals(0, $gigyaResponse->getErrorCode());
+        static::assertEquals("OK", $gigyaResponse->getStatusReason());
+        static::assertEquals("e6f891ac17f24810bee6eb533524a152", $gigyaResponse->getCallId());
+        static::assertEquals(DateTimeImmutable::createFromFormat(DateTime::ATOM, "2015-03-22T11:42:25.943Z"), $gigyaResponse->getTime());
+        $data = $gigyaResponse->getData();
         static::assertEquals("_gid_30A3XVJciH95WEEnoRmfZS7ee3MY+lUAtpVxvUWNseU=", $data->get('UID'));
-        static::assertSame($response, $model->getOriginalResponse());
+        static::assertSame($response, $gigyaResponse->getOriginalResponse());
     }
 
     public function testCollectionModel()
@@ -69,16 +69,16 @@ class ResponseFactoryTest extends TestCase
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.search_simple'));
         $this->expectResponse($response);
 
-        /** @var ResponseCollectionInterface $model */
-        $model = $this->factory->getResponse($response);
+        /** @var ResponseCollectionInterface $gigyaResponse */
+        $gigyaResponse = $this->factory->getResponse($response);
 
-        static::assertInstanceOf('Graze\Gigya\Response\ResponseCollection', $model);
-        static::assertEquals(200, $model->getStatusCode());
-        static::assertEquals(1840, $model->getTotal());
-        static::assertEquals(5, $model->getCount());
-        static::assertNull($model->getNextCursor());
+        static::assertInstanceOf('Graze\Gigya\Response\ResponseCollection', $gigyaResponse);
+        static::assertEquals(200, $gigyaResponse->getStatusCode());
+        static::assertEquals(1840, $gigyaResponse->getTotal());
+        static::assertEquals(5, $gigyaResponse->getCount());
+        static::assertNull($gigyaResponse->getNextCursor());
 
-        $results = $model->getData();
+        $results = $gigyaResponse->getData();
 
         static::assertEquals(5, $results->count());
         static::assertEquals('g1@gmail.com', $results[0]->profile->email);
@@ -90,14 +90,14 @@ class ResponseFactoryTest extends TestCase
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('failure_403'));
         $this->expectResponse($response);
 
-        $model = $this->factory->getResponse($response);
+        $gigyaResponse = $this->factory->getResponse($response);
 
-        static::assertInstanceOf('Graze\Gigya\Response\Response', $model);
-        static::assertEquals(403, $model->getStatusCode());
-        static::assertEquals(403005, $model->getErrorCode());
-        static::assertEquals("Forbidden", $model->getStatusReason());
-        static::assertEquals("Unauthorized user", $model->getErrorMessage());
-        static::assertEquals("The user billyBob cannot login", $model->getErrorDetails());
+        static::assertInstanceOf('Graze\Gigya\Response\Response', $gigyaResponse);
+        static::assertEquals(403, $gigyaResponse->getStatusCode());
+        static::assertEquals(403005, $gigyaResponse->getErrorCode());
+        static::assertEquals("Forbidden", $gigyaResponse->getStatusReason());
+        static::assertEquals("Unauthorized user", $gigyaResponse->getErrorMessage());
+        static::assertEquals("The user billyBob cannot login", $gigyaResponse->getErrorDetails());
     }
 
     public function testNoBody()

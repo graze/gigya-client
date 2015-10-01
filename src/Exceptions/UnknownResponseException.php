@@ -9,9 +9,9 @@ use GuzzleHttp\Message\ResponseInterface as GuzzleResponseInterface;
 
 class UnknownResponseException extends Exception
 {
-    public function __construct(GuzzleResponseInterface $response, Exception $e = null)
+    public function __construct(GuzzleResponseInterface $response, $message = '', Exception $e = null)
     {
-        $message = "The contents of the response could not be determined.\n  Body:\n" . $response->getBody();
+        $message = "The contents of the response could not be determined. {$message}\n  Body:\n" . $response->getBody();
 
         parent::__construct($message, 0, $e);
     }

@@ -2,7 +2,9 @@
 
 namespace Graze\Gigya\Test\Unit\Response;
 
+use DateTime;
 use DateTimeImmutable;
+use DateTimeZone;
 use Graze\Gigya\Exceptions\UnknownResponseException;
 use Graze\Gigya\Response\ResponseCollectionInterface;
 use Graze\Gigya\Response\ResponseFactory;
@@ -48,16 +50,17 @@ class ResponseFactoryTest extends TestCase
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.getAccountInfo'));
         $this->expectResponse($response);
 
-        $model = $this->factory->getModel($response);
+        $model = $this->factory->getResponse($response);
 
         static::assertInstanceOf('Graze\Gigya\Response\Response', $model);
         static::assertEquals(200, $model->getStatusCode());
         static::assertEquals(0, $model->getErrorCode());
         static::assertEquals("OK", $model->getStatusReason());
         static::assertEquals("e6f891ac17f24810bee6eb533524a152", $model->getCallId());
-        static::assertEquals(new DateTimeImmutable("2015-03-22T11:42:25.943Z"), $model->getTime());
+        static::assertEquals(DateTimeImmutable::createFromFormat(DateTime::ATOM, "2015-03-22T11:42:25.943Z"), $model->getTime());
         $data = $model->getData();
         static::assertEquals("_gid_30A3XVJciH95WEEnoRmfZS7ee3MY+lUAtpVxvUWNseU=", $data->get('UID'));
+        static::assertSame($response, $model->getOriginalResponse());
     }
 
     public function testCollectionModel()
@@ -67,7 +70,7 @@ class ResponseFactoryTest extends TestCase
         $this->expectResponse($response);
 
         /** @var ResponseCollectionInterface $model */
-        $model = $this->factory->getModel($response);
+        $model = $this->factory->getResponse($response);
 
         static::assertInstanceOf('Graze\Gigya\Response\ResponseCollection', $model);
         static::assertEquals(200, $model->getStatusCode());
@@ -87,13 +90,14 @@ class ResponseFactoryTest extends TestCase
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('failure_403'));
         $this->expectResponse($response);
 
-        $model = $this->factory->getModel($response);
+        $model = $this->factory->getResponse($response);
 
         static::assertInstanceOf('Graze\Gigya\Response\Response', $model);
         static::assertEquals(403, $model->getStatusCode());
         static::assertEquals(403005, $model->getErrorCode());
         static::assertEquals("Forbidden", $model->getStatusReason());
         static::assertEquals("Unauthorized user", $model->getErrorMessage());
+        static::assertEquals("The user billyBob cannot login", $model->getErrorDetails());
     }
 
     public function testNoBody()
@@ -110,6 +114,6 @@ class ResponseFactoryTest extends TestCase
             'The contents of the response could not be determined'
         );
 
-        $this->factory->getModel($response);
+        $this->factory->getResponse($response);
     }
 }

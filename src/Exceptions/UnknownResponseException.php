@@ -13,10 +13,6 @@ class UnknownResponseException extends Exception
     {
         $message = "The contents of the response could not be determined.\n  Body:\n" . $response->getBody();
 
-        if ($e) {
-            $message .= "\n" . $e->getMessage();
-        }
-
         parent::__construct($message, 0, $e);
     }
 }

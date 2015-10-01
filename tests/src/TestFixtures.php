@@ -139,6 +139,7 @@ class TestFixtures
       'failure_403' => '{
 "errorCode": 403005,
 "errorMessage": "Unauthorized user",
+"errorDetails": "The user billyBob cannot login",
 "statusCode": 403,
 "statusReason": "Forbidden",
 "callId": "d8b041336e354a789553830705203779"

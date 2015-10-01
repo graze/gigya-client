@@ -25,7 +25,7 @@ class Gigya
     const NAMESPACE_ACCOUNTS_TFA     = 'accounts.tfa';
     const NAMESPACE_SOCIALIZE        = 'socialize';
     const NAMESPACE_COMMENTS         = 'comments';
-    const NAMESPACE_GAME_MECHANICS   = 'gameMechanics';
+    const NAMESPACE_GAME_MECHANICS   = 'gm';
     const NAMESPACE_REPORTS          = 'reports';
     const NAMESPACE_DATA_STORE       = 'ds';
     const NAMESPACE_IDENTITY_STORAGE = 'ids';

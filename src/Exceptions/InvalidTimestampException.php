@@ -20,10 +20,6 @@ class InvalidTimestampException extends Exception
             time()
         );
 
-        if ($e) {
-            $message .= "\n " . $e->getMessage();
-        }
-
         parent::__construct($message, 0, $e);
     }
 }

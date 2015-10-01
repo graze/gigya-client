@@ -2,6 +2,7 @@
 
 namespace Graze\Gigya\Response;
 
+use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
 use GuzzleHttp\Message\ResponseInterface as GuzzleResponseInterface;
@@ -69,7 +70,7 @@ class Response implements ResponseInterface
         $this->statusCode = (int)$this->popField('statusCode');
         $this->statusReason = $this->popField('statusReason');
         $this->callId = $this->popField('callId');
-        $this->time = new DateTimeImmutable($this->popField('time'));
+        $this->time = DateTimeImmutable::createFromFormat(DateTime::ATOM, $this->popField('time'));
     }
 
     /**

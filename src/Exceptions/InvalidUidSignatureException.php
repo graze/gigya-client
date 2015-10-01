@@ -18,10 +18,6 @@ class InvalidUidSignatureException extends Exception
             $uid, $expected, $signature
         );
 
-        if ($e) {
-            $message .= "\n" . $e->getMessage();
-        }
-
         parent::__construct($message, 0, $e);
     }
 }

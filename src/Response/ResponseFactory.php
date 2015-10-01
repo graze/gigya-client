@@ -28,7 +28,7 @@ class ResponseFactory
      * @param GuzzleResponseInterface $response
      * @return ResponseInterface
      */
-    public function getModel(GuzzleResponseInterface $response)
+    public function getResponse(GuzzleResponseInterface $response)
     {
         $this->validator->assert($response);
         $body = json_decode($response->getBody(), true);

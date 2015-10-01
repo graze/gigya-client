@@ -20,10 +20,6 @@ class InvalidFriendUidSignatureException extends Exception
             $uid, $friendUid, $expected, $signature
         );
 
-        if ($e) {
-            $message .= "\n" . $e->getMessage();
-        }
-
         parent::__construct($message, 0, $e);
     }
 }

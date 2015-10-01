@@ -9,13 +9,13 @@ use Graze\Gigya\Validation\GuzzleResponseValidator;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Message\ResponseInterface as GuzzleResponseInterface;
 
 // use Psr\Http\Message\ResponseInterface; Guzzle v6
 
 class Client
 {
-    const DOMAIN = 'gigya.com';
+    const DOMAIN           = 'gigya.com';
+    const CERTIFICATE_FILE = 'cacert.pem';
 
     /**
      * @var string
@@ -46,6 +46,7 @@ class Client
         $this->factory = new ResponseFactory(new GuzzleResponseValidator(
             isset($this->options['secret']) ? $this->options['secret'] : ''
         ));
+        $this->certificate = __DIR__ . '/' . static::CERTIFICATE_FILE;
     }
 
     /**
@@ -83,23 +84,14 @@ class Client
      * @param string $method
      * @param array  $arguments
      * @return ResponseInterface
-     * @throws Exception
+     * @throws RequestException When an error is encountered
      */
     public function request($method, $arguments)
     {
-        try {
-            $options['query'] = array_merge($this->options, $arguments);
-            $response = $this->client->get($this->getEndpoint($method), $options);
-            return $this->factory->getModel($response);
-        } catch (ClientException $e) {
-            throw new Exception($e->getResponse()->getBody());
-        } catch (RequestException $e) {
-            $response = $e->getResponse();
-            if ($response instanceof GuzzleResponseInterface) {
-                throw new Exception($e->getResponse()->getBody());
-            }
-            throw new Exception($e->getMessage());
-        }
+        $options['query'] = array_merge($this->options, $arguments);
+        $options['cert'] = $this->certificate;
+        $response = $this->client->get($this->getEndpoint($method), $options);
+        return $this->factory->getResponse($response);
     }
 
     /**

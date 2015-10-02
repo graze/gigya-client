@@ -34,21 +34,6 @@ class Gigya
     const NAMESPACE_FIDM_SAML_IDP    = 'fidm.saml.idp';
 
     /**
-     * @var string
-     */
-    protected $apiKey;
-
-    /**
-     * @var string
-     */
-    protected $secretKey;
-
-    /**
-     * @var string
-     */
-    protected $userKey;
-
-    /**
      * Data Center ID to use
      *
      * - us1 - for the US datacenter

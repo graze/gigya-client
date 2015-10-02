@@ -12,17 +12,17 @@ use Graze\Gigya\Response\ResponseInterface;
  *
  * @link     http://developers.gigya.com/display/GD/Accounts+REST
  *
- * @method ResponseInterface deactivateProvider(array $params = []) @link
+ * @method ResponseInterface deactivateProvider(array $params = [], array $options = []) @link
  *         http://developers.gigya.com/display/GD/accounts.tfa.deactivateProvider+REST
- * @method ResponseInterface finalizeTFA(array $params = []) @link
+ * @method ResponseInterface finalizeTFA(array $params = [], array $options = []) @link
  *         http://developers.gigya.com/display/GD/accounts.tfa.finalizeTFA+REST
- * @method ResponseInterface getCertificate(array $params = []) @link
+ * @method ResponseInterface getCertificate(array $params = [], array $options = []) @link
  *         http://developers.gigya.com/display/GD/accounts.tfa.getCertificate+REST
- * @method ResponseInterface getProviders(array $params = []) @link
+ * @method ResponseInterface getProviders(array $params = [], array $options = []) @link
  *         http://developers.gigya.com/display/GD/accounts.tfa.getProviders+REST
- * @method ResponseInterface initTFA(array $params = []) @link
+ * @method ResponseInterface initTFA(array $params = [], array $options = []) @link
  *         http://developers.gigya.com/display/GD/accounts.tfa.initTFA+REST
- * @method ResponseInterface unregisterDevice(array $params = []) @link
+ * @method ResponseInterface unregisterDevice(array $params = [], array $options = []) @link
  *         http://developers.gigya.com/display/GD/accounts.tfa.unregisterDevice+REST
  */
 class AccountsTfa extends Client

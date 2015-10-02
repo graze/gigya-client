@@ -11,7 +11,8 @@ use Graze\Gigya\Response\ResponseInterface;
  *
  * @link     http://developers.gigya.com/display/GD/Audit+REST
  *
- * @method ResponseInterface search(array $params = []) @link http://developers.gigya.com/display/GD/audit.search
+ * @method ResponseInterface search(array $params = [], array $options = []) @link
+ *         http://developers.gigya.com/display/GD/audit.search
  */
 class Audit extends Client
 {

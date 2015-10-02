@@ -7,7 +7,6 @@ use Graze\Gigya\Response\ResponseFactory;
 use Graze\Gigya\Response\ResponseInterface;
 use Graze\Gigya\Validation\GigyaResponseValidator;
 use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
 
 // use Psr\Http\Message\ResponseInterface; Guzzle v6
@@ -25,7 +24,7 @@ class Client
     /**
      * @var array
      */
-    protected $options;
+    protected $params;
 
     /**
      * @var ResponseFactory
@@ -33,20 +32,29 @@ class Client
     protected $factory;
 
     /**
-     * @param string $namespace
-     * @param array  $options [:apiKey,:secret,:userKey]
-     * @param string $dataCenter
+     * Collection of options to pass to Guzzle
+     *
+     * @var array
      */
-    public function __construct($namespace, array $options, $dataCenter)
+    protected $options;
+
+    /**
+     * @param string $namespace
+     * @param array  $params [:apiKey,:secret,:userKey]
+     * @param string $dataCenter
+     * @param array  $options
+     */
+    public function __construct($namespace, array $params, $dataCenter, array $options = [])
     {
         $this->namespace = $namespace;
-        $this->options = $options;
+        $this->params = $params;
         $this->dataCenter = $dataCenter;
         $this->client = new GuzzleClient();
         $this->factory = new ResponseFactory(new GigyaResponseValidator(
-            isset($this->options['secret']) ? $this->options['secret'] : ''
+            isset($this->params['secret']) ? $this->params['secret'] : ''
         ));
         $this->certificate = __DIR__ . '/' . static::CERTIFICATE_FILE;
+        $this->options = $options;
     }
 
     /**
@@ -82,26 +90,33 @@ class Client
 
     /**
      * @param string $method
-     * @param array  $arguments
+     * @param array  $params  Parameters to pass as part the of the uri
+     * @param array  $options Extra options to be passed to guzzle. These will overwrite any existing options defined
+     *                        by using addOption
      * @return ResponseInterface
      * @throws RequestException When an error is encountered
      */
-    public function request($method, $arguments)
+    public function request($method, array $params = [], array $options = [])
     {
-        $options['query'] = array_merge($this->options, $arguments);
-        $options['cert'] = $this->certificate;
-        $response = $this->client->get($this->getEndpoint($method), $options);
+        $requestOptions = array_merge($this->options, $options);
+        $requestOptions['query'] = array_merge($params, $this->params);
+        $requestOptions['cert'] = $this->certificate;
+        $response = $this->client->get($this->getEndpoint($method), $requestOptions);
         return $this->factory->getResponse($response);
     }
 
     /**
      * @param string $method
-     * @param array  $arguments
+     * @param array  $arguments [params, options]
      * @return ResponseInterface
-     * @throws Exception
+     * @throws RequestException
      */
     public function __call($method, $arguments)
     {
-        return $this->request($method, isset($arguments[0]) ? $arguments[0] : []);
+        return $this->request(
+            $method,
+            isset($arguments[0]) ? $arguments[0] : [],
+            isset($arguments[1]) ? $arguments[1] : []
+        );
     }
 }

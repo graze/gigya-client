@@ -12,17 +12,17 @@ use Graze\Gigya\Response\ResponseInterface;
  *
  * @link     http://developers.gigya.com/display/GD/FIdM+SAML+REST
  *
- * @method ResponseInterface delIdP(array $params = []) @link
+ * @method ResponseInterface delIdP(array $params = [], array $options = []) @link
  *         http://developers.gigya.com/display/GD/fidm.saml.delIdP+REST
- * @method ResponseInterface getConfig(array $params = []) @link
+ * @method ResponseInterface getConfig(array $params = [], array $options = []) @link
  *         http://developers.gigya.com/display/GD/fidm.saml.getConfig+REST
- * @method ResponseInterface getRegisteredIdPs(array $params = []) @link
+ * @method ResponseInterface getRegisteredIdPs(array $params = [], array $options = []) @link
  *         http://developers.gigya.com/display/GD/fidm.saml.getRegisteredIdPs+REST
- * @method ResponseInterface importIdPMetadata(array $params = []) @link
+ * @method ResponseInterface importIdPMetadata(array $params = [], array $options = []) @link
  *         http://developers.gigya.com/display/GD/fidm.saml.importIdPMetadata+REST
- * @method ResponseInterface registerIdP(array $params = []) @link
+ * @method ResponseInterface registerIdP(array $params = [], array $options = []) @link
  *         http://developers.gigya.com/display/GD/fidm.saml.registerIdP+REST
- * @method ResponseInterface setConfig(array $params = []) @link
+ * @method ResponseInterface setConfig(array $params = [], array $options = []) @link
  *         http://developers.gigya.com/display/GD/fidm.saml.setConfig+REST
  */
 class Saml extends Client
@@ -40,6 +40,6 @@ class Saml extends Client
      */
     public function idp()
     {
-        return new SamlIdp($this->namespace, $this->options, $this->dataCenter);
+        return new SamlIdp($this->namespace, $this->params, $this->dataCenter, $this->options);
     }
 }

@@ -34,21 +34,6 @@ class Gigya
     const NAMESPACE_FIDM_SAML_IDP    = 'fidm.saml.idp';
 
     /**
-     * @var string
-     */
-    protected $apiKey;
-
-    /**
-     * @var string
-     */
-    protected $secretKey;
-
-    /**
-     * @var string
-     */
-    protected $userKey;
-
-    /**
      * Data Center ID to use
      *
      * - us1 - for the US datacenter
@@ -60,21 +45,59 @@ class Gigya
     protected $dataCenter;
 
     /**
-     * @param string $apiKey
-     * @param string $secretKey
+     * Collection of options to pass the client when calling the API
+     *
+     * @var array
+     */
+    protected $options = [];
+
+    /**
+     * @param string      $apiKey
+     * @param string      $secretKey
      * @param string|null $dataCenter
      * @param string|null $userKey
      */
     public function __construct($apiKey, $secretKey, $dataCenter = null, $userKey = null)
     {
-        $this->options = [
+        $this->params = [
             'apiKey' => $apiKey,
             'secret' => $secretKey
         ];
         if ($userKey) {
-            $this->options['userKey'] = $userKey;
+            $this->params['userKey'] = $userKey;
         }
         $this->dataCenter = $dataCenter ?: Gigya::DC_EU;
+    }
+
+    /**
+     * Add an option to be passed through to Guzzle for the request.
+     *
+     * N.B. This will overwrite any existing options apart from query and cert
+     *
+     * @param string $option
+     * @param mixed  $value
+     * @return $this
+     */
+    public function addOption($option, $value)
+    {
+        $this->options[$option] = $value;
+        return $this;
+    }
+
+    /**
+     * Add a set of options as key value pairs. These will be passed to the Guzzle request
+     *
+     * N.B. This will overwrite any existing options apart from query and cert
+     *
+     * @param array $options
+     * @return $this
+     */
+    public function addOptions(array $options)
+    {
+        foreach ($options as $option => $value) {
+            $this->addOption($option, $value);
+        }
+        return $this;
     }
 
     /**
@@ -88,7 +111,7 @@ class Gigya
             throw new BadMethodCallException("No Arguments should be supplied for Gigya call");
         }
 
-        return new Client($method, $this->options, $this->dataCenter);
+        return new Client($method, $this->params, $this->dataCenter, $this->options);
     }
 
     /**
@@ -96,7 +119,7 @@ class Gigya
      */
     public function accounts()
     {
-        return new Accounts(static::NAMESPACE_ACCOUNTS, $this->options, $this->dataCenter);
+        return new Accounts(static::NAMESPACE_ACCOUNTS, $this->params, $this->dataCenter, $this->options);
     }
 
     /**
@@ -104,7 +127,7 @@ class Gigya
      */
     public function audit()
     {
-        return new Audit(static::NAMESPACE_AUDIT, $this->options, $this->dataCenter);
+        return new Audit(static::NAMESPACE_AUDIT, $this->params, $this->dataCenter, $this->options);
     }
 
     /**
@@ -112,7 +135,7 @@ class Gigya
      */
     public function socialize()
     {
-        return new Socialize(static::NAMESPACE_SOCIALIZE, $this->options, $this->dataCenter);
+        return new Socialize(static::NAMESPACE_SOCIALIZE, $this->params, $this->dataCenter, $this->options);
     }
 
     /**
@@ -120,7 +143,7 @@ class Gigya
      */
     public function comments()
     {
-        return new Comments(static::NAMESPACE_COMMENTS, $this->options, $this->dataCenter);
+        return new Comments(static::NAMESPACE_COMMENTS, $this->params, $this->dataCenter, $this->options);
     }
 
     /**
@@ -128,7 +151,7 @@ class Gigya
      */
     public function gameMechanics()
     {
-        return new GameMechanics(static::NAMESPACE_GAME_MECHANICS, $this->options, $this->dataCenter);
+        return new GameMechanics(static::NAMESPACE_GAME_MECHANICS, $this->params, $this->dataCenter, $this->options);
     }
 
     /**
@@ -136,7 +159,7 @@ class Gigya
      */
     public function reports()
     {
-        return new Reports(static::NAMESPACE_REPORTS, $this->options, $this->dataCenter);
+        return new Reports(static::NAMESPACE_REPORTS, $this->params, $this->dataCenter, $this->options);
     }
 
     /**
@@ -144,7 +167,7 @@ class Gigya
      */
     public function dataStore()
     {
-        return new DataStore(static::NAMESPACE_DATA_STORE, $this->options, $this->dataCenter);
+        return new DataStore(static::NAMESPACE_DATA_STORE, $this->params, $this->dataCenter, $this->options);
     }
 
     /**
@@ -152,7 +175,12 @@ class Gigya
      */
     public function identityStorage()
     {
-        return new IdentityStorage(static::NAMESPACE_IDENTITY_STORAGE, $this->options, $this->dataCenter);
+        return new IdentityStorage(
+            static::NAMESPACE_IDENTITY_STORAGE,
+            $this->params,
+            $this->dataCenter,
+            $this->options
+        );
     }
 
     /**
@@ -160,6 +188,6 @@ class Gigya
      */
     public function saml()
     {
-        return new Saml(static::NAMESPACE_FIDM, $this->options, $this->dataCenter);
+        return new Saml(static::NAMESPACE_FIDM, $this->params, $this->dataCenter, $this->options);
     }
 }

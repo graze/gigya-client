@@ -20,6 +20,9 @@ class GigyaResponseValidator implements GigyaResponseValidatorInterface
      */
     private $signatureValidator;
 
+    /**
+     * @var string[]
+     */
     private $requiredFields = [
         'errorCode',
         'statusCode',

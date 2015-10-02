@@ -45,7 +45,14 @@ class Gigya
     protected $dataCenter;
 
     /**
-     * Collection of options to pass the client when calling the API
+     * Collection of core uri parameters to be passed to each api request
+     *
+     * @var array
+     */
+    protected $params = [];
+
+    /**
+     * Collection of core options to be passed to each api request
      *
      * @var array
      */

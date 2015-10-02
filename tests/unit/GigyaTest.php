@@ -54,7 +54,8 @@ class GigyaTest extends TestCase
     }
 
     /**
-     * @param string $fixture
+     * @param string $fixtureName
+     * @param string $uri
      * @param array  $getOptions
      * @return ResponseInterface
      */

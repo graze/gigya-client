@@ -100,7 +100,7 @@ class Client
     {
         $requestOptions = array_merge($this->options, $options);
         $requestOptions['query'] = array_merge($params, $this->params);
-        $requestOptions['cert'] = $this->certificate;
+        $requestOptions['verify'] = $this->certificate;
         $response = $this->client->get($this->getEndpoint($method), $requestOptions);
         return $this->factory->getResponse($response);
     }

@@ -95,7 +95,7 @@ class GigyaTest extends TestCase
                     'apiKey' => $key,
                     'secret' => $secret
                 ],
-                'cert'  => $this->certPath,
+                'verify'  => $this->certPath,
             ]
         );
 
@@ -116,7 +116,7 @@ class GigyaTest extends TestCase
                     'apiKey' => 'key',
                     'secret' => 'secret'
                 ],
-                'cert'  => $this->certPath,
+                'verify'  => $this->certPath,
             ]
         );
 
@@ -137,7 +137,7 @@ class GigyaTest extends TestCase
                     'apiKey' => 'key',
                     'secret' => 'secret'
                 ],
-                'cert'  => $this->certPath,
+                'verify'  => $this->certPath,
             ]
         );
 
@@ -159,7 +159,7 @@ class GigyaTest extends TestCase
                     'secret'  => 'userSecret',
                     'userKey' => 'userKey',
                 ],
-                'cert'  => $this->certPath,
+                'verify'  => $this->certPath,
             ]
         );
 
@@ -181,7 +181,7 @@ class GigyaTest extends TestCase
                     'secret' => 'secret',
                     'param'  => 'passedThrough'
                 ],
-                'cert'  => $this->certPath,
+                'verify'  => $this->certPath,
             ]
         );
 
@@ -203,7 +203,7 @@ class GigyaTest extends TestCase
                     'secret' => 'secret',
                     'params' => 'passedThrough'
                 ],
-                'cert'  => $this->certPath,
+                'verify'  => $this->certPath,
             ]
         );
 
@@ -225,7 +225,7 @@ class GigyaTest extends TestCase
                     'secret' => 'secret',
                     'params' => 'passedThrough'
                 ],
-                'cert'  => $this->certPath,
+                'verify'  => $this->certPath,
             ]
         );
 
@@ -253,7 +253,7 @@ class GigyaTest extends TestCase
                     'secret' => 'secret',
                     'params' => 'passedThrough'
                 ],
-                'cert'  => $this->certPath,
+                'verify'  => $this->certPath,
             ]
         );
 
@@ -286,7 +286,7 @@ class GigyaTest extends TestCase
                     'secret' => 'secret',
                     'params' => 'passedThrough'
                 ],
-                'cert'    => $this->certPath,
+                'verify'    => $this->certPath,
                 'option1' => 'value1',
                 'option2' => false,
             ]
@@ -313,7 +313,7 @@ class GigyaTest extends TestCase
                     'secret' => 'secret',
                     'params' => 'passedThrough'
                 ],
-                'cert'    => $this->certPath,
+                'verify'    => $this->certPath,
                 'option1' => 'value1',
                 'option2' => true,
             ]
@@ -342,7 +342,7 @@ class GigyaTest extends TestCase
                     'secret' => 'secret',
                     'params' => 'passedThrough'
                 ],
-                'cert'    => $this->certPath,
+                'verify'    => $this->certPath,
                 'option1' => false,
             ]
         );
@@ -368,7 +368,7 @@ class GigyaTest extends TestCase
                     'secret' => 'secret',
                     'params' => 'passedThrough'
                 ],
-                'cert'    => $this->certPath,
+                'verify'    => $this->certPath,
                 'option1' => true,
             ]
         );
@@ -394,12 +394,12 @@ class GigyaTest extends TestCase
                     'secret' => 'secret',
                     'params' => 'passedThrough'
                 ],
-                'cert'  => $this->certPath,
+                'verify'  => $this->certPath,
             ]
         );
 
         $client->addOption('query', 'random');
-        $client->addOption('cert', 'notAFile');
+        $client->addOption('verify', 'notAFile');
 
         $result = $client->accounts()->getAccountInfo(['params' => 'passedThrough']);
 
@@ -418,7 +418,7 @@ class GigyaTest extends TestCase
                     'secret' => 'secret',
                     'params' => 'passedThrough'
                 ],
-                'cert'   => $this->certPath,
+                'verify'   => $this->certPath,
                 'custom' => 'value'
             ]
         );
@@ -440,7 +440,7 @@ class GigyaTest extends TestCase
                     'secret' => 'secret',
                     'params' => 'passedThrough'
                 ],
-                'cert'   => $this->certPath,
+                'verify'   => $this->certPath,
                 'custom' => 'value'
             ]
         );
@@ -464,13 +464,13 @@ class GigyaTest extends TestCase
                     'secret' => 'secret',
                     'params' => 'passedThrough'
                 ],
-                'cert'  => $this->certPath
+                'verify'  => $this->certPath
             ]
         );
 
         $result = $client->accounts()->getAccountInfo(
             ['params' => 'passedThrough'],
-            ['query' => 'value', 'cert' => false]
+            ['query' => 'value', 'verify' => false]
         );
 
         static::assertSame($gigyaResponse, $result);
@@ -487,7 +487,7 @@ class GigyaTest extends TestCase
                     'apiKey' => 'key',
                     'secret' => 'secret'
                 ],
-                'cert'  => $this->certPath
+                'verify'  => $this->certPath
             ]
         );
 

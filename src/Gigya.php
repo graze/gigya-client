@@ -79,7 +79,7 @@ class Gigya
     /**
      * Add an option to be passed through to Guzzle for the request.
      *
-     * N.B. This will overwrite any existing options apart from query and cert
+     * N.B. This will overwrite any existing options apart from query and verify
      *
      * @param string $option
      * @param mixed  $value
@@ -94,7 +94,7 @@ class Gigya
     /**
      * Add a set of options as key value pairs. These will be passed to the Guzzle request
      *
-     * N.B. This will overwrite any existing options apart from query and cert
+     * N.B. This will overwrite any existing options apart from query and verify
      *
      * @param array $options
      * @return $this

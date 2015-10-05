@@ -2,7 +2,7 @@
 
 namespace Graze\Gigya\Exceptions;
 
-use Mockery\Exception;
+use Exception;
 
 class InvalidFriendUidSignatureException extends Exception
 {

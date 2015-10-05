@@ -2,9 +2,7 @@
 
 namespace Graze\Gigya\Test\Unit\Response;
 
-use DateTime;
 use DateTimeImmutable;
-use DateTimeZone;
 use Graze\Gigya\Exceptions\UnknownResponseException;
 use Graze\Gigya\Response\Response;
 use Graze\Gigya\Response\ResponseCollectionInterface;
@@ -19,6 +17,7 @@ use Mockery\MockInterface;
 
 class ResponseFactoryTest extends TestCase
 {
+
     /**
      * @var ResponseFactory
      */
@@ -28,6 +27,11 @@ class ResponseFactoryTest extends TestCase
      * @var MockInterface|\Graze\Gigya\Validation\GigyaResponseValidatorInterface
      */
     private $validator;
+
+    public static function setUpBeforeClass()
+    {
+        date_default_timezone_set('UTC');
+    }
 
     public function setUp()
     {
@@ -60,11 +64,7 @@ class ResponseFactoryTest extends TestCase
         static::assertEquals("e6f891ac17f24810bee6eb533524a152", $gigyaResponse->getCallId());
         static::assertInstanceOf('DateTimeInterface', $gigyaResponse->getTime());
         static::assertEquals(
-            DateTimeImmutable::createFromFormat(
-                Response::DATE_TIME_FORMAT,
-                "2015-03-22T11:42:25.943Z",
-                new DateTimeZone('UTC')
-            ),
+            DateTimeImmutable::createFromFormat(Response::DATE_TIME_FORMAT, "2015-03-22T11:42:25.943Z"),
             $gigyaResponse->getTime()
         );
         $data = $gigyaResponse->getData();

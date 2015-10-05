@@ -4,7 +4,6 @@ namespace Graze\Gigya\Response;
 
 use DateTimeImmutable;
 use DateTimeInterface;
-use DateTimeZone;
 use GuzzleHttp\Message\ResponseInterface as GuzzleResponseInterface;
 use Illuminate\Support\Collection;
 
@@ -72,11 +71,7 @@ class Response implements ResponseInterface
         $this->statusCode = (int)$this->popField('statusCode');
         $this->statusReason = $this->popField('statusReason');
         $this->callId = $this->popField('callId');
-        $this->time = DateTimeImmutable::createFromFormat(
-            static::DATE_TIME_FORMAT,
-            $this->popField('time'),
-            new DateTimeZone('UTC')
-        );
+        $this->time = DateTimeImmutable::createFromFormat(static::DATE_TIME_FORMAT, $this->popField('time'));
     }
 
     /**

@@ -6,6 +6,7 @@ use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
 use Graze\Gigya\Exceptions\UnknownResponseException;
+use Graze\Gigya\Response\Response;
 use Graze\Gigya\Response\ResponseCollectionInterface;
 use Graze\Gigya\Response\ResponseFactory;
 use Graze\Gigya\Test\TestCase;
@@ -57,7 +58,15 @@ class ResponseFactoryTest extends TestCase
         static::assertEquals(0, $gigyaResponse->getErrorCode());
         static::assertEquals("OK", $gigyaResponse->getStatusReason());
         static::assertEquals("e6f891ac17f24810bee6eb533524a152", $gigyaResponse->getCallId());
-        static::assertEquals(DateTimeImmutable::createFromFormat(DateTime::ATOM, "2015-03-22T11:42:25.943Z"), $gigyaResponse->getTime());
+        static::assertInstanceOf('DateTimeInterface', $gigyaResponse->getTime());
+        static::assertEquals(
+            DateTimeImmutable::createFromFormat(
+                Response::DATE_TIME_FORMAT,
+                "2015-03-22T11:42:25.943Z",
+                new DateTimeZone('UTC')
+            ),
+            $gigyaResponse->getTime()
+        );
         $data = $gigyaResponse->getData();
         static::assertEquals("_gid_30A3XVJciH95WEEnoRmfZS7ee3MY+lUAtpVxvUWNseU=", $data->get('UID'));
         static::assertSame($response, $gigyaResponse->getOriginalResponse());

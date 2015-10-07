@@ -39,6 +39,16 @@ class Client
     protected $options;
 
     /**
+     * @var string
+     */
+    protected $namespace;
+
+    /**
+     * @var string
+     */
+    protected $certificate;
+
+    /**
      * @param string $namespace
      * @param array  $params [:apiKey,:secret,:userKey]
      * @param string $dataCenter

@@ -19,7 +19,8 @@ $ composer require graze/gigya-client
 
 ``` php
 $client = new \Graze\Gigya\Gigya($key, $secret, Gigya::DC_EU);
-$account = $client->accounts()->getAccountInfo(['uid' => $uid]);
+$response = $client->accounts()->getAccountInfo(['uid' => $uid]);
+$account = $response->getData();
 ```
 
 ## Change log

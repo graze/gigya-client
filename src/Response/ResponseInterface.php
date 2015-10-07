@@ -54,4 +54,9 @@ interface ResponseInterface
      * @return GuzzleResponseInterface
      */
     public function getOriginalResponse();
+
+    /**
+     * @return string
+     */
+    public function __toString();
 }

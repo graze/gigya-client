@@ -59,6 +59,11 @@ class Response implements ResponseInterface
     protected $data;
 
     /**
+     * @var GuzzleResponseInterface
+     */
+    protected $response;
+
+    /**
      * @param GuzzleResponseInterface $response
      */
     public function __construct(GuzzleResponseInterface $response)
@@ -163,5 +168,22 @@ class Response implements ResponseInterface
     public function getOriginalResponse()
     {
         return $this->response;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return sprintf(
+            "Response: %d: %s - %d: %s\n%s\n%s\n%s",
+            $this->getStatusCode(),
+            $this->getStatusReason(),
+            $this->getErrorCode(),
+            ErrorCode::getName($this->getErrorCode()),
+            ErrorCode::getDescription($this->getErrorCode()),
+            $this->getErrorMessage(),
+            $this->getErrorDetails()
+        );
     }
 }

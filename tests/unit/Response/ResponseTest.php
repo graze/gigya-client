@@ -5,6 +5,9 @@ namespace Graze\Gigya\Test\Unit\Response;
 use DateTime;
 use Graze\Gigya\Response\Response;
 use Graze\Gigya\Test\TestCase;
+use Graze\Gigya\Test\TestFixtures;
+use GuzzleHttp\Message\ResponseInterface as GuzzleResponseInterface;
+use Mockery as m;
 
 class ResponseTest extends TestCase
 {
@@ -41,5 +44,23 @@ class ResponseTest extends TestCase
         static::assertEquals("25", $time->format('s'));
         static::assertEquals("943000", $time->format('u'));
         static::assertEquals("+02:00", $time->getTimezone()->getName());
+    }
+
+    public function testToString()
+    {
+        $guzzleResponse = m::mock(GuzzleResponseInterface::class);
+        $guzzleResponse->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.getAccountInfo'));
+        $response = new Response($guzzleResponse);
+
+        static::assertRegExp('/Response: \d+: \w+ - \d+: .+\n.+/s', $response->__toString());
+    }
+
+    public function testToStringForFailure()
+    {
+        $guzzleResponse = m::mock(GuzzleResponseInterface::class);
+        $guzzleResponse->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('failure_403'));
+        $response = new Response($guzzleResponse);
+
+        static::assertRegExp('/Response: \d+: \w+ - \d+: .+\n.+\n.+\n.+/s', $response->__toString());
     }
 }

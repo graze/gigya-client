@@ -3,6 +3,7 @@
 namespace Graze\Gigya;
 
 use BadMethodCallException;
+use Graze\Gigya\Auth\GigyaHttpsAuth;
 use Graze\Gigya\Endpoints\Accounts;
 use Graze\Gigya\Endpoints\Audit;
 use Graze\Gigya\Endpoints\Client;
@@ -33,6 +34,8 @@ class Gigya
     const NAMESPACE_FIDM_SAML        = 'fidm.saml';
     const NAMESPACE_FIDM_SAML_IDP    = 'fidm.saml.idp';
 
+    const CERTIFICATE_FILE = 'cacert.pem';
+
     /**
      * Data Center ID to use
      *
@@ -43,13 +46,6 @@ class Gigya
      * @var string (Default: eu1)
      */
     protected $dataCenter;
-
-    /**
-     * Collection of core uri parameters to be passed to each api request
-     *
-     * @var array
-     */
-    protected $params = [];
 
     /**
      * Collection of core options to be passed to each api request
@@ -66,14 +62,10 @@ class Gigya
      */
     public function __construct($apiKey, $secretKey, $dataCenter = null, $userKey = null)
     {
-        $this->params = [
-            'apiKey' => $apiKey,
-            'secret' => $secretKey
-        ];
-        if ($userKey) {
-            $this->params['userKey'] = $userKey;
-        }
+        $this->auth = new GigyaHttpsAuth($apiKey, $secretKey, $userKey);
         $this->dataCenter = $dataCenter ?: Gigya::DC_EU;
+        $this->addOption('auth', 'gigya');
+        $this->addOption('verify', __DIR__ . '/' . static::CERTIFICATE_FILE);
     }
 
     /**
@@ -118,7 +110,7 @@ class Gigya
             throw new BadMethodCallException("No Arguments should be supplied for Gigya call");
         }
 
-        return new Client($method, $this->params, $this->dataCenter, $this->options);
+        return new Client($method, $this->auth, $this->dataCenter, $this->options);
     }
 
     /**
@@ -126,7 +118,7 @@ class Gigya
      */
     public function accounts()
     {
-        return new Accounts(static::NAMESPACE_ACCOUNTS, $this->params, $this->dataCenter, $this->options);
+        return new Accounts(static::NAMESPACE_ACCOUNTS, $this->auth, $this->dataCenter, $this->options);
     }
 
     /**
@@ -134,7 +126,7 @@ class Gigya
      */
     public function audit()
     {
-        return new Audit(static::NAMESPACE_AUDIT, $this->params, $this->dataCenter, $this->options);
+        return new Audit(static::NAMESPACE_AUDIT, $this->auth, $this->dataCenter, $this->options);
     }
 
     /**
@@ -142,7 +134,7 @@ class Gigya
      */
     public function socialize()
     {
-        return new Socialize(static::NAMESPACE_SOCIALIZE, $this->params, $this->dataCenter, $this->options);
+        return new Socialize(static::NAMESPACE_SOCIALIZE, $this->auth, $this->dataCenter, $this->options);
     }
 
     /**
@@ -150,7 +142,7 @@ class Gigya
      */
     public function comments()
     {
-        return new Comments(static::NAMESPACE_COMMENTS, $this->params, $this->dataCenter, $this->options);
+        return new Comments(static::NAMESPACE_COMMENTS, $this->auth, $this->dataCenter, $this->options);
     }
 
     /**
@@ -158,7 +150,7 @@ class Gigya
      */
     public function gameMechanics()
     {
-        return new GameMechanics(static::NAMESPACE_GAME_MECHANICS, $this->params, $this->dataCenter, $this->options);
+        return new GameMechanics(static::NAMESPACE_GAME_MECHANICS, $this->auth, $this->dataCenter, $this->options);
     }
 
     /**
@@ -166,7 +158,7 @@ class Gigya
      */
     public function reports()
     {
-        return new Reports(static::NAMESPACE_REPORTS, $this->params, $this->dataCenter, $this->options);
+        return new Reports(static::NAMESPACE_REPORTS, $this->auth, $this->dataCenter, $this->options);
     }
 
     /**
@@ -174,7 +166,7 @@ class Gigya
      */
     public function dataStore()
     {
-        return new DataStore(static::NAMESPACE_DATA_STORE, $this->params, $this->dataCenter, $this->options);
+        return new DataStore(static::NAMESPACE_DATA_STORE, $this->auth, $this->dataCenter, $this->options);
     }
 
     /**
@@ -184,7 +176,7 @@ class Gigya
     {
         return new IdentityStorage(
             static::NAMESPACE_IDENTITY_STORAGE,
-            $this->params,
+            $this->auth,
             $this->dataCenter,
             $this->options
         );
@@ -195,6 +187,6 @@ class Gigya
      */
     public function saml()
     {
-        return new Saml(static::NAMESPACE_FIDM, $this->params, $this->dataCenter, $this->options);
+        return new Saml(static::NAMESPACE_FIDM, $this->auth, $this->dataCenter, $this->options);
     }
 }

@@ -40,6 +40,6 @@ class Saml extends Client
      */
     public function idp()
     {
-        return new SamlIdp($this->namespace, $this->params, $this->dataCenter, $this->options);
+        return new SamlIdp($this->namespace, $this->auth, $this->dataCenter, $this->options);
     }
 }

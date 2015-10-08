@@ -3,9 +3,12 @@
 namespace Graze\Gigya\Endpoints;
 
 use Exception;
+use Graze\Gigya\Auth\GigyaAuthInterface;
 use Graze\Gigya\Response\ResponseFactory;
 use Graze\Gigya\Response\ResponseInterface;
-use Graze\Gigya\Validation\GigyaResponseValidator;
+use Graze\Gigya\Validation\Signature;
+use Graze\Gigya\Validation\UidSignatureValidator;
+use Graze\Gigya\Validation\ValidGigyaResponseSubscriber;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\RequestException;
 
@@ -14,17 +17,11 @@ use GuzzleHttp\Exception\RequestException;
 class Client
 {
     const DOMAIN           = 'gigya.com';
-    const CERTIFICATE_FILE = 'cacert.pem';
 
     /**
      * @var string
      */
     protected $dataCenter;
-
-    /**
-     * @var array
-     */
-    protected $params;
 
     /**
      * @var ResponseFactory
@@ -44,27 +41,37 @@ class Client
     protected $namespace;
 
     /**
-     * @var string
+     * @var GigyaAuthInterface
      */
-    protected $certificate;
+    protected $auth;
 
     /**
-     * @param string $namespace
-     * @param array  $params [:apiKey,:secret,:userKey]
-     * @param string $dataCenter
-     * @param array  $options
+     * @var GuzzleClient
      */
-    public function __construct($namespace, array $params, $dataCenter, array $options = [])
+    protected $client;
+
+    /**
+     * @param string             $namespace
+     * @param GigyaAuthInterface $auth
+     * @param string             $dataCenter
+     * @param array              $options
+     */
+    public function __construct($namespace, GigyaAuthInterface $auth, $dataCenter, array $options = [])
     {
         $this->namespace = $namespace;
-        $this->params = $params;
+        $this->auth = $auth;
         $this->dataCenter = $dataCenter;
-        $this->client = new GuzzleClient();
-        $this->factory = new ResponseFactory(new GigyaResponseValidator(
-            isset($this->params['secret']) ? $this->params['secret'] : ''
-        ));
-        $this->certificate = __DIR__ . '/' . static::CERTIFICATE_FILE;
         $this->options = $options;
+
+        $this->client = new GuzzleClient();
+        $this->client->getEmitter()->attach(new ValidGigyaResponseSubscriber());
+        $this->client->getEmitter()->attach($auth);
+
+        $this->factory = new ResponseFactory();
+        $this->factory->addValidator(new UidSignatureValidator(
+            new Signature(),
+            $auth->getSecret()
+        ));
     }
 
     /**
@@ -109,8 +116,7 @@ class Client
     public function request($method, array $params = [], array $options = [])
     {
         $requestOptions = array_merge($this->options, $options);
-        $requestOptions['query'] = array_merge($params, $this->params);
-        $requestOptions['verify'] = $this->certificate;
+        $requestOptions['query'] = $params;
         $response = $this->client->get($this->getEndpoint($method), $requestOptions);
         return $this->factory->getResponse($response);
     }

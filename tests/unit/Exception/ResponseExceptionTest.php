@@ -2,7 +2,7 @@
 
 namespace Graze\Gigya\Test\Unit\Exception;
 
-use Graze\Gigya\Exceptions\ResponseException;
+use Graze\Gigya\Exception\ResponseException;
 use Graze\Gigya\Response\ResponseInterface;
 use Graze\Gigya\Test\TestCase;
 use Mockery as m;

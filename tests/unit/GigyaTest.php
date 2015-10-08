@@ -319,7 +319,6 @@ class GigyaTest extends TestCase
                 'option1' => 'value1',
                 'option2' => false,
             ],
-
             'key',
             'secret'
         );

@@ -46,12 +46,15 @@ class GigyaTest extends TestCase
         static::assertEquals(0, $response->getErrorCode());
         static::assertEquals(1, $history->count());
         $request = $history->getLastRequest();
-        static::assertEquals('https://accounts.eu1.gigya.com/accounts.getAccountInfo', $request->getUrl());
-        $params = $request->getConfig()->get('params');
-        static::assertArrayHasKey('apiKey', $params);
-        static::assertArrayHasKey('secret', $params);
-        static::assertEquals('key', $params['apiKey']);
-        static::assertEquals('secret', $params['secret']);
+        static::assertEquals(
+            'https://accounts.eu1.gigya.com/accounts.getAccountInfo?apiKey=key&secret=secret',
+            $request->getUrl()
+        );
+        $query = $request->getQuery();
+        static::assertArrayHasKey('apiKey', $query);
+        static::assertArrayHasKey('secret', $query);
+        static::assertEquals('key', $query['apiKey']);
+        static::assertEquals('secret', $query['secret']);
     }
 
     public function testAuthInjectsKeySecretAndUserKeyIntoParams()
@@ -64,13 +67,16 @@ class GigyaTest extends TestCase
         static::assertEquals(0, $response->getErrorCode());
         static::assertEquals(1, $history->count());
         $request = $history->getLastRequest();
-        static::assertEquals('https://accounts.eu1.gigya.com/accounts.getAccountInfo', $request->getUrl());
-        $params = $request->getConfig()->get('params');
-        static::assertArrayHasKey('apiKey', $params);
-        static::assertArrayHasKey('secret', $params);
-        static::assertArrayHasKey('userKey', $params);
-        static::assertEquals('key', $params['apiKey']);
-        static::assertEquals('secret', $params['secret']);
-        static::assertEquals('userKey', $params['userKey']);
+        static::assertEquals(
+            'https://accounts.eu1.gigya.com/accounts.getAccountInfo?apiKey=key&secret=secret&userKey=userKey',
+            $request->getUrl()
+        );
+        $query = $request->getQuery();
+        static::assertArrayHasKey('apiKey', $query);
+        static::assertArrayHasKey('secret', $query);
+        static::assertArrayHasKey('userKey', $query);
+        static::assertEquals('key', $query['apiKey']);
+        static::assertEquals('secret', $query['secret']);
+        static::assertEquals('userKey', $query['userKey']);
     }
 }

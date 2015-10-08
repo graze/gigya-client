@@ -53,15 +53,12 @@ class GigyaHttpsAuth implements GigyaAuthInterface
     {
         $request = $event->getRequest();
         if ($request->getScheme() == 'https' && $request->getConfig()->get('auth') == 'gigya') {
-            $config = $request->getConfig();
-            $params = $config->get('params');
-            $params['apiKey'] = $this->apiKey;
-            $params['secret'] = $this->secret;
+            $query = $request->getQuery();
+            $query['apiKey'] = $this->apiKey;
+            $query['secret'] = $this->secret;
             if ($this->userKey) {
-                $params['userKey'] = $this->userKey;
+                $query['userKey'] = $this->userKey;
             }
-
-            $config->set('params', $params);
         }
     }
 

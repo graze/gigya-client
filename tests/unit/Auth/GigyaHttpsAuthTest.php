@@ -10,6 +10,7 @@ use GuzzleHttp\Event\BeforeEvent;
 use GuzzleHttp\Event\RequestEvents;
 use GuzzleHttp\Event\SubscriberInterface;
 use GuzzleHttp\Message\RequestInterface;
+use GuzzleHttp\Query;
 use Mockery as m;
 
 class GigyaHttpsAuthTest extends TestCase
@@ -37,28 +38,23 @@ class GigyaHttpsAuthTest extends TestCase
         $event->shouldReceive('getRequest')
               ->andReturn($request);
 
+        $query = m::mock(Query::class);
         $config = m::mock(Collection::class);
 
         $request->shouldReceive('getScheme')
                 ->andReturn('https');
         $request->shouldReceive('getConfig')
                 ->andReturn($config);
+        $request->shouldReceive('getQuery')
+                ->andReturn($query);
 
+        $query->shouldReceive('offsetSet')
+              ->with('apiKey', 'key');
+        $query->shouldReceive('offsetSet')
+              ->with('secret', 'secret');
         $config->shouldReceive('get')
                ->with('auth')
                ->andReturn('gigya');
-        $config->shouldReceive('get')
-               ->with('params')
-               ->andReturn([]);
-
-        $config->shouldReceive('set')
-               ->with(
-                   'params',
-                   [
-                       'apiKey' => 'key',
-                       'secret' => 'secret'
-                   ]
-               );
 
         $auth = new GigyaHttpsAuth('key', 'secret');
         $auth->sign($event);
@@ -71,67 +67,25 @@ class GigyaHttpsAuthTest extends TestCase
         $event->shouldReceive('getRequest')
               ->andReturn($request);
 
+        $query = m::mock(Query::class);
         $config = m::mock(Collection::class);
 
         $request->shouldReceive('getScheme')
                 ->andReturn('https');
         $request->shouldReceive('getConfig')
                 ->andReturn($config);
+        $request->shouldReceive('getQuery')
+                ->andReturn($query);
 
+        $query->shouldReceive('offsetSet')
+              ->with('apiKey', 'key');
+        $query->shouldReceive('offsetSet')
+              ->with('secret', 'secret');
+        $query->shouldReceive('offsetSet')
+              ->with('userKey', 'user');
         $config->shouldReceive('get')
                ->with('auth')
                ->andReturn('gigya');
-        $config->shouldReceive('get')
-               ->with('params')
-               ->andReturn([]);
-
-        $config->shouldReceive('set')
-               ->with(
-                   'params',
-                   [
-                       'apiKey'  => 'key',
-                       'secret'  => 'secret',
-                       'userKey' => 'user'
-                   ]
-               );
-
-        $auth = new GigyaHttpsAuth('key', 'secret', 'user');
-        $auth->sign($event);
-    }
-
-    public function testKeySecretAndUserKeyIsMergedWithParams()
-    {
-        $request = m::mock(RequestInterface::class);
-        $event = m::mock(BeforeEvent::class);
-        $event->shouldReceive('getRequest')
-              ->andReturn($request);
-
-        $config = m::mock(Collection::class);
-
-        $request->shouldReceive('getScheme')
-                ->andReturn('https');
-        $request->shouldReceive('getConfig')
-                ->andReturn($config);
-
-        $config->shouldReceive('get')
-               ->with('auth')
-               ->andReturn('gigya');
-        $config->shouldReceive('get')
-               ->with('params')
-               ->andReturn([
-                   'existing' => 'value'
-               ]);
-
-        $config->shouldReceive('set')
-               ->with(
-                   'params',
-                   [
-                       'existing' => 'value',
-                       'apiKey'   => 'key',
-                       'secret'   => 'secret',
-                       'userKey'  => 'user'
-                   ]
-               );
 
         $auth = new GigyaHttpsAuth('key', 'secret', 'user');
         $auth->sign($event);

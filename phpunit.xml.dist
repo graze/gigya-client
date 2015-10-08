@@ -13,6 +13,9 @@
         <testsuite name="unit">
             <directory>tests/unit</directory>
         </testsuite>
+        <testsuite name="functional">
+            <directory>tests/functional</directory>
+        </testsuite>
     </testsuites>
     <filter>
         <whitelist>

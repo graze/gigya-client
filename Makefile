@@ -18,5 +18,11 @@ test-unit:
 test-unit-coverage:
 	@./vendor/bin/phpunit --testsuite unit --coverage-text --coverage-html ./tests/report
 
+test-functional:
+	@./vendor/bin/phpunit --testsuite functional
+
+test-functional-coverage:
+	@./vendor/bin/phpunit --testsuite functional --coverage-text --coverage-html ./tests/report
+
 install:
 	@composer install

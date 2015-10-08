@@ -122,7 +122,7 @@ class TestFixtures
   "callId": "e6f891ac17f24810bee6eb533524a152",
   "time": "2015-03-22T11:42:25.943Z"
 }',
-      'accounts.search_simple' => '{"results": [
+        'accounts.search_simple'  => '{"results": [
     {"profile": {"email": "g1@gmail.com"} },
     {"profile": {"firstName": "George", "lastName": "Lucas", "email": "g2@gmail.com" } },
     {"profile": {"firstName": "Paris", "lastName": "Radisson" } },
@@ -136,7 +136,14 @@ class TestFixtures
 "callId": "123456",
 "time": "2015-03-22T11:42:25.943Z"
 }',
-      'failure_403' => '{
+        'basic'                   => '{
+"statusCode": 200,
+"errorCode": 0,
+"statusReason": "OK",
+"callId": "123456",
+"time": "2015-03-22T11:42:25.943Z"
+}',
+        'failure_403'             => '{
 "errorCode": 403005,
 "errorMessage": "Unauthorized user",
 "errorDetails": "The user billyBob cannot login",
@@ -145,7 +152,7 @@ class TestFixtures
 "callId": "d8b041336e354a789553830705203779",
 "time": "2015-03-22T11:42:25.943Z"
 }',
-      'missing_field' => '{
+        'missing_field'           => '{
 "errorCode": 403005,
 "errorMessage": "Unauthorized user",
 "errorDetails": "The user billyBob cannot login",
@@ -153,7 +160,7 @@ class TestFixtures
 "callId": "d8b041336e354a789553830705203779",
 "time": "2015-03-22T11:42:25.943Z"
 }',
-        'invalid_json' => '{
+        'invalid_json'            => '{
 "errorCode": 403005,
 "errorMessage": "Unauthorized user",
 "statusCode": 403,',

@@ -55,6 +55,13 @@ class Gigya
     protected $options = [];
 
     /**
+     * Configuration to pass to the constructor of guzzle
+     *
+     * @var array
+     */
+    protected $guzzleConfig = [];
+
+    /**
      * @param string      $apiKey
      * @param string      $secretKey
      * @param string|null $dataCenter
@@ -100,6 +107,16 @@ class Gigya
     }
 
     /**
+     * Set the configuration information to pass to Guzzle
+     *
+     * @param array $config
+     */
+    public function setGuzzleConfig(array $config)
+    {
+        $this->guzzleConfig = $config;
+    }
+
+    /**
      * @param string $method
      * @param array  $arguments
      * @return Client
@@ -110,7 +127,7 @@ class Gigya
             throw new BadMethodCallException("No Arguments should be supplied for Gigya call");
         }
 
-        return new Client($method, $this->auth, $this->dataCenter, $this->options);
+        return new Client($method, $this->auth, $this->dataCenter, $this->guzzleConfig, $this->options);
     }
 
     /**
@@ -118,7 +135,13 @@ class Gigya
      */
     public function accounts()
     {
-        return new Accounts(static::NAMESPACE_ACCOUNTS, $this->auth, $this->dataCenter, $this->options);
+        return new Accounts(
+            static::NAMESPACE_ACCOUNTS,
+            $this->auth,
+            $this->dataCenter,
+            $this->guzzleConfig,
+            $this->options
+        );
     }
 
     /**
@@ -126,7 +149,7 @@ class Gigya
      */
     public function audit()
     {
-        return new Audit(static::NAMESPACE_AUDIT, $this->auth, $this->dataCenter, $this->options);
+        return new Audit(static::NAMESPACE_AUDIT, $this->auth, $this->dataCenter, $this->guzzleConfig, $this->options);
     }
 
     /**
@@ -134,7 +157,13 @@ class Gigya
      */
     public function socialize()
     {
-        return new Socialize(static::NAMESPACE_SOCIALIZE, $this->auth, $this->dataCenter, $this->options);
+        return new Socialize(
+            static::NAMESPACE_SOCIALIZE,
+            $this->auth,
+            $this->dataCenter,
+            $this->guzzleConfig,
+            $this->options
+        );
     }
 
     /**
@@ -142,7 +171,13 @@ class Gigya
      */
     public function comments()
     {
-        return new Comments(static::NAMESPACE_COMMENTS, $this->auth, $this->dataCenter, $this->options);
+        return new Comments(
+            static::NAMESPACE_COMMENTS,
+            $this->auth,
+            $this->dataCenter,
+            $this->guzzleConfig,
+            $this->options
+        );
     }
 
     /**
@@ -150,7 +185,13 @@ class Gigya
      */
     public function gameMechanics()
     {
-        return new GameMechanics(static::NAMESPACE_GAME_MECHANICS, $this->auth, $this->dataCenter, $this->options);
+        return new GameMechanics(
+            static::NAMESPACE_GAME_MECHANICS,
+            $this->auth,
+            $this->dataCenter,
+            $this->guzzleConfig,
+            $this->options
+        );
     }
 
     /**
@@ -158,7 +199,13 @@ class Gigya
      */
     public function reports()
     {
-        return new Reports(static::NAMESPACE_REPORTS, $this->auth, $this->dataCenter, $this->options);
+        return new Reports(
+            static::NAMESPACE_REPORTS,
+            $this->auth,
+            $this->dataCenter,
+            $this->guzzleConfig,
+            $this->options
+        );
     }
 
     /**
@@ -166,7 +213,13 @@ class Gigya
      */
     public function dataStore()
     {
-        return new DataStore(static::NAMESPACE_DATA_STORE, $this->auth, $this->dataCenter, $this->options);
+        return new DataStore(
+            static::NAMESPACE_DATA_STORE,
+            $this->auth,
+            $this->dataCenter,
+            $this->guzzleConfig,
+            $this->options
+        );
     }
 
     /**
@@ -178,6 +231,7 @@ class Gigya
             static::NAMESPACE_IDENTITY_STORAGE,
             $this->auth,
             $this->dataCenter,
+            $this->guzzleConfig,
             $this->options
         );
     }
@@ -187,6 +241,6 @@ class Gigya
      */
     public function saml()
     {
-        return new Saml(static::NAMESPACE_FIDM, $this->auth, $this->dataCenter, $this->options);
+        return new Saml(static::NAMESPACE_FIDM, $this->auth, $this->dataCenter, $this->guzzleConfig, $this->options);
     }
 }

@@ -86,6 +86,12 @@ class Accounts extends Client
      */
     public function tfa()
     {
-        return new AccountsTfa(Gigya::NAMESPACE_ACCOUNTS, $this->auth, $this->dataCenter, $this->options);
+        return new AccountsTfa(
+            Gigya::NAMESPACE_ACCOUNTS,
+            $this->auth,
+            $this->dataCenter,
+            $this->guzzleConfig,
+            $this->options
+        );
     }
 }

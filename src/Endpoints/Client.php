@@ -16,7 +16,7 @@ use GuzzleHttp\Exception\RequestException;
 
 class Client
 {
-    const DOMAIN           = 'gigya.com';
+    const DOMAIN = 'gigya.com';
 
     /**
      * @var string
@@ -51,19 +51,31 @@ class Client
     protected $client;
 
     /**
+     * @var array
+     */
+    protected $guzzleConfig;
+
+    /**
      * @param string             $namespace
      * @param GigyaAuthInterface $auth
      * @param string             $dataCenter
+     * @param array              $guzzleConfig
      * @param array              $options
      */
-    public function __construct($namespace, GigyaAuthInterface $auth, $dataCenter, array $options = [])
-    {
+    public function __construct(
+        $namespace,
+        GigyaAuthInterface $auth,
+        $dataCenter,
+        array $guzzleConfig = [],
+        array $options = []
+    ) {
         $this->namespace = $namespace;
         $this->auth = $auth;
         $this->dataCenter = $dataCenter;
+        $this->guzzleConfig = $guzzleConfig;
         $this->options = $options;
 
-        $this->client = new GuzzleClient();
+        $this->client = new GuzzleClient($guzzleConfig);
         $this->client->getEmitter()->attach(new ValidGigyaResponseSubscriber());
         $this->client->getEmitter()->attach($auth);
 

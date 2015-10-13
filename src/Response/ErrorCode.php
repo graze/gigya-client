@@ -341,7 +341,8 @@ class ErrorCode
     /**
      * When there is an attempt to deactivate a TFA provider for a user (with accounts.tfa.deactivateProvider) or to
      * register a user (with accounts.tfa.initTFA) and the user did not login through the device in the last few
-     * minutes. */
+     * minutes.
+     */
     const ERROR_ACCOUNT_PENDING_RECENT_LOGIN = 403110;
     /**
      * When accounts.login is attempted and the account is locked out or the originating IP is locked out. This occurs
@@ -374,7 +375,8 @@ class ErrorCode
     const ERROR_MISSING_USER_PHOTO = 409010;
     /**
      * There was an attempt to set or retrieve information in a counter that the system cannot find. See
-     * accounts.incrementCounters. */
+     * accounts.incrementCounters.
+     */
     const ERROR_COUNTER_NOT_REGISTERED = 409011;
     /** See 3rd Party Cookies for information about using gmid tickets. */
     const ERROR_INVALID_GMID_TICKET = 409012;

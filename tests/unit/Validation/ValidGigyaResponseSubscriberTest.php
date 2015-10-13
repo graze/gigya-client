@@ -4,7 +4,6 @@ namespace Graze\Gigya\Test\Unit\Validation;
 
 use Graze\Gigya\Test\TestCase;
 use Graze\Gigya\Test\TestFixtures;
-use Graze\Gigya\Validation\Signature;
 use Graze\Gigya\Validation\ValidGigyaResponseSubscriber;
 use GuzzleHttp\Event\CompleteEvent;
 use GuzzleHttp\Event\RequestEvents;
@@ -51,39 +50,6 @@ class ValidGigyaResponseSubscriberTest extends TestCase
         $completeEvent->shouldReceive('getResponse')
                       ->andReturn($response);
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.search_simple'));
-
-        $this->validator->onComplete($completeEvent, 'name');
-    }
-
-    public function testUidSignatureWhenValidDoesNotThrowException()
-    {
-        $uid       = 'diofu90ifgdf';
-        $timestamp = time();
-
-        $signatureValidator = new Signature();
-        $signature          = $signatureValidator->calculateSignature($timestamp . '_' . $uid, 'secret');
-
-        $body = sprintf(
-            '{
-            "UID": "%s",
-            "UIDSignature": "%s",
-            "signatureTimestamp": "%d",
-            "statusCode": 200,
-            "errorCode": 0,
-            "statusReason": "OK",
-            "callId": "123456",
-            "time": "2015-03-22T11:42:25.943Z"
-        }',
-            $uid,
-            $signature,
-            $timestamp
-        );
-
-        $completeEvent = m::mock(CompleteEvent::class);
-        $response      = m::mock('GuzzleHttp\Message\ResponseInterface');
-        $completeEvent->shouldReceive('getResponse')
-                      ->andReturn($response);
-        $response->shouldReceive('getBody')->andReturn($body);
 
         $this->validator->onComplete($completeEvent, 'name');
     }

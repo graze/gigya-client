@@ -1,7 +1,7 @@
 .PHONY: test test-coverage test-unit test-unit-coverage test-functional test-functional-coverage install
 
 test:
-	@./vendor/bin/phpunit
+	@./vendor/bin/phpunit --exclude-group performance
 
 lint:
 	@./vendor/bin/phpcs -p --standard=PSR2 --warning-severity=0 src/ tests/
@@ -23,6 +23,9 @@ test-functional:
 
 test-functional-coverage:
 	@./vendor/bin/phpunit --testsuite functional --coverage-text --coverage-html ./tests/report
+
+test-performance:
+	@./vendor/bin/phpunit --testsuite performance
 
 install:
 	@composer install

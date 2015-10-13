@@ -16,6 +16,9 @@
         <testsuite name="functional">
             <directory>tests/functional</directory>
         </testsuite>
+        <testsuite name="performance">
+            <directory>tests/performance</directory>
+        </testsuite>
     </testsuites>
     <filter>
         <whitelist>

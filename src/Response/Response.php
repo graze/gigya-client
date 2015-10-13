@@ -159,7 +159,7 @@ class Response implements ResponseInterface
      */
     public function getData()
     {
-        if (! $this->data) {
+        if (!$this->data) {
             $this->data = new Collection($this->body);
         }
 

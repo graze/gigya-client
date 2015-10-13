@@ -47,7 +47,7 @@ class ValidGigyaResponseSubscriberTest extends TestCase
     public function testValidResponse()
     {
         $completeEvent = m::mock(CompleteEvent::class);
-        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
+        $response      = m::mock('GuzzleHttp\Message\ResponseInterface');
         $completeEvent->shouldReceive('getResponse')
                       ->andReturn($response);
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.search_simple'));
@@ -57,11 +57,11 @@ class ValidGigyaResponseSubscriberTest extends TestCase
 
     public function testUidSignatureWhenValidDoesNotThrowException()
     {
-        $uid = 'diofu90ifgdf';
+        $uid       = 'diofu90ifgdf';
         $timestamp = time();
 
         $signatureValidator = new Signature();
-        $signature = $signatureValidator->calculateSignature($timestamp . '_' . $uid, 'secret');
+        $signature          = $signatureValidator->calculateSignature($timestamp . '_' . $uid, 'secret');
 
         $body = sprintf(
             '{
@@ -80,7 +80,7 @@ class ValidGigyaResponseSubscriberTest extends TestCase
         );
 
         $completeEvent = m::mock(CompleteEvent::class);
-        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
+        $response      = m::mock('GuzzleHttp\Message\ResponseInterface');
         $completeEvent->shouldReceive('getResponse')
                       ->andReturn($response);
         $response->shouldReceive('getBody')->andReturn($body);
@@ -96,7 +96,7 @@ class ValidGigyaResponseSubscriberTest extends TestCase
 
         static::setExpectedException(
             'Graze\Gigya\Exception\UnknownResponseException',
-            "The contents of the response could not be determined. No response provided"
+            'The contents of the response could not be determined. No response provided'
         );
 
         $this->validator->onComplete($completeEvent, 'name');
@@ -105,7 +105,7 @@ class ValidGigyaResponseSubscriberTest extends TestCase
     public function testMissingFieldWillThrowAnException()
     {
         $completeEvent = m::mock(CompleteEvent::class);
-        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
+        $response      = m::mock('GuzzleHttp\Message\ResponseInterface');
         $completeEvent->shouldReceive('getResponse')
                       ->andReturn($response);
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('missing_field'));
@@ -121,7 +121,7 @@ class ValidGigyaResponseSubscriberTest extends TestCase
     public function testNoBodyWillFail()
     {
         $completeEvent = m::mock(CompleteEvent::class);
-        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
+        $response      = m::mock('GuzzleHttp\Message\ResponseInterface');
         $completeEvent->shouldReceive('getResponse')
                       ->andReturn($response);
         $response->shouldReceive('getBody')->andReturn('');
@@ -137,14 +137,14 @@ class ValidGigyaResponseSubscriberTest extends TestCase
     public function testInvalidBody()
     {
         $completeEvent = m::mock(CompleteEvent::class);
-        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
+        $response      = m::mock('GuzzleHttp\Message\ResponseInterface');
         $completeEvent->shouldReceive('getResponse')
                       ->andReturn($response);
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('invalid_json'));
 
         static::setExpectedException(
             'Graze\Gigya\Exception\UnknownResponseException',
-            "The contents of the response could not be determined. Could not decode the body"
+            'The contents of the response could not be determined. Could not decode the body'
         );
 
         $this->validator->onComplete($completeEvent, 'name');

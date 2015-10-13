@@ -37,7 +37,7 @@ class Gigya
     const CERTIFICATE_FILE = 'cacert.pem';
 
     /**
-     * Data Center ID to use
+     * Data Center ID to use.
      *
      * - us1 - for the US datacenter
      * - eu1 - for the European datacenter
@@ -48,14 +48,14 @@ class Gigya
     protected $dataCenter;
 
     /**
-     * Collection of core options to be passed to each api request
+     * Collection of core options to be passed to each api request.
      *
      * @var array
      */
     protected $options = [];
 
     /**
-     * Configuration to pass to the constructor of guzzle
+     * Configuration to pass to the constructor of guzzle.
      *
      * @var array
      */
@@ -69,8 +69,8 @@ class Gigya
      */
     public function __construct($apiKey, $secretKey, $dataCenter = null, $userKey = null)
     {
-        $this->auth = new GigyaHttpsAuth($apiKey, $secretKey, $userKey);
-        $this->dataCenter = $dataCenter ?: Gigya::DC_EU;
+        $this->auth       = new GigyaHttpsAuth($apiKey, $secretKey, $userKey);
+        $this->dataCenter = $dataCenter ?: self::DC_EU;
         $this->addOption('auth', 'gigya');
         $this->addOption('verify', __DIR__ . '/' . static::CERTIFICATE_FILE);
     }
@@ -88,11 +88,12 @@ class Gigya
     public function addOption($option, $value)
     {
         $this->options[$option] = $value;
+
         return $this;
     }
 
     /**
-     * Add a set of options as key value pairs. These will be passed to the Guzzle request
+     * Add a set of options as key value pairs. These will be passed to the Guzzle request.
      *
      * N.B. This will overwrite any existing options apart from query and verify
      *
@@ -105,11 +106,12 @@ class Gigya
         foreach ($options as $option => $value) {
             $this->addOption($option, $value);
         }
+
         return $this;
     }
 
     /**
-     * Set the configuration information to pass to Guzzle
+     * Set the configuration information to pass to Guzzle.
      *
      * @param array $config
      */
@@ -127,7 +129,7 @@ class Gigya
     public function __call($method, array $arguments)
     {
         if (count($arguments) > 0) {
-            throw new BadMethodCallException("No Arguments should be supplied for Gigya call");
+            throw new BadMethodCallException('No Arguments should be supplied for Gigya call');
         }
 
         return new Client($method, $this->auth, $this->dataCenter, $this->guzzleConfig, $this->options);

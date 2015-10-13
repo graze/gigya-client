@@ -15,7 +15,7 @@ use Mockery\MockInterface;
 
 class UidSignatureValidatorTest extends TestCase
 {
-    const SECRET = "8j9h0g-opko;dk]=id0f[sjo";
+    const SECRET = '8j9h0g-opko;dk]=id0f[sjo';
 
     /**
      * @var MockInterface|Signature
@@ -45,7 +45,7 @@ class UidSignatureValidatorTest extends TestCase
 
     public function testUidSignature()
     {
-        $response = m::mock(ResponseInterface::class);
+        $response   = m::mock(ResponseInterface::class);
         $collection = m::mock(Collection::class);
         $response->shouldReceive('getData')
                  ->andReturn($collection);
@@ -80,7 +80,7 @@ class UidSignatureValidatorTest extends TestCase
 
     public function testInvalidUidSignature()
     {
-        $response = m::mock(ResponseInterface::class);
+        $response   = m::mock(ResponseInterface::class);
         $collection = m::mock(Collection::class);
         $response->shouldReceive('getData')
                  ->andReturn($collection);
@@ -121,7 +121,7 @@ class UidSignatureValidatorTest extends TestCase
 
     public function testInvalidTimestamp()
     {
-        $response = m::mock(ResponseInterface::class);
+        $response   = m::mock(ResponseInterface::class);
         $collection = m::mock(Collection::class);
         $response->shouldReceive('getData')
                  ->andReturn($collection);

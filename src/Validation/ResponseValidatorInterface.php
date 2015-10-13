@@ -7,7 +7,7 @@ use Graze\Gigya\Response\ResponseInterface;
 interface ResponseValidatorInterface
 {
     /**
-     * Is this validate applicable to this response
+     * Is this validate applicable to this response.
      *
      * @param ResponseInterface $response
      *
@@ -16,7 +16,7 @@ interface ResponseValidatorInterface
     public function canValidate(ResponseInterface $response);
 
     /**
-     * Throws exceptions if any errors are found
+     * Throws exceptions if any errors are found.
      *
      * @param ResponseInterface $response
      *

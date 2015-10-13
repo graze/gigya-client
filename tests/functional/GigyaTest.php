@@ -15,18 +15,19 @@ class GigyaTest extends TestCase
 {
     /**
      * @param Gigya $gigya
+     *
      * @return History
      */
     public function setUpGigyaHistory(Gigya $gigya)
     {
         $emitter = new Emitter();
         $history = new History();
-        $mock = new Mock([
+        $mock    = new Mock([
             new Response(
                 '200',
                 ['test-encoding' => 'application/json'],
                 Stream::factory(TestFixtures::getFixture('basic'))
-            )
+            ),
         ]);
         $emitter->attach($history);
         $emitter->attach($mock);
@@ -38,7 +39,7 @@ class GigyaTest extends TestCase
 
     public function testAuthInjectsKeyAndSecretIntoParams()
     {
-        $client = new Gigya('key', 'secret');
+        $client  = new Gigya('key', 'secret');
         $history = $this->setUpGigyaHistory($client);
 
         $response = $client->accounts()->getAccountInfo();
@@ -59,7 +60,7 @@ class GigyaTest extends TestCase
 
     public function testAuthInjectsKeySecretAndUserKeyIntoParams()
     {
-        $client = new Gigya('key', 'secret', Gigya::DC_EU, 'userKey');
+        $client  = new Gigya('key', 'secret', Gigya::DC_EU, 'userKey');
         $history = $this->setUpGigyaHistory($client);
 
         $response = $client->accounts()->getAccountInfo();

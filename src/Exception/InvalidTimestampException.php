@@ -16,7 +16,7 @@ class InvalidTimestampException extends ResponseException
     public function __construct($timestamp, ResponseInterface $response, Exception $e = null)
     {
         $message = sprintf(
-            "The supplied timestamp: %d is more than %d seconds different to now: %d",
+            'The supplied timestamp: %d is more than %d seconds different to now: %d',
             $timestamp,
             Signature::TIMESTAMP_OFFSET,
             time()

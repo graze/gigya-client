@@ -7,9 +7,7 @@ use Graze\Gigya\Exception\InvalidUidSignatureException;
 use Graze\Gigya\Response\ResponseInterface;
 
 /**
- * Class UidSignatureValidator
- *
- * @package Graze\Gigya\Validation
+ * Class UidSignatureValidator.
  */
 class UidSignatureValidator implements ResponseValidatorInterface
 {
@@ -29,12 +27,12 @@ class UidSignatureValidator implements ResponseValidatorInterface
      */
     public function __construct(Signature $signature, $secret)
     {
-        $this->secret = $secret;
+        $this->secret    = $secret;
         $this->signature = $signature;
     }
 
     /**
-     * Can validate
+     * Can validate.
      *
      * @param ResponseInterface $response
      *
@@ -43,13 +41,14 @@ class UidSignatureValidator implements ResponseValidatorInterface
     public function canValidate(ResponseInterface $response)
     {
         $data = $response->getData();
+
         return ($data->contains('UID') &&
             $data->contains('UIDSignature') &&
             $data->contains('signatureTimestamp'));
     }
 
     /**
-     * Throws exceptions if any errors are found
+     * Throws exceptions if any errors are found.
      *
      * @param ResponseInterface $response
      *
@@ -58,6 +57,7 @@ class UidSignatureValidator implements ResponseValidatorInterface
     public function validate(ResponseInterface $response)
     {
         $data = $response->getData();
+
         return $this->validateUid(
             $data->get('UID'),
             $data->get('signatureTimestamp'),
@@ -69,9 +69,10 @@ class UidSignatureValidator implements ResponseValidatorInterface
     /**
      * @param ResponseInterface $response
      *
-     * @return void
      * @throws InvalidTimestampException
      * @throws InvalidUidSignatureException
+     *
+     * @return void
      */
     public function assert(ResponseInterface $response)
     {
@@ -86,7 +87,7 @@ class UidSignatureValidator implements ResponseValidatorInterface
     }
 
     /**
-     * Validate the provided Uid signature is valid
+     * Validate the provided Uid signature is valid.
      *
      * @param string $uid
      * @param int    $timestamp Unix Timestamp
@@ -108,19 +109,21 @@ class UidSignatureValidator implements ResponseValidatorInterface
      * @param string            $signature
      * @param ResponseInterface $response
      *
-     * @return bool
      * @throws InvalidTimestampException
      * @throws InvalidUidSignatureException
+     *
+     * @return bool
      */
     private function assertUid($uid, $timestamp, $secret, $signature, ResponseInterface $response)
     {
-        if (!$this->signature->checkTimestamp($timestamp)) {
+        if (! $this->signature->checkTimestamp($timestamp)) {
             throw new InvalidTimestampException($timestamp, $response);
         }
         $expected = $this->signature->getUidSignature($uid, $timestamp, $secret);
         if ($signature !== $expected) {
             throw new InvalidUidSignatureException($uid, $expected, $signature, $response);
         }
+
         return true;
     }
 }

@@ -29,8 +29,8 @@ class GigyaHttpsAuth implements GigyaAuthInterface
      */
     public function __construct($apiKey, $secret, $userKey = null)
     {
-        $this->apiKey = $apiKey;
-        $this->secret = $secret;
+        $this->apiKey  = $apiKey;
+        $this->secret  = $secret;
         $this->userKey = $userKey;
     }
 
@@ -45,7 +45,7 @@ class GigyaHttpsAuth implements GigyaAuthInterface
     }
 
     /**
-     * Add the authentication params to the request
+     * Add the authentication params to the request.
      *
      * @param BeforeEvent $event
      */
@@ -53,7 +53,7 @@ class GigyaHttpsAuth implements GigyaAuthInterface
     {
         $request = $event->getRequest();
         if ($request->getScheme() == 'https' && $request->getConfig()->get('auth') == 'gigya') {
-            $query = $request->getQuery();
+            $query           = $request->getQuery();
             $query['apiKey'] = $this->apiKey;
             $query['secret'] = $this->secret;
             if ($this->userKey) {

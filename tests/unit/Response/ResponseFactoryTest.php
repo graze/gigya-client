@@ -17,7 +17,6 @@ use Mockery as m;
 
 class ResponseFactoryTest extends TestCase
 {
-
     /**
      * @var ResponseFactory
      */
@@ -48,15 +47,15 @@ class ResponseFactoryTest extends TestCase
         static::assertInstanceOf('Graze\Gigya\Response\Response', $gigyaResponse);
         static::assertEquals(200, $gigyaResponse->getStatusCode());
         static::assertEquals(0, $gigyaResponse->getErrorCode());
-        static::assertEquals("OK", $gigyaResponse->getStatusReason());
-        static::assertEquals("e6f891ac17f24810bee6eb533524a152", $gigyaResponse->getCallId());
+        static::assertEquals('OK', $gigyaResponse->getStatusReason());
+        static::assertEquals('e6f891ac17f24810bee6eb533524a152', $gigyaResponse->getCallId());
         static::assertInstanceOf('DateTimeInterface', $gigyaResponse->getTime());
         static::assertEquals(
-            DateTimeImmutable::createFromFormat(Response::DATE_TIME_FORMAT, "2015-03-22T11:42:25.943Z"),
+            DateTimeImmutable::createFromFormat(Response::DATE_TIME_FORMAT, '2015-03-22T11:42:25.943Z'),
             $gigyaResponse->getTime()
         );
         $data = $gigyaResponse->getData();
-        static::assertEquals("_gid_30A3XVJciH95WEEnoRmfZS7ee3MY+lUAtpVxvUWNseU=", $data->get('UID'));
+        static::assertEquals('_gid_30A3XVJciH95WEEnoRmfZS7ee3MY+lUAtpVxvUWNseU=', $data->get('UID'));
         static::assertSame($response, $gigyaResponse->getOriginalResponse());
     }
 
@@ -70,6 +69,7 @@ class ResponseFactoryTest extends TestCase
         $validator->shouldReceive('canValidate')
                   ->with(m::on(function (ResponseInterface $gigyaResponse) use ($response) {
                       static::assertSame($response, $gigyaResponse->getOriginalResponse());
+
                       return true;
                   }))
                   ->andReturn(true);
@@ -91,6 +91,7 @@ class ResponseFactoryTest extends TestCase
         $validator->shouldReceive('canValidate')
                   ->with(m::on(function (ResponseInterface $gigyaResponse) use ($response) {
                       static::assertSame($response, $gigyaResponse->getOriginalResponse());
+
                       return true;
                   }))
                   ->andReturn(true);
@@ -102,6 +103,7 @@ class ResponseFactoryTest extends TestCase
         $validator2->shouldReceive('canValidate')
                    ->with(m::on(function (ResponseInterface $gigyaResponse) use ($response) {
                        static::assertSame($response, $gigyaResponse->getOriginalResponse());
+
                        return true;
                    }))
                    ->andReturn(true);
@@ -118,7 +120,7 @@ class ResponseFactoryTest extends TestCase
         $response = m::mock('GuzzleHttp\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.getAccountInfo'));
 
-        $validator = m::mock(ResponseValidatorInterface::class);
+        $validator  = m::mock(ResponseValidatorInterface::class);
         $validator2 = m::mock(ResponseValidatorInterface::class);
         $this->factory->addValidator($validator);
         $this->factory->addValidator($validator2);
@@ -126,6 +128,7 @@ class ResponseFactoryTest extends TestCase
         $validator->shouldReceive('canValidate')
                   ->with(m::on(function (ResponseInterface $gigyaResponse) use ($response) {
                       static::assertSame($response, $gigyaResponse->getOriginalResponse());
+
                       return true;
                   }))
                   ->andReturn(true);
@@ -143,13 +146,14 @@ class ResponseFactoryTest extends TestCase
         $response = m::mock('GuzzleHttp\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.getAccountInfo'));
 
-        $validator = m::mock(ResponseValidatorInterface::class);
+        $validator  = m::mock(ResponseValidatorInterface::class);
         $validator2 = m::mock(ResponseValidatorInterface::class);
         $this->factory->addValidator($validator);
         $this->factory->addValidator($validator2);
         $validator->shouldReceive('canValidate')
                   ->with(m::on(function (ResponseInterface $gigyaResponse) use ($response) {
                       static::assertSame($response, $gigyaResponse->getOriginalResponse());
+
                       return true;
                   }))
                   ->andReturn(true);
@@ -159,6 +163,7 @@ class ResponseFactoryTest extends TestCase
         $validator2->shouldReceive('canValidate')
                    ->with(m::on(function (ResponseInterface $gigyaResponse) use ($response) {
                        static::assertSame($response, $gigyaResponse->getOriginalResponse());
+
                        return true;
                    }))
                    ->andReturn(false);
@@ -197,8 +202,8 @@ class ResponseFactoryTest extends TestCase
         static::assertInstanceOf('Graze\Gigya\Response\Response', $gigyaResponse);
         static::assertEquals(403, $gigyaResponse->getStatusCode());
         static::assertEquals(403005, $gigyaResponse->getErrorCode());
-        static::assertEquals("Forbidden", $gigyaResponse->getStatusReason());
-        static::assertEquals("Unauthorized user", $gigyaResponse->getErrorMessage());
-        static::assertEquals("The user billyBob cannot login", $gigyaResponse->getErrorDetails());
+        static::assertEquals('Forbidden', $gigyaResponse->getStatusReason());
+        static::assertEquals('Unauthorized user', $gigyaResponse->getErrorMessage());
+        static::assertEquals('The user billyBob cannot login', $gigyaResponse->getErrorDetails());
     }
 }

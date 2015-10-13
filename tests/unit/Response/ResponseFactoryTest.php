@@ -3,14 +3,11 @@
 namespace Graze\Gigya\Test\Unit\Response;
 
 use DateTimeImmutable;
-use Exception;
 use Graze\Gigya\Response\Response;
 use Graze\Gigya\Response\ResponseCollectionInterface;
 use Graze\Gigya\Response\ResponseFactory;
-use Graze\Gigya\Response\ResponseInterface;
 use Graze\Gigya\Test\TestCase;
 use Graze\Gigya\Test\TestFixtures;
-use Graze\Gigya\Validation\ResponseValidatorInterface;
 use Mockery as m;
 
 // use Psr\Http\Message\ResponseInterface; Guzzle v6
@@ -56,119 +53,6 @@ class ResponseFactoryTest extends TestCase
         );
         $data = $gigyaResponse->getData();
         static::assertEquals('_gid_30A3XVJciH95WEEnoRmfZS7ee3MY+lUAtpVxvUWNseU=', $data->get('UID'));
-        static::assertSame($response, $gigyaResponse->getOriginalResponse());
-    }
-
-    public function testTheFactoryWillCallAValidator()
-    {
-        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
-        $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.getAccountInfo'));
-
-        $validator = m::mock(ResponseValidatorInterface::class);
-        $this->factory->addValidator($validator);
-        $validator->shouldReceive('canValidate')
-                  ->with(m::on(function (ResponseInterface $gigyaResponse) use ($response) {
-                      static::assertSame($response, $gigyaResponse->getOriginalResponse());
-
-                      return true;
-                  }))
-                  ->andReturn(true);
-        $validator->shouldReceive('assert')
-                  ->with(m::type(ResponseInterface::class))
-                  ->andReturn(true);
-
-        $gigyaResponse = $this->factory->getResponse($response);
-        static::assertSame($response, $gigyaResponse->getOriginalResponse());
-    }
-
-    public function testTheFactoryWillCallMultipleValidators()
-    {
-        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
-        $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.getAccountInfo'));
-
-        $validator = m::mock(ResponseValidatorInterface::class);
-        $this->factory->addValidator($validator);
-        $validator->shouldReceive('canValidate')
-                  ->with(m::on(function (ResponseInterface $gigyaResponse) use ($response) {
-                      static::assertSame($response, $gigyaResponse->getOriginalResponse());
-
-                      return true;
-                  }))
-                  ->andReturn(true);
-        $validator->shouldReceive('assert')
-                  ->with(m::type(ResponseInterface::class))
-                  ->andReturn(true);
-        $validator2 = m::mock(ResponseValidatorInterface::class);
-        $this->factory->addValidator($validator2);
-        $validator2->shouldReceive('canValidate')
-                   ->with(m::on(function (ResponseInterface $gigyaResponse) use ($response) {
-                       static::assertSame($response, $gigyaResponse->getOriginalResponse());
-
-                       return true;
-                   }))
-                   ->andReturn(true);
-        $validator2->shouldReceive('assert')
-                   ->with(m::type(ResponseInterface::class))
-                   ->andReturn(true);
-
-        $gigyaResponse = $this->factory->getResponse($response);
-        static::assertSame($response, $gigyaResponse->getOriginalResponse());
-    }
-
-    public function testTheValidatorThrowingAnExceptionWillPassthrough()
-    {
-        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
-        $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.getAccountInfo'));
-
-        $validator  = m::mock(ResponseValidatorInterface::class);
-        $validator2 = m::mock(ResponseValidatorInterface::class);
-        $this->factory->addValidator($validator);
-        $this->factory->addValidator($validator2);
-        $exception = new Exception();
-        $validator->shouldReceive('canValidate')
-                  ->with(m::on(function (ResponseInterface $gigyaResponse) use ($response) {
-                      static::assertSame($response, $gigyaResponse->getOriginalResponse());
-
-                      return true;
-                  }))
-                  ->andReturn(true);
-        $validator->shouldReceive('assert')
-                  ->with(m::type(ResponseInterface::class))
-                  ->andThrow($exception);
-
-        static::setExpectedException(Exception::class);
-
-        $this->factory->getResponse($response);
-    }
-
-    public function testTheValidatorWillOnlyCallAssertWhenItCanValidate()
-    {
-        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
-        $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.getAccountInfo'));
-
-        $validator  = m::mock(ResponseValidatorInterface::class);
-        $validator2 = m::mock(ResponseValidatorInterface::class);
-        $this->factory->addValidator($validator);
-        $this->factory->addValidator($validator2);
-        $validator->shouldReceive('canValidate')
-                  ->with(m::on(function (ResponseInterface $gigyaResponse) use ($response) {
-                      static::assertSame($response, $gigyaResponse->getOriginalResponse());
-
-                      return true;
-                  }))
-                  ->andReturn(true);
-        $validator->shouldReceive('assert')
-                  ->with(m::type(ResponseInterface::class))
-                  ->andReturn(true);
-        $validator2->shouldReceive('canValidate')
-                   ->with(m::on(function (ResponseInterface $gigyaResponse) use ($response) {
-                       static::assertSame($response, $gigyaResponse->getOriginalResponse());
-
-                       return true;
-                   }))
-                   ->andReturn(false);
-
-        $gigyaResponse = $this->factory->getResponse($response);
         static::assertSame($response, $gigyaResponse->getOriginalResponse());
     }
 

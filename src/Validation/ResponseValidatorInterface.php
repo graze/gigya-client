@@ -16,8 +16,6 @@ interface ResponseValidatorInterface
     public function canValidate(ResponseInterface $response);
 
     /**
-     * Throws exceptions if any errors are found.
-     *
      * @param ResponseInterface $response
      *
      * @return bool
@@ -25,6 +23,8 @@ interface ResponseValidatorInterface
     public function validate(ResponseInterface $response);
 
     /**
+     * Throws exceptions if any errors are found.
+     *
      * @param ResponseInterface $response
      *
      * @return void

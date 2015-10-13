@@ -2,40 +2,12 @@
 
 namespace Graze\Gigya\Response;
 
-use Graze\Gigya\Validation\ResponseValidatorInterface;
 use GuzzleHttp\Message\ResponseInterface as GuzzleResponseInterface;
 
 // use Psr\Http\Message\ResponseInterface; Guzzle v6
 
-class ResponseFactory
+class ResponseFactory implements ResponseFactoryInterface
 {
-    /**
-     * @var ResponseValidatorInterface[]
-     */
-    private $validators = [];
-
-    /**
-     * @param ResponseValidatorInterface[] $validators
-     */
-    public function __construct($validators = [])
-    {
-        foreach ($validators as $validator) {
-            $this->addValidator($validator);
-        }
-    }
-
-    /**
-     * @param ResponseValidatorInterface $validator
-     *
-     * @return $this
-     */
-    public function addValidator(ResponseValidatorInterface $validator)
-    {
-        $this->validators[] = $validator;
-
-        return $this;
-    }
-
     /**
      * Pass in json decoded response here.
      *
@@ -51,20 +23,6 @@ class ResponseFactory
         } else {
             $result = new Response($response);
         }
-        $this->assert($result);
-
         return $result;
-    }
-
-    /**
-     * @param ResponseInterface $response
-     */
-    private function assert(ResponseInterface $response)
-    {
-        foreach ($this->validators as $validator) {
-            if ($validator->canValidate($response)) {
-                $validator->assert($response);
-            }
-        }
     }
 }

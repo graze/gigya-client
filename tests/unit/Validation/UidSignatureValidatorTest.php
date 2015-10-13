@@ -49,13 +49,13 @@ class UidSignatureValidatorTest extends TestCase
         $collection = m::mock(Collection::class);
         $response->shouldReceive('getData')
                  ->andReturn($collection);
-        $collection->shouldReceive('contains')
+        $collection->shouldReceive('has')
                    ->with('UID')
                    ->andReturn(true);
-        $collection->shouldReceive('contains')
+        $collection->shouldReceive('has')
                    ->with('UIDSignature')
                    ->andReturn(true);
-        $collection->shouldReceive('contains')
+        $collection->shouldReceive('has')
                    ->with('signatureTimestamp')
                    ->andReturn(true);
         $collection->shouldReceive('get')
@@ -84,13 +84,13 @@ class UidSignatureValidatorTest extends TestCase
         $collection = m::mock(Collection::class);
         $response->shouldReceive('getData')
                  ->andReturn($collection);
-        $collection->shouldReceive('contains')
+        $collection->shouldReceive('has')
                    ->with('UID')
                    ->andReturn(true);
-        $collection->shouldReceive('contains')
+        $collection->shouldReceive('has')
                    ->with('UIDSignature')
                    ->andReturn(true);
-        $collection->shouldReceive('contains')
+        $collection->shouldReceive('has')
                    ->with('signatureTimestamp')
                    ->andReturn(true);
         $collection->shouldReceive('get')
@@ -113,7 +113,7 @@ class UidSignatureValidatorTest extends TestCase
         static::assertFalse($this->validator->validate($response));
 
         $response->shouldReceive('getErrorCode')
-            ->andReturn(0);
+                 ->andReturn(0);
 
         static::setExpectedException(InvalidUidSignatureException::class);
         $this->validator->assert($response);
@@ -125,13 +125,13 @@ class UidSignatureValidatorTest extends TestCase
         $collection = m::mock(Collection::class);
         $response->shouldReceive('getData')
                  ->andReturn($collection);
-        $collection->shouldReceive('contains')
+        $collection->shouldReceive('has')
                    ->with('UID')
                    ->andReturn(true);
-        $collection->shouldReceive('contains')
+        $collection->shouldReceive('has')
                    ->with('UIDSignature')
                    ->andReturn(true);
-        $collection->shouldReceive('contains')
+        $collection->shouldReceive('has')
                    ->with('signatureTimestamp')
                    ->andReturn(true);
         $collection->shouldReceive('get')
@@ -155,5 +155,26 @@ class UidSignatureValidatorTest extends TestCase
 
         static::setExpectedException(InvalidTimestampException::class);
         $this->validator->assert($response);
+    }
+
+    public function testCanValidationReturnsFalseWhenTheRequiredFieldsAreNotPresent()
+    {
+        $response   = m::mock(ResponseInterface::class);
+        $collection = m::mock(Collection::class);
+        $response->shouldReceive('getData')
+                 ->andReturn($collection);
+        $collection->shouldReceive('has')
+                   ->with('UID')
+                   ->andReturn(true, true, true, false);
+        $collection->shouldReceive('has')
+                   ->with('UIDSignature')
+                   ->andReturn(true, true, false, true);
+        $collection->shouldReceive('has')
+                   ->with('signatureTimestamp')
+                   ->andReturn(true, false, true, true);
+        static::assertTrue($this->validator->canValidate($response));
+        static::assertFalse($this->validator->canValidate($response));
+        static::assertFalse($this->validator->canValidate($response));
+        static::assertFalse($this->validator->canValidate($response));
     }
 }

@@ -1,15 +1,15 @@
 <?php
 
-namespace Graze\Gigya\Endpoints;
+namespace Graze\Gigya\Endpoint;
 
 use Exception;
 use Graze\Gigya\Auth\GigyaAuthInterface;
 use Graze\Gigya\Response\ResponseFactory;
+use Graze\Gigya\Response\ResponseFactoryInterface;
 use Graze\Gigya\Response\ResponseInterface;
-use Graze\Gigya\Validation\Signature;
-use Graze\Gigya\Validation\UidSignatureValidator;
-use Graze\Gigya\Validation\ValidGigyaResponseSubscriber;
+use Graze\Gigya\Validation\ResponseValidatorInterface;
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Event\SubscriberInterface;
 use GuzzleHttp\Exception\RequestException;
 
 // use Psr\Http\Message\ResponseInterface; Guzzle v6
@@ -24,7 +24,7 @@ class Client
     protected $dataCenter;
 
     /**
-     * @var ResponseFactory
+     * @var ResponseFactoryInterface
      */
     protected $factory;
 
@@ -53,37 +53,51 @@ class Client
     /**
      * @var array
      */
-    protected $guzzleConfig;
+    protected $config;
 
     /**
-     * @param string             $namespace
-     * @param GigyaAuthInterface $auth
-     * @param string             $dataCenter
-     * @param array              $guzzleConfig
-     * @param array              $options
+     * @var SubscriberInterface[]
+     */
+    protected $subscribers = [];
+
+    /**
+     * @var ResponseValidatorInterface[]
+     */
+    protected $validators = [];
+
+    /**
+     * @param GuzzleClient             $client
+     * @param string                   $namespace
+     * @param string                   $dataCenter
+     * @param array                    $config     List of configuration settings for Guzzle
+     * @param array                    $options    Options to pass to each request
+     * @param array                    $validators Response validators
+     * @param ResponseFactoryInterface $factory
      */
     public function __construct(
+        GuzzleClient $client,
         $namespace,
-        GigyaAuthInterface $auth,
         $dataCenter,
-        array $guzzleConfig = [],
-        array $options = []
+        array $config = [],
+        array $options = [],
+        array $validators = [],
+        ResponseFactoryInterface $factory = null
     ) {
-        $this->namespace    = $namespace;
-        $this->auth         = $auth;
-        $this->dataCenter   = $dataCenter;
-        $this->guzzleConfig = $guzzleConfig;
-        $this->options      = $options;
+        $this->client     = $client;
+        $this->namespace  = $namespace;
+        $this->dataCenter = $dataCenter;
+        $this->config     = $config;
+        $this->options    = $options;
+        $this->factory    = $factory ?: new ResponseFactory();
+        array_map([$this, 'addValidator'], $validators);
+    }
 
-        $this->client = new GuzzleClient($guzzleConfig);
-        $this->client->getEmitter()->attach(new ValidGigyaResponseSubscriber());
-        $this->client->getEmitter()->attach($auth);
-
-        $this->factory = new ResponseFactory();
-        $this->factory->addValidator(new UidSignatureValidator(
-            new Signature(),
-            $auth->getSecret()
-        ));
+    /**
+     * @param ResponseValidatorInterface $validator
+     */
+    public function addValidator(ResponseValidatorInterface $validator)
+    {
+        $this->validators[] = $validator;
     }
 
     /**
@@ -133,9 +147,11 @@ class Client
     {
         $requestOptions          = array_merge($this->options, $options);
         $requestOptions['query'] = $params;
-        $response                = $this->client->get($this->getEndpoint($method), $requestOptions);
+        $guzzleResponse          = $this->client->get($this->getEndpoint($method), $requestOptions);
+        $response                = $this->factory->getResponse($guzzleResponse);
 
-        return $this->factory->getResponse($response);
+        $this->assert($response);
+        return $response;
     }
 
     /**
@@ -153,5 +169,39 @@ class Client
             isset($arguments[0]) ? $arguments[0] : [],
             isset($arguments[1]) ? $arguments[1] : []
         );
+    }
+
+    /**
+     * @param string $className
+     *
+     * @return Client
+     */
+    protected function clientFactory($className = Client::class)
+    {
+        return new $className(
+            $this->client,
+            $this->namespace,
+            $this->dataCenter,
+            $this->config,
+            $this->options,
+            $this->validators,
+            $this->factory
+        );
+    }
+
+    /**
+     * Throws exceptions if any errors are found.
+     *
+     * @param ResponseInterface $response
+     *
+     * @return void
+     */
+    public function assert(ResponseInterface $response)
+    {
+        foreach ($this->validators as $validator) {
+            if ($validator->canValidate($response)) {
+                $validator->assert($response);
+            }
+        }
     }
 }

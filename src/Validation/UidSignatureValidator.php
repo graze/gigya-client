@@ -42,9 +42,9 @@ class UidSignatureValidator implements ResponseValidatorInterface
     {
         $data = $response->getData();
 
-        return ($data->contains('UID') &&
-            $data->contains('UIDSignature') &&
-            $data->contains('signatureTimestamp'));
+        return ($data->has('UID') &&
+            $data->has('UIDSignature') &&
+            $data->has('signatureTimestamp'));
     }
 
     /**
@@ -77,6 +77,7 @@ class UidSignatureValidator implements ResponseValidatorInterface
     public function assert(ResponseInterface $response)
     {
         $data = $response->getData();
+
         $this->assertUid(
             $data->get('UID'),
             $data->get('signatureTimestamp'),
@@ -116,7 +117,7 @@ class UidSignatureValidator implements ResponseValidatorInterface
      */
     private function assertUid($uid, $timestamp, $secret, $signature, ResponseInterface $response)
     {
-        if (! $this->signature->checkTimestamp($timestamp)) {
+        if (!$this->signature->checkTimestamp($timestamp)) {
             throw new InvalidTimestampException($timestamp, $response);
         }
         $expected = $this->signature->getUidSignature($uid, $timestamp, $secret);

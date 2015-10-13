@@ -35,33 +35,19 @@ class ValidGigyaResponseSubscriber implements SubscriberInterface
     private function assert(GuzzleResponseInterface $response)
     {
         $data = json_decode($response->getBody(), true);
-        if (! is_array($data)) {
+        if (!is_array($data)) {
             throw new UnknownResponseException($response, 'Could not decode the body');
         }
 
         foreach ($this->requiredFields as $field) {
-            if (! array_key_exists($field, $data)) {
+            if (!array_key_exists($field, $data)) {
                 throw new UnknownResponseException($response, "Missing required field: '{$field}'");
             }
         }
     }
 
     /**
-     * Returns an array of event names this subscriber wants to listen to.
-     *
-     * The returned array keys MUST map to an event name. Each array value
-     * MUST be an array in which the first element is the name of a function
-     * on the EventSubscriber OR an array of arrays in the aforementioned
-     * format. The second element in the array is optional, and if specified,
-     * designates the event priority.
-     *
-     * For example, the following are all valid:
-     *
-     *  - ['eventName' => ['methodName']]
-     *  - ['eventName' => ['methodName', $priority]]
-     *  - ['eventName' => [['methodName'], ['otherMethod']]
-     *  - ['eventName' => [['methodName'], ['otherMethod', $priority]]
-     *  - ['eventName' => [['methodName', $priority], ['otherMethod', $priority]]
+     * List of events to listen for
      *
      * @return array
      */
@@ -71,7 +57,8 @@ class ValidGigyaResponseSubscriber implements SubscriberInterface
     }
 
     /**
-     * When the response is complete, validate it against our current knowledge of what a gigya response shoud look like.
+     * When the response is complete, validate it against our current knowledge of what a gigya response shoud look
+     * like.
      *
      * @param CompleteEvent $event
      * @param string        $name

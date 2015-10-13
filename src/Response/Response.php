@@ -95,7 +95,7 @@ class Response implements ResponseInterface
             return $value;
         }
 
-        return;
+        return null;
     }
 
     /**

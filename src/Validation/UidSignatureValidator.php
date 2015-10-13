@@ -37,6 +37,7 @@ class UidSignatureValidator implements ResponseValidatorInterface
      * Can validate
      *
      * @param ResponseInterface $response
+     *
      * @return bool
      */
     public function canValidate(ResponseInterface $response)
@@ -51,6 +52,7 @@ class UidSignatureValidator implements ResponseValidatorInterface
      * Throws exceptions if any errors are found
      *
      * @param ResponseInterface $response
+     *
      * @return bool
      */
     public function validate(ResponseInterface $response)
@@ -66,6 +68,7 @@ class UidSignatureValidator implements ResponseValidatorInterface
 
     /**
      * @param ResponseInterface $response
+     *
      * @return void
      * @throws InvalidTimestampException
      * @throws InvalidUidSignatureException
@@ -89,6 +92,7 @@ class UidSignatureValidator implements ResponseValidatorInterface
      * @param int    $timestamp Unix Timestamp
      * @param string $secret
      * @param string $signature
+     *
      * @return bool
      */
     private function validateUid($uid, $timestamp, $secret, $signature)
@@ -103,6 +107,7 @@ class UidSignatureValidator implements ResponseValidatorInterface
      * @param string            $secret
      * @param string            $signature
      * @param ResponseInterface $response
+     *
      * @return bool
      * @throws InvalidTimestampException
      * @throws InvalidUidSignatureException

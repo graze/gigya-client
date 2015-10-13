@@ -26,6 +26,7 @@ class ResponseFactory
 
     /**
      * @param ResponseValidatorInterface $validator
+     *
      * @return $this
      */
     public function addValidator(ResponseValidatorInterface $validator)
@@ -38,6 +39,7 @@ class ResponseFactory
      * Pass in json decoded response here
      *
      * @param GuzzleResponseInterface $response
+     *
      * @return ResponseInterface
      */
     public function getResponse(GuzzleResponseInterface $response)

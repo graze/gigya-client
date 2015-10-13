@@ -102,6 +102,7 @@ class Client
      * Get the endpoint for a method
      *
      * @param string $method
+     *
      * @return string
      * @throws Exception
      */
@@ -122,6 +123,7 @@ class Client
      * @param array  $params  Parameters to pass as part the of the uri
      * @param array  $options Extra options to be passed to guzzle. These will overwrite any existing options defined
      *                        by using addOption
+     *
      * @return ResponseInterface
      * @throws RequestException When an error is encountered
      */
@@ -136,6 +138,7 @@ class Client
     /**
      * @param string $method
      * @param array  $arguments [params, options]
+     *
      * @return ResponseInterface
      * @throws RequestException
      */

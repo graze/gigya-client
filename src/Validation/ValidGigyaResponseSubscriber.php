@@ -26,6 +26,7 @@ class ValidGigyaResponseSubscriber implements SubscriberInterface
 
     /**
      * @param GuzzleResponseInterface $response
+     *
      * @return void
      * @throws InvalidTimestampException
      * @throws UnknownResponseException
@@ -73,6 +74,7 @@ class ValidGigyaResponseSubscriber implements SubscriberInterface
      *
      * @param CompleteEvent $event
      * @param string        $name
+     *
      * @throws InvalidTimestampException
      * @throws UnknownResponseException
      */

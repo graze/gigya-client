@@ -26,33 +26,40 @@ class ErrorCode
     /**
      * When a new account is created and the login identifier already exists, the server handles the conflict according
      * to the conflictHandling parameter. If saveProfileAndFail is passed, the profile data is saved, a registration
-     * token is returned for account linking, and this error is returned. */
+     * token is returned for account linking, and this error is returned.
+     */
     const OK_WITH_ERROR_LOGIN_IDENTIFIER_EXISTS = 200010;
     /**
      * A method has been called that performs social login, but the registration process has not been finalized, or a
      * required field is missing from the user profile or data. See Accounts API Error Codes and Messages for more
-     * information. */
+     * information.
+     */
     const ERROR_ACCOUNT_PENDING_REGISTRATION = 206001;
     /**
      * An account has already been verified and a user tries to log in with a loginID (usually an email address) whose
-     * connection to the user has not been verified. See Accounts API Error Codes and Messages for more information. */
+     * connection to the user has not been verified. See Accounts API Error Codes and Messages for more information.
+     */
     const ERROR_ACCOUNT_PENDING_VERIFICATION = 206002;
     /**
      * The registration policy requires a loginID when a user uses Social Login to register to the site, but there are
      * no login identifiers or a password associated with the account. See Accounts API Error Codes and Messages for
-     * more information. */
+     * more information.
+     */
     const ERROR_ACCOUNT_MISSING_LOGIN_ID = 206003;
     /**
      * The API key is served by another data center. The error occurs when an API request is received at the wrong data
-     * center. */
+     * center.
+     */
     const ERROR_INVALID_DATA_CENTER = 301001;
     /**
      * This error may be caused by various faults in the request. For example: wrong authentication header, non-secure
-     * request that should be secured. */
+     * request that should be secured.
+     */
     const ERROR_INVALID_REQUEST_FORMAT = 400001;
     /**
      * The method requires some parameters. One of the required parameters was not set in this method call. The error
-     * message will include the name of the missing parameter. */
+     * message will include the name of the missing parameter.
+     */
     const ERROR_MISSING_REQUIRED_PARAMETER = 400002;
     /**
      * A user tries to register or set the account information with an email or username that already exists in the
@@ -68,7 +75,8 @@ class ErrorCode
     /**
      * One of the parameters of this request has been set with a value which is not within the parameter's defined
      * value bounds. Please refer to the method's parameter table, and check the definition of valid values per
-     * parameter. The error message will include the name of the specific parameter. */
+     * parameter. The error message will include the name of the specific parameter.
+     */
     const ERROR_INVALID_PARAMETER_VALUE = 400006;
     /** Internal error. */
     const ERROR_DUPLICATE_VALUE = 400007;
@@ -97,11 +105,13 @@ class ErrorCode
     const ERROR_CODE_EXPIRED = 400015;
     /**
      * There was an attempt to write to fields from the client side. By default, only signed requests coming from the
-     * server are allowed to write into the data fields. */
+     * server are allowed to write into the data fields.
+     */
     const ERROR_SCHEMA_VALIDATION_FAILED = 400020;
     /**
      * The registration policy requires the user to pass a CAPTCHA test in order to register, and the CAPTCHA
-     * verification has failed. See Accounts API Error Codes and Messages for more information. */
+     * verification has failed. See Accounts API Error Codes and Messages for more information.
+     */
     const ERROR_CAPTCHA_VERIFICATION_FAILED = 400021;
     /** Used mostly for DS, where custom unique indexes are supported. */
     const ERROR_UNIQUE_INDEX_VALIDATION = 400022;
@@ -114,7 +124,8 @@ class ErrorCode
     const ERROR_DYNAMIC_FIELDS_VALIDATION = 400024;
     /**
      * A write access error regarding one of the following required fields: username, password, secretQuestion,
-     * secretAnswer, email. */
+     * secretAnswer, email.
+     */
     const ERROR_WRITE_ACCESS_VALIDATION = 400025;
     /** Invalid regex format. */
     const ERROR_INVALID_FORMAT_VALIDATION = 400026;
@@ -133,7 +144,8 @@ class ErrorCode
     const ERROR_SCHEMA_CONFLICT = 400029;
     /**
      * This error is returned if a user logs in with a SAML provider, and multiple identities are not allowed, and a
-     * call to socialize.addConnection or to socialize.removeConnection is attempted. */
+     * call to socialize.addConnection or to socialize.removeConnection is attempted.
+     */
     const ERROR_OPERATION_NOT_ALLOWED = 400030;
     /** With accounts.resetPassword when the provided credentials could not be verified. */
     const ERROR_SECURITY_VERIFICATION_FAILED = 400050;
@@ -143,7 +155,8 @@ class ErrorCode
     const ERROR_NOT_SUPPORTED = 400096;
     /**
      * The user is attempting to access Gigya services from an insecure/unsupported browser. User should switch
-     * browsers. */
+     * browsers.
+     */
     const ERROR_BROWSER_INSECURE = 400097;
     /** With accounts.tfa.importTFA or accounts.tfa.resetTFA when no such TFA provider exists. */
     const ERROR_NO_PROVIDERS = 400100;
@@ -174,7 +187,8 @@ class ErrorCode
     const ERROR_INSUFFICIENT_POINTS_TO_REDEEM = 400127;
     /**
      * If Protect Against Account Harvesting policy is enabled and neither Email Validation nor CAPTCHA Validation
-     * policies are enabled. */
+     * policies are enabled.
+     */
     const ERROR_INVALID_POLICY_CONFIGURATION = 401000;
     /** When media items are not allowed for this category. */
     const ERROR_MEDIA_ITEMS_NOT_SUPPORTED = 401001;
@@ -184,11 +198,13 @@ class ErrorCode
     const ERROR_SUSPECTED_SPAM = 401010;
     /**
      * If accounts.login is attempted and the CAPTCHA threshold has been reached. The CAPTCHA threshold is set in the
-     * site Policies (security.captcha.failedLoginThreshold policy). */
+     * site Policies (security.captcha.failedLoginThreshold policy).
+     */
     const ERROR_LOGIN_FAILED_CAPTCHA_REQUIRED = 401020;
     /**
      * If accounts.login is attempted and the CAPTCHA threshold has been reached and the provided CAPTCHA text is
-     * wrong. The CAPTCHA threshold is set in the site Policies (security.captcha.failedLoginThreshold policy). */
+     * wrong. The CAPTCHA threshold is set in the site Policies (security.captcha.failedLoginThreshold policy).
+     */
     const ERROR_LOGIN_FAILED_WRONG_CAPTCHA = 401021;
     /**
      * The password provided is not the correct, current password; however, it is a password previously associated with
@@ -216,7 +232,8 @@ class ErrorCode
     /**
      * The value of the nonce parameter that was passed with this request is not unique. Gigya requires that in each
      * REST API call the nonce string will be unique. If Gigya receives two API calls with the same nonce, the second
-     * API call is rejected. Please refer to Signing requests for more details. */
+     * API call is rejected. Please refer to Signing requests for more details.
+     */
     const ERROR_DUPLICATE_NONCE = 403004;
     /** The user ID that is passed is not valid for this site. */
     const ERROR_UNAUTHORIZED_USER = 403005;
@@ -224,7 +241,8 @@ class ErrorCode
     const ERROR_SECRET_SENT_OVER_HTTP = 403006;
     /**
      * Returned when a user lacks the necessary permissions to perform the requested action, or when the user's
-     * credentials are not configured properly. */
+     * credentials are not configured properly.
+     */
     const ERROR_PERMISSION_DENIED = 403007;
     /** Cannot find an openId endpoint on the url or cannot find the username given for the openId login. */
     const ERROR_INVALID_OPENID_URL = 403008;
@@ -243,15 +261,18 @@ class ErrorCode
     /**
      * This operation needs a user permission and it was not requested. You may use the method
      * socialize.requestPermissions to request the user permission. After gaining user permission you may retry to
-     * execute this operation.*/
+     * execute this operation.
+     */
     const ERROR_PERMISSION_NOT_REQUESTED = 403022;
     /**
      * This operation needs a user permission and the user did not grant your application with the necessary
-     * permission. */
+     * permission.
+     */
     const ERROR_NO_USER_PERMISSION = 403023;
     /**
      * Limit reached: Status is a duplicate. This error occurs when a user shares content multiple times, and is
-     * returned with the provider name, e.g., "provider" : "twitter". */
+     * returned with the provider name, e.g., "provider" : "twitter".
+     */
     const ERROR_PROVIDER_LIMIT_REACHED = 403024;
     /** Invalid OAuth2 token. Read more in Using Gigya's REST API in compliance with OAuth 2.0. */
     const ERROR_INVALID_TOKEN = 403025;
@@ -271,43 +292,51 @@ class ErrorCode
     const ERROR_NO_LOGIN_TICKET = 403040;
     /**
      * A user has tried to log into an inactive account. See Accounts API Error Codes and Messages for more
-     * information.*/
+     * information.
+     */
     const ERROR_ACCOUNT_DISABLED = 403041;
     /**
      * A user passes an incorrect password or a login ID that doesn't exist in our accounts database. See Accounts API
-     * Error Codes and Messages for more information. */
+     * Error Codes and Messages for more information.
+     */
     const ERROR_INVALID_LOGIN_ID = 403042;
     /**
      * The username/email address provided by the user exists in the database but is associated with a different user.
-     * See Accounts API Error Codes and Messages for more information. */
+     * See Accounts API Error Codes and Messages for more information.
+     */
     const ERROR_LOGIN_IDENTIFIER_EXISTS = 403043;
     /**
      * A user under the age of 13 has tried to log in. For COPPA compliance (Children's Online Privacy Protection Act).
-     * Please refer to the Age Limit section in the Policies guide. */
+     * Please refer to the Age Limit section in the Policies guide.
+     */
     const ERROR_UNDERAGE_USER = 403044;
     /** If Registration-as-a-Service (RaaS) is enabled for your site, but the storage size has not been configured. */
     const ERROR_INVALID_SITE_CONFIGURATION_ERROR = 403045;
     /**
      * There is no user with that username or email. In the "Forgot Password" screen of the Screen-sets tool, this
-     * error is returned if a user fills in an email of a user that doesn't exist. */
+     * error is returned if a user fills in an email of a user that doesn't exist.
+     */
     const ERROR_LOGIN_ID_DOES_NOT_EXIST = 403047;
     /** The daily API call limit has been reached. */
     const ERROR_API_RATE_LIMIT_EXCEEDED = 403048;
     /**
      * When accounts.login is attempted and the password change interval has passed since the last password change. The
-     * interval is set in the site Policies (security.passwordChangeInterval policy). */
+     * interval is set in the site Policies (security.passwordChangeInterval policy).
+     */
     const ERROR_PENDING_PASSWORD_CHANGE = 403100;
     /**
      * When accounts.login, accounts.socialLogin, accounts.finalizeRegistration, socialize.notifyLogin, or
      * socialize.login is called and the policy (in the site Policies) requires 2-factor authentication, and the device
      * is not already in the verified device list for the account. The first time the method is called, the device
-     * needs to be registered, and for the following calls, the device needs to be verified. */
+     * needs to be registered, and for the following calls, the device needs to be verified.
+     */
     const ERROR_ACCOUNT_PENDING_TFA_VERIFICATION = 403101;
     /**
      * When accounts.login, accounts.socialLogin, accounts.finalizeRegistration, socialize.notifyLogin, or
      * socialize.login is called and the policy (in the site Policies) requires 2-factor authentication, and the device
      * is not already in the verified device list for the account. The first time the method is called, the device
-     * needs to be registered, and for the following calls, the device needs to be verified. */
+     * needs to be registered, and for the following calls, the device needs to be verified.
+     */
     const ERROR_ACCOUNT_PENDING_TFA_REGISTRATION = 403102;
     /**
      * When there is an attempt to deactivate a TFA provider for a user (with accounts.tfa.deactivateProvider) or to
@@ -317,7 +346,8 @@ class ErrorCode
     /**
      * When accounts.login is attempted and the account is locked out or the originating IP is locked out. This occurs
      * after a set number of failed login attempts. The number is set in the site Policies -
-     * security.accountLockout.failedLoginThreshold policy and security.ipLockout.hourlyFailedLoginThreshold policy. */
+     * security.accountLockout.failedLoginThreshold policy and security.ipLockout.hourlyFailedLoginThreshold policy.
+     */
     const ERROR_ACCOUNT_TEMPORARILY_LOCKED_OUT = 403120;
     /** When the client performs an operation that is redundant. */
     const ERROR_REDUNDANT_OPERATION = 403200;
@@ -339,7 +369,8 @@ class ErrorCode
     const ERROR_IDENTITY_EXISTS = 409001;
     /**
      * When calling accounts.getProfilePhoto, accounts.publishProfilePhoto or accounts.uploadProfilePhoto. The user
-     * photo requested does not exist or the photo provided is not valid. */
+     * photo requested does not exist or the photo provided is not valid.
+     */
     const ERROR_MISSING_USER_PHOTO = 409010;
     /**
      * There was an attempt to set or retrieve information in a counter that the system cannot find. See
@@ -379,7 +410,8 @@ class ErrorCode
     const ERROR_DATABASE_ERROR = 500028;
     /**
      * There is no definition of provider application for this site. Please refer to Opening External Applications to
-     * learn how to define provider application. */
+     * learn how to define provider application.
+     */
     const ERROR_NO_PROVIDER_APPLICATION = 500031;
     /** When there is no target environment in the config file. */
     const ERROR_INVALID_ENVIRONMENT_CONFIG = 500033;
@@ -854,6 +886,7 @@ Please refer to Signing requests for more details.'
 
     /**
      * @param int $errorCode
+     *
      * @return string|null
      */
     public static function getName($errorCode)
@@ -865,6 +898,7 @@ Please refer to Signing requests for more details.'
 
     /**
      * @param int $errorCode
+     *
      * @return string|null
      */
     public static function getDescription($errorCode)

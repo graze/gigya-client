@@ -83,6 +83,7 @@ class Response implements ResponseInterface
      * Get a field from the body if it exists, and remove the name from the array
      *
      * @param string $name
+     *
      * @return mixed|null The value or null if the field does not exist
      */
     public function popField($name)

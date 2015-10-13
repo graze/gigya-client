@@ -82,6 +82,7 @@ class Gigya
      *
      * @param string $option
      * @param mixed  $value
+     *
      * @return $this
      */
     public function addOption($option, $value)
@@ -96,6 +97,7 @@ class Gigya
      * N.B. This will overwrite any existing options apart from query and verify
      *
      * @param array $options
+     *
      * @return $this
      */
     public function addOptions(array $options)
@@ -119,6 +121,7 @@ class Gigya
     /**
      * @param string $method
      * @param array  $arguments
+     *
      * @return Client
      */
     public function __call($method, array $arguments)

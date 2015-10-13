@@ -8,6 +8,7 @@ class Signature
 
     /**
      * @param int $timestamp Unix Timestamp
+     *
      * @return bool
      */
     public function checkTimestamp($timestamp)
@@ -19,6 +20,7 @@ class Signature
      * @param string $uid
      * @param int    $timestamp
      * @param string $secret
+     *
      * @return string
      */
     public function getUidSignature($uid, $timestamp, $secret)
@@ -32,6 +34,7 @@ class Signature
      * @param string $friendUid
      * @param int    $timestamp
      * @param string $secret
+     *
      * @return string
      */
     public function getFriendUidSignature($uid, $friendUid, $timestamp, $secret)
@@ -43,6 +46,7 @@ class Signature
     /**
      * @param string $baseString
      * @param string $key
+     *
      * @return string
      */
     public function calculateSignature($baseString, $key)

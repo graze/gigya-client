@@ -68,19 +68,19 @@ class Response implements ResponseInterface
      */
     public function __construct(GuzzleResponseInterface $response)
     {
-        $this->response = $response;
-        $this->body = json_decode($response->getBody());
-        $this->errorCode = (int)$this->popField('errorCode');
+        $this->response     = $response;
+        $this->body         = json_decode($response->getBody());
+        $this->errorCode    = (int) $this->popField('errorCode');
         $this->errorMessage = $this->popField('errorMessage');
         $this->errorDetails = $this->popField('errorDetails');
-        $this->statusCode = (int)$this->popField('statusCode');
+        $this->statusCode   = (int) $this->popField('statusCode');
         $this->statusReason = $this->popField('statusReason');
-        $this->callId = $this->popField('callId');
-        $this->time = DateTimeImmutable::createFromFormat(static::DATE_TIME_FORMAT, $this->popField('time'));
+        $this->callId       = $this->popField('callId');
+        $this->time         = DateTimeImmutable::createFromFormat(static::DATE_TIME_FORMAT, $this->popField('time'));
     }
 
     /**
-     * Get a field from the body if it exists, and remove the name from the array
+     * Get a field from the body if it exists, and remove the name from the array.
      *
      * @param string $name
      *
@@ -91,9 +91,11 @@ class Response implements ResponseInterface
         if (property_exists($this->body, $name)) {
             $value = $this->body->{$name};
             unset($this->body->{$name});
+
             return $value;
         }
-        return null;
+
+        return;
     }
 
     /**
@@ -157,9 +159,10 @@ class Response implements ResponseInterface
      */
     public function getData()
     {
-        if (!$this->data) {
+        if (! $this->data) {
             $this->data = new Collection($this->body);
         }
+
         return $this->data;
     }
 

@@ -21,25 +21,26 @@ class ValidGigyaResponseSubscriber implements SubscriberInterface
         'statusCode',
         'statusReason',
         'callId',
-        'time'
+        'time',
     ];
 
     /**
      * @param GuzzleResponseInterface $response
      *
-     * @return void
      * @throws InvalidTimestampException
      * @throws UnknownResponseException
+     *
+     * @return void
      */
     private function assert(GuzzleResponseInterface $response)
     {
         $data = json_decode($response->getBody(), true);
-        if (!is_array($data)) {
-            throw new UnknownResponseException($response, "Could not decode the body");
+        if (! is_array($data)) {
+            throw new UnknownResponseException($response, 'Could not decode the body');
         }
 
         foreach ($this->requiredFields as $field) {
-            if (!array_key_exists($field, $data)) {
+            if (! array_key_exists($field, $data)) {
                 throw new UnknownResponseException($response, "Missing required field: '{$field}'");
             }
         }
@@ -70,7 +71,7 @@ class ValidGigyaResponseSubscriber implements SubscriberInterface
     }
 
     /**
-     * When the response is complete, validate it against our current knowledge of what a gigya response shoud look like
+     * When the response is complete, validate it against our current knowledge of what a gigya response shoud look like.
      *
      * @param CompleteEvent $event
      * @param string        $name
@@ -83,7 +84,7 @@ class ValidGigyaResponseSubscriber implements SubscriberInterface
         $response = $event->getResponse();
 
         if (is_null($response)) {
-            throw new UnknownResponseException($response, "No response provided");
+            throw new UnknownResponseException($response, 'No response provided');
         }
 
         $this->assert($response);

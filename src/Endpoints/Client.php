@@ -29,7 +29,7 @@ class Client
     protected $factory;
 
     /**
-     * Collection of options to pass to Guzzle
+     * Collection of options to pass to Guzzle.
      *
      * @var array
      */
@@ -69,11 +69,11 @@ class Client
         array $guzzleConfig = [],
         array $options = []
     ) {
-        $this->namespace = $namespace;
-        $this->auth = $auth;
-        $this->dataCenter = $dataCenter;
+        $this->namespace    = $namespace;
+        $this->auth         = $auth;
+        $this->dataCenter   = $dataCenter;
         $this->guzzleConfig = $guzzleConfig;
-        $this->options = $options;
+        $this->options      = $options;
 
         $this->client = new GuzzleClient($guzzleConfig);
         $this->client->getEmitter()->attach(new ValidGigyaResponseSubscriber());
@@ -87,7 +87,7 @@ class Client
     }
 
     /**
-     * Get the method namespace for each method call
+     * Get the method namespace for each method call.
      *
      * Overload this to handle different method namespaces
      *
@@ -99,12 +99,13 @@ class Client
     }
 
     /**
-     * Get the endpoint for a method
+     * Get the endpoint for a method.
      *
      * @param string $method
      *
-     * @return string
      * @throws Exception
+     *
+     * @return string
      */
     public function getEndpoint($method)
     {
@@ -124,14 +125,16 @@ class Client
      * @param array  $options Extra options to be passed to guzzle. These will overwrite any existing options defined
      *                        by using addOption
      *
-     * @return ResponseInterface
      * @throws RequestException When an error is encountered
+     *
+     * @return ResponseInterface
      */
     public function request($method, array $params = [], array $options = [])
     {
-        $requestOptions = array_merge($this->options, $options);
+        $requestOptions          = array_merge($this->options, $options);
         $requestOptions['query'] = $params;
-        $response = $this->client->get($this->getEndpoint($method), $requestOptions);
+        $response                = $this->client->get($this->getEndpoint($method), $requestOptions);
+
         return $this->factory->getResponse($response);
     }
 
@@ -139,8 +142,9 @@ class Client
      * @param string $method
      * @param array  $arguments [params, options]
      *
-     * @return ResponseInterface
      * @throws RequestException
+     *
+     * @return ResponseInterface
      */
     public function __call($method, $arguments)
     {

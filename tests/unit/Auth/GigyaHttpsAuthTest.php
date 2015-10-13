@@ -34,11 +34,11 @@ class GigyaHttpsAuthTest extends TestCase
     public function testKeyAndSecretIsPassedToParams()
     {
         $request = m::mock(RequestInterface::class);
-        $event = m::mock(BeforeEvent::class);
+        $event   = m::mock(BeforeEvent::class);
         $event->shouldReceive('getRequest')
               ->andReturn($request);
 
-        $query = m::mock(Query::class);
+        $query  = m::mock(Query::class);
         $config = m::mock(Collection::class);
 
         $request->shouldReceive('getScheme')
@@ -63,11 +63,11 @@ class GigyaHttpsAuthTest extends TestCase
     public function testKeySecretAndUserKeyIsPassedToParams()
     {
         $request = m::mock(RequestInterface::class);
-        $event = m::mock(BeforeEvent::class);
+        $event   = m::mock(BeforeEvent::class);
         $event->shouldReceive('getRequest')
               ->andReturn($request);
 
-        $query = m::mock(Query::class);
+        $query  = m::mock(Query::class);
         $config = m::mock(Collection::class);
 
         $request->shouldReceive('getScheme')
@@ -102,7 +102,7 @@ class GigyaHttpsAuthTest extends TestCase
     public function testSubscriberDoesNotDoAnythingForNonHttpsRequests()
     {
         $request = m::mock(RequestInterface::class);
-        $event = m::mock(BeforeEvent::class);
+        $event   = m::mock(BeforeEvent::class);
         $event->shouldReceive('getRequest')
               ->andReturn($request);
 
@@ -116,7 +116,7 @@ class GigyaHttpsAuthTest extends TestCase
     public function testSubscriberDoesNotDoAnythingForNonGigyaAuthRequests()
     {
         $request = m::mock(RequestInterface::class);
-        $event = m::mock(BeforeEvent::class);
+        $event   = m::mock(BeforeEvent::class);
         $event->shouldReceive('getRequest')
               ->andReturn($request);
 

@@ -5,9 +5,8 @@ namespace Graze\Gigya\Endpoints;
 use Graze\Gigya\Response\ResponseInterface;
 
 /**
- * Class Audit
+ * Class Audit.
  *
- * @package  Graze\Gigya\Endpoints
  *
  * @link     http://developers.gigya.com/display/GD/Audit+REST
  *

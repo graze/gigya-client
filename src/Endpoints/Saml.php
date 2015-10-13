@@ -6,9 +6,8 @@ use Graze\Gigya\Gigya;
 use Graze\Gigya\Response\ResponseInterface;
 
 /**
- * Class Saml
+ * Class Saml.
  *
- * @package  Graze\Gigya\Endpoints
  *
  * @link     http://developers.gigya.com/display/GD/FIdM+SAML+REST
  *

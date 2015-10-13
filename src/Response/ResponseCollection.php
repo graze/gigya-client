@@ -35,10 +35,10 @@ class ResponseCollection extends Response implements ResponseCollectionInterface
     public function __construct(GuzzleResponseInterface $response)
     {
         parent::__construct($response);
-        $this->count = (int)$this->popField('objectsCount');
-        $this->total = (int)$this->popField('totalCount');
+        $this->count      = (int) $this->popField('objectsCount');
+        $this->total      = (int) $this->popField('totalCount');
         $this->nextCursor = $this->popField('nextCursorId');
-        $this->results = $this->popField('results');
+        $this->results    = $this->popField('results');
     }
 
     /**
@@ -66,7 +66,7 @@ class ResponseCollection extends Response implements ResponseCollectionInterface
     }
 
     /**
-     * The cursor for the next set of results, if this is null there are no more results
+     * The cursor for the next set of results, if this is null there are no more results.
      *
      * @return string|null
      */

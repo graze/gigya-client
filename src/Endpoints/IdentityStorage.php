@@ -5,9 +5,8 @@ namespace Graze\Gigya\Endpoints;
 use Graze\Gigya\Response\ResponseInterface;
 
 /**
- * Class IdentityStorage
+ * Class IdentityStorage.
  *
- * @package  Graze\Gigya\Endpoints
  *
  * @link     http://developers.gigya.com/display/GD/Identity+Storage+REST
  *

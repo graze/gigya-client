@@ -32,11 +32,12 @@ class ResponseFactory
     public function addValidator(ResponseValidatorInterface $validator)
     {
         $this->validators[] = $validator;
+
         return $this;
     }
 
     /**
-     * Pass in json decoded response here
+     * Pass in json decoded response here.
      *
      * @param GuzzleResponseInterface $response
      *

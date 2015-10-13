@@ -6,6 +6,7 @@ class TestFixtures
 {
     /**
      * @param string $name
+     *
      * @return string|null
      */
     public static function getFixture($name)
@@ -13,7 +14,7 @@ class TestFixtures
         if (array_key_exists($name, static::$fixtures)) {
             return static::$fixtures[$name];
         } else {
-            return null;
+            return;
         }
     }
 

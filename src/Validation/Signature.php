@@ -26,6 +26,7 @@ class Signature
     public function getUidSignature($uid, $timestamp, $secret)
     {
         $baseString = $timestamp . '_' . $uid;
+
         return $this->calculateSignature($baseString, $secret);
     }
 
@@ -40,6 +41,7 @@ class Signature
     public function getFriendUidSignature($uid, $friendUid, $timestamp, $secret)
     {
         $baseString = sprintf('%d_%s_%s', $timestamp, $friendUid, $uid);
+
         return $this->calculateSignature($baseString, $secret);
     }
 
@@ -51,7 +53,8 @@ class Signature
      */
     public function calculateSignature($baseString, $key)
     {
-        $hmac = hash_hmac("sha1", utf8_encode($baseString), base64_decode($key), true);
+        $hmac = hash_hmac('sha1', utf8_encode($baseString), base64_decode($key), true);
+
         return base64_encode($hmac);
     }
 }

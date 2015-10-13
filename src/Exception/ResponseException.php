@@ -7,11 +7,9 @@ use Graze\Gigya\Response\ResponseInterface;
 use RuntimeException;
 
 /**
- * Class ResponseException
+ * Class ResponseException.
  *
  * Generic Response Exception
- *
- * @package Graze\Gigya\Exceptions
  */
 class ResponseException extends RuntimeException
 {

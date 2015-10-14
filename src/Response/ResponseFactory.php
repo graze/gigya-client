@@ -2,7 +2,7 @@
 
 namespace Graze\Gigya\Response;
 
-use Graze\Gigya\Validation\GigyaResponseValidatorInterface;
+use Graze\Gigya\Validation\ResponseValidatorInterface;
 use GuzzleHttp\Message\ResponseInterface as GuzzleResponseInterface;
 
 // use Psr\Http\Message\ResponseInterface; Guzzle v6
@@ -10,32 +10,61 @@ use GuzzleHttp\Message\ResponseInterface as GuzzleResponseInterface;
 class ResponseFactory
 {
     /**
-     * @var GigyaResponseValidatorInterface
+     * @var ResponseValidatorInterface[]
      */
-    private $validator;
+    private $validators = [];
 
     /**
-     * @param GigyaResponseValidatorInterface $validator
+     * @param ResponseValidatorInterface[] $validators
      */
-    public function __construct(GigyaResponseValidatorInterface $validator)
+    public function __construct($validators = [])
     {
-        $this->validator = $validator;
+        foreach ($validators as $validator) {
+            $this->addValidator($validator);
+        }
     }
 
     /**
-     * Pass in json decoded response here
+     * @param ResponseValidatorInterface $validator
+     *
+     * @return $this
+     */
+    public function addValidator(ResponseValidatorInterface $validator)
+    {
+        $this->validators[] = $validator;
+
+        return $this;
+    }
+
+    /**
+     * Pass in json decoded response here.
      *
      * @param GuzzleResponseInterface $response
+     *
      * @return ResponseInterface
      */
     public function getResponse(GuzzleResponseInterface $response)
     {
-        $this->validator->assert($response);
         $body = json_decode($response->getBody(), true);
         if (array_key_exists('results', $body)) {
-            return new ResponseCollection($response);
+            $result = new ResponseCollection($response);
         } else {
-            return new Response($response);
+            $result = new Response($response);
+        }
+        $this->assert($result);
+
+        return $result;
+    }
+
+    /**
+     * @param ResponseInterface $response
+     */
+    private function assert(ResponseInterface $response)
+    {
+        foreach ($this->validators as $validator) {
+            if ($validator->canValidate($response)) {
+                $validator->assert($response);
+            }
         }
     }
 }

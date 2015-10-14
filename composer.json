@@ -39,7 +39,8 @@
         "psr-4": {
             "Graze\\Gigya\\Test\\": "tests/src",
             "Graze\\Gigya\\Test\\Unit\\": "tests/unit",
-            "Graze\\Gigya\\Test\\Functional\\": "tests/functional"
+            "Graze\\Gigya\\Test\\Functional\\": "tests/functional",
+            "Graze\\Gigya\\Test\\Performance\\": "tests/performance"
         }
     }
 }

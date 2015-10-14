@@ -5,9 +5,8 @@ namespace Graze\Gigya\Endpoints;
 use Graze\Gigya\Response\ResponseInterface;
 
 /**
- * Class Socialize
+ * Class Socialize.
  *
- * @package  Graze\Gigya
  *
  * @link     http://developers.gigya.com/display/GD/Socialize+REST
  *

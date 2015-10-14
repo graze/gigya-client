@@ -6,9 +6,8 @@ use Graze\Gigya\Gigya;
 use Graze\Gigya\Response\ResponseInterface;
 
 /**
- * Class Saml
+ * Class Saml.
  *
- * @package  Graze\Gigya\Endpoints
  *
  * @link     http://developers.gigya.com/display/GD/FIdM+SAML+REST
  *
@@ -40,6 +39,6 @@ class Saml extends Client
      */
     public function idp()
     {
-        return new SamlIdp($this->namespace, $this->params, $this->dataCenter, $this->options);
+        return new SamlIdp($this->namespace, $this->auth, $this->dataCenter, $this->guzzleConfig, $this->options);
     }
 }

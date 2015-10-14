@@ -2,11 +2,15 @@
 
 namespace Graze\Gigya\Test\Unit;
 
-use Graze\Gigya\Endpoints\Client;
+use Graze\Gigya\Auth\GigyaAuthInterface;
 use Graze\Gigya\Gigya;
 use Graze\Gigya\Response\ResponseInterface;
 use Graze\Gigya\Test\TestCase;
 use Graze\Gigya\Test\TestFixtures;
+use Graze\Gigya\Validation\ResponseValidatorInterface;
+use Graze\Gigya\Validation\ValidGigyaResponseSubscriber;
+use GuzzleHttp\Event\EmitterInterface;
+use GuzzleHttp\Event\SubscriberInterface;
 use Mockery as m;
 use Mockery\MockInterface;
 
@@ -34,18 +38,18 @@ class GigyaTest extends TestCase
     public function setUp()
     {
         $this->guzzleClient = m::mock('overload:GuzzleHttp\Client');
-        $this->factory = m::mock('overload:Graze\Gigya\Response\ResponseFactory');
-
-        $this->certPath = realpath(__DIR__ . '/../../src/Endpoints/' . Client::CERTIFICATE_FILE);
+        $this->factory      = m::mock('overload:Graze\Gigya\Response\ResponseFactory');
+        $this->certPath     = realpath(__DIR__ . '/../../src/' . Gigya::CERTIFICATE_FILE);
     }
 
     public function tearDown()
     {
-        $this->guzzleClient = $this->factory = null;
+        $this->guzzleClient = $this->factory = $this->auth = null;
     }
 
     /**
      * @param string|null $dc
+     *
      * @return Gigya
      */
     public function createClient($dc = null)
@@ -54,16 +58,26 @@ class GigyaTest extends TestCase
     }
 
     /**
-     * @param string $fixtureName
-     * @param string $uri
-     * @param array  $getOptions
+     * @param string      $fixtureName
+     * @param string      $uri
+     * @param array       $getOptions
+     * @param string      $key
+     * @param string      $secret
+     * @param string|null $userKey
+     *
      * @return ResponseInterface
      */
-    private function setupCall($fixtureName, $uri, $getOptions)
+    private function setupCall($fixtureName, $uri, $getOptions, $key, $secret, $userKey = null)
     {
         $response = m::mock('GuzzleHttp\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture($fixtureName));
 
+        $this->factory->shouldReceive('addValidator')
+                      ->with(m::type(ResponseValidatorInterface::class));
+
+        $emitter = m::mock(EmitterInterface::class);
+        $this->guzzleClient->shouldReceive('getEmitter')
+                           ->andReturn($emitter);
         $this->guzzleClient
             ->shouldReceive('get')
             ->with(
@@ -71,6 +85,21 @@ class GigyaTest extends TestCase
                 $getOptions
             )
             ->andReturn($response);
+
+        $emitter->shouldReceive('attach')
+                ->with(m::type(ValidGigyaResponseSubscriber::class))
+                ->once();
+        $emitter->shouldReceive('attach')
+                ->with(m::on(function (SubscriberInterface $subscriber) use ($key, $secret, $userKey) {
+                    if ($subscriber instanceof GigyaAuthInterface) {
+                        static::assertEquals($key, $subscriber->getApiKey());
+                        static::assertEquals($secret, $subscriber->getSecret());
+                        static::assertEquals($userKey, $subscriber->getUserKey());
+                    }
+
+                    return true;
+                }))
+                ->once();
 
         $gigyaResponse = m::mock('Graze\Gigya\Response\ResponseInterface');
 
@@ -83,7 +112,7 @@ class GigyaTest extends TestCase
 
     public function testSettingKeyAndSecretWillPassToGuzzleClient()
     {
-        $key = 'key' . rand(1, 1000);
+        $key    = 'key' . rand(1, 1000);
         $secret = 'secret' . rand(1001, 2000002);
         $client = new Gigya($key, $secret, Gigya::DC_EU, null);
 
@@ -91,12 +120,12 @@ class GigyaTest extends TestCase
             'accounts.getAccountInfo',
             'https://accounts.eu1.gigya.com/accounts.getAccountInfo',
             [
-                'query' => [
-                    'apiKey' => $key,
-                    'secret' => $secret
-                ],
-                'verify'  => $this->certPath,
-            ]
+                'auth'   => 'gigya',
+                'verify' => $this->certPath,
+                'query'  => [],
+            ],
+            $key,
+            $secret
         );
 
         $result = $client->accounts()->getAccountInfo([]);
@@ -112,12 +141,12 @@ class GigyaTest extends TestCase
             'accounts.getAccountInfo',
             'https://accounts.au1.gigya.com/accounts.getAccountInfo',
             [
-                'query' => [
-                    'apiKey' => 'key',
-                    'secret' => 'secret'
-                ],
-                'verify'  => $this->certPath,
-            ]
+                'auth'   => 'gigya',
+                'verify' => $this->certPath,
+                'query'  => [],
+            ],
+            'key',
+            'secret'
         );
 
         $result = $client->accounts()->getAccountInfo([]);
@@ -133,12 +162,12 @@ class GigyaTest extends TestCase
             'accounts.getAccountInfo',
             'https://accounts.us1.gigya.com/accounts.getAccountInfo',
             [
-                'query' => [
-                    'apiKey' => 'key',
-                    'secret' => 'secret'
-                ],
-                'verify'  => $this->certPath,
-            ]
+                'auth'   => 'gigya',
+                'verify' => $this->certPath,
+                'query'  => [],
+            ],
+            'key',
+            'secret'
         );
 
         $result = $client->accounts()->getAccountInfo([]);
@@ -154,13 +183,13 @@ class GigyaTest extends TestCase
             'accounts.getAccountInfo',
             'https://accounts.eu1.gigya.com/accounts.getAccountInfo',
             [
-                'query' => [
-                    'apiKey'  => 'key',
-                    'secret'  => 'userSecret',
-                    'userKey' => 'userKey',
-                ],
-                'verify'  => $this->certPath,
-            ]
+                'auth'   => 'gigya',
+                'verify' => $this->certPath,
+                'query'  => [],
+            ],
+            'key',
+            'userSecret',
+            'userKey'
         );
 
         $result = $client->accounts()->getAccountInfo([]);
@@ -176,13 +205,14 @@ class GigyaTest extends TestCase
             'accounts.getAccountInfo',
             'https://socialize.eu1.gigya.com/socialize.notifyLogin',
             [
-                'query' => [
-                    'apiKey' => 'key',
-                    'secret' => 'secret',
-                    'param'  => 'passedThrough'
+                'auth'   => 'gigya',
+                'verify' => $this->certPath,
+                'query'  => [
+                    'param' => 'passedThrough',
                 ],
-                'verify'  => $this->certPath,
-            ]
+            ],
+            'key',
+            'secret'
         );
 
         $result = $client->socialize()->notifyLogin(['param' => 'passedThrough']);
@@ -198,13 +228,14 @@ class GigyaTest extends TestCase
             'accounts.getAccountInfo',
             'https://fidm.eu1.gigya.com/fidm.saml.idp.getConfig',
             [
-                'query' => [
-                    'apiKey' => 'key',
-                    'secret' => 'secret',
-                    'params' => 'passedThrough'
+                'auth'   => 'gigya',
+                'verify' => $this->certPath,
+                'query'  => [
+                    'params' => 'passedThrough',
                 ],
-                'verify'  => $this->certPath,
-            ]
+            ],
+            'key',
+            'secret'
         );
 
         $result = $client->saml()->idp()->getConfig(['params' => 'passedThrough']);
@@ -220,13 +251,14 @@ class GigyaTest extends TestCase
             'accounts.getAccountInfo',
             'https://accounts.eu1.gigya.com/accounts.tfa.getCertificate',
             [
-                'query' => [
-                    'apiKey' => 'key',
-                    'secret' => 'secret',
-                    'params' => 'passedThrough'
+                'auth'   => 'gigya',
+                'verify' => $this->certPath,
+                'query'  => [
+                    'params' => 'passedThrough',
                 ],
-                'verify'  => $this->certPath,
-            ]
+            ],
+            'key',
+            'secret'
         );
 
         $result = $client->accounts()->tfa()->getCertificate(['params' => 'passedThrough']);
@@ -236,6 +268,7 @@ class GigyaTest extends TestCase
 
     /**
      * @dataProvider clientCallDataProvider
+     *
      * @param $namespace
      * @param $method
      * @param $expectedUri
@@ -248,13 +281,14 @@ class GigyaTest extends TestCase
             'accounts.getAccountInfo',
             $expectedUri,
             [
-                'query' => [
-                    'apiKey' => 'key',
-                    'secret' => 'secret',
-                    'params' => 'passedThrough'
+                'auth'   => 'gigya',
+                'verify' => $this->certPath,
+                'query'  => [
+                    'params' => 'passedThrough',
                 ],
-                'verify'  => $this->certPath,
-            ]
+            ],
+            'key',
+            'secret'
         );
 
         $result = $client->{$namespace}()->{$method}(['params' => 'passedThrough']);
@@ -265,8 +299,8 @@ class GigyaTest extends TestCase
     public function testCallingMagicMethodWithArgumentsThrowsAnException()
     {
         static::setExpectedException(
-            "BadMethodCallException",
-            "No Arguments should be supplied for Gigya call"
+            'BadMethodCallException',
+            'No Arguments should be supplied for Gigya call'
         );
 
         $client = $this->createClient();
@@ -281,15 +315,16 @@ class GigyaTest extends TestCase
             'accounts.getAccountInfo',
             'https://accounts.eu1.gigya.com/accounts.getAccountInfo',
             [
+                'auth'    => 'gigya',
+                'verify'  => $this->certPath,
                 'query'   => [
-                    'apiKey' => 'key',
-                    'secret' => 'secret',
-                    'params' => 'passedThrough'
+                    'params' => 'passedThrough',
                 ],
-                'verify'    => $this->certPath,
                 'option1' => 'value1',
                 'option2' => false,
-            ]
+            ],
+            'key',
+            'secret'
         );
 
         $client->addOption('option1', 'value1');
@@ -308,15 +343,16 @@ class GigyaTest extends TestCase
             'accounts.getAccountInfo',
             'https://accounts.eu1.gigya.com/accounts.getAccountInfo',
             [
+                'auth'    => 'gigya',
+                'verify'  => $this->certPath,
                 'query'   => [
-                    'apiKey' => 'key',
-                    'secret' => 'secret',
-                    'params' => 'passedThrough'
+                    'params' => 'passedThrough',
                 ],
-                'verify'    => $this->certPath,
                 'option1' => 'value1',
                 'option2' => true,
-            ]
+            ],
+            'key',
+            'secret'
         );
 
         $client->addOptions([
@@ -337,14 +373,15 @@ class GigyaTest extends TestCase
             'accounts.getAccountInfo',
             'https://accounts.eu1.gigya.com/accounts.getAccountInfo',
             [
+                'auth'    => 'gigya',
+                'verify'  => $this->certPath,
                 'query'   => [
-                    'apiKey' => 'key',
-                    'secret' => 'secret',
-                    'params' => 'passedThrough'
+                    'params' => 'passedThrough',
                 ],
-                'verify'    => $this->certPath,
                 'option1' => false,
-            ]
+            ],
+            'key',
+            'secret'
         );
 
         $client->addOption('option1', 'value1');
@@ -363,14 +400,15 @@ class GigyaTest extends TestCase
             'accounts.getAccountInfo',
             'https://accounts.eu1.gigya.com/accounts.getAccountInfo',
             [
+                'auth'    => 'gigya',
+                'verify'  => $this->certPath,
                 'query'   => [
-                    'apiKey' => 'key',
-                    'secret' => 'secret',
-                    'params' => 'passedThrough'
+                    'params' => 'passedThrough',
                 ],
-                'verify'    => $this->certPath,
                 'option1' => true,
-            ]
+            ],
+            'key',
+            'secret'
         );
 
         $client->addOption('option1', 'value1');
@@ -381,7 +419,7 @@ class GigyaTest extends TestCase
         static::assertSame($gigyaResponse, $result);
     }
 
-    public function testAddingQueryAndCertOptionsWillBeIgnored()
+    public function testAddingQueryOptionsWillBeIgnored()
     {
         $client = $this->createClient();
 
@@ -389,13 +427,14 @@ class GigyaTest extends TestCase
             'accounts.getAccountInfo',
             'https://accounts.eu1.gigya.com/accounts.getAccountInfo',
             [
-                'query' => [
-                    'apiKey' => 'key',
-                    'secret' => 'secret',
-                    'params' => 'passedThrough'
+                'auth'   => 'gigya',
+                'verify' => 'notAFile',
+                'query'  => [
+                    'params' => 'passedThrough',
                 ],
-                'verify'  => $this->certPath,
-            ]
+            ],
+            'key',
+            'secret'
         );
 
         $client->addOption('query', 'random');
@@ -408,19 +447,20 @@ class GigyaTest extends TestCase
 
     public function testSettingOptionsAsPartOfTheQuery()
     {
-        $client = $this->createClient();
+        $client        = $this->createClient();
         $gigyaResponse = $this->setupCall(
             'accounts.getAccountInfo',
             'https://accounts.eu1.gigya.com/accounts.getAccountInfo',
             [
+                'auth'   => 'gigya',
+                'verify' => $this->certPath,
                 'query'  => [
-                    'apiKey' => 'key',
-                    'secret' => 'secret',
-                    'params' => 'passedThrough'
+                    'params' => 'passedThrough',
                 ],
-                'verify'   => $this->certPath,
-                'custom' => 'value'
-            ]
+                'custom' => 'value',
+            ],
+            'key',
+            'secret'
         );
 
         $result = $client->accounts()->getAccountInfo(['params' => 'passedThrough'], ['custom' => 'value']);
@@ -430,19 +470,20 @@ class GigyaTest extends TestCase
 
     public function testSettingGlobalAndRequestOptionsTheRequestOptionsOverrideGlobalOptions()
     {
-        $client = $this->createClient();
+        $client        = $this->createClient();
         $gigyaResponse = $this->setupCall(
             'accounts.getAccountInfo',
             'https://accounts.eu1.gigya.com/accounts.getAccountInfo',
             [
+                'auth'   => 'gigya',
+                'verify' => $this->certPath,
                 'query'  => [
-                    'apiKey' => 'key',
-                    'secret' => 'secret',
-                    'params' => 'passedThrough'
+                    'params' => 'passedThrough',
                 ],
-                'verify'   => $this->certPath,
-                'custom' => 'value'
-            ]
+                'custom' => 'value',
+            ],
+            'key',
+            'secret'
         );
 
         $client->addOption('custom', 'notUsed');
@@ -452,25 +493,26 @@ class GigyaTest extends TestCase
         static::assertSame($gigyaResponse, $result);
     }
 
-    public function testSettingRequestOptionsDoNotOverrideTheParams()
+    public function testSettingRequestOptionsDoOverrideTheParams()
     {
-        $client = $this->createClient();
+        $client        = $this->createClient();
         $gigyaResponse = $this->setupCall(
             'accounts.getAccountInfo',
             'https://accounts.eu1.gigya.com/accounts.getAccountInfo',
             [
-                'query' => [
-                    'apiKey' => 'key',
-                    'secret' => 'secret',
-                    'params' => 'passedThrough'
+                'auth'   => 'gigya',
+                'verify' => false,
+                'query'  => [
+                    'params' => 'passedThrough',
                 ],
-                'verify'  => $this->certPath
-            ]
+            ],
+            'key',
+            'secret'
         );
 
         $result = $client->accounts()->getAccountInfo(
             ['params' => 'passedThrough'],
-            ['query' => 'value', 'verify' => false]
+            ['query'  => 'value', 'verify' => false]
         );
 
         static::assertSame($gigyaResponse, $result);
@@ -478,17 +520,19 @@ class GigyaTest extends TestCase
 
     public function testSettingParamsWillNotOverwriteTheDefaultParams()
     {
-        $client = $this->createClient();
+        $client        = $this->createClient();
         $gigyaResponse = $this->setupCall(
             'accounts.getAccountInfo',
             'https://accounts.eu1.gigya.com/accounts.getAccountInfo',
             [
-                'query' => [
-                    'apiKey' => 'key',
-                    'secret' => 'secret'
+                'auth'   => 'gigya',
+                'verify' => $this->certPath,
+                'query'  => [
+                    'secret' => 'newSecret',
                 ],
-                'verify'  => $this->certPath
-            ]
+            ],
+            'key',
+            'secret'
         );
 
         $result = $client->accounts()->getAccountInfo(

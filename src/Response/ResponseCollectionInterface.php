@@ -15,7 +15,7 @@ interface ResponseCollectionInterface extends ResponseInterface
     public function getTotal();
 
     /**
-     * The cursor for the next set of results, if this is null there are no more results
+     * The cursor for the next set of results, if this is null there are no more results.
      *
      * @return string|null
      */

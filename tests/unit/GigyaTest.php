@@ -63,6 +63,7 @@ class GigyaTest extends TestCase
             'uidValidator' => false,
             'factory'      => $this->factory,
         ];
+
         return new Gigya($key, $secret, $userKey, $options);
     }
 
@@ -521,7 +522,7 @@ class GigyaTest extends TestCase
 
         $result = $client->accounts()->getAccountInfo(
             ['params' => 'passedThrough'],
-            ['query' => 'value', 'verify' => false]
+            ['query'  => 'value', 'verify' => false]
         );
 
         static::assertSame($gigyaResponse, $result);
@@ -568,7 +569,7 @@ class GigyaTest extends TestCase
         );
         $client        = $this->createClient();
 
-        $result = $client->fidm()->{"saml.idp.getConfig"}(
+        $result = $client->fidm()->{'saml.idp.getConfig'}(
             ['secret' => 'newSecret']
         );
 

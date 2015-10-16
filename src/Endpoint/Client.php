@@ -151,6 +151,7 @@ class Client
         $response                = $this->factory->getResponse($guzzleResponse);
 
         $this->assert($response);
+
         return $response;
     }
 
@@ -176,7 +177,7 @@ class Client
      *
      * @return Client
      */
-    protected function clientFactory($className = Client::class)
+    protected function clientFactory($className = self::class)
     {
         return new $className(
             $this->client,

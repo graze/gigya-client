@@ -92,15 +92,15 @@ class Gigya
      * @param string      $apiKey
      * @param string      $secretKey
      * @param string|null $userKey
-     * @param array       $config Gigya configuration:
-     *                            - dataCenter <string> (Default: DC_EU) Data Center to use
-     *                            - auth <string> (Default: gigya) Type of authentication, gigya (HttpsAuth) is the
-     *                            default
-     *                            - uidValidator <bool> (Default: true) Include Uid Signature Validation
-     *                            - factory <object> (Default: null) A ResponseFactoryInterface to use, if none is
-     *                            provided ResponseFactory will be used
-     *                            - guzzle <array> (Default: []) A configuration to pass to guzzle if required
-     *                            - options <array> (Default: []) A set of options to pass to each request
+     * @param array       $config    Gigya configuration:
+     *                               - dataCenter <string> (Default: DC_EU) Data Center to use
+     *                               - auth <string> (Default: gigya) Type of authentication, gigya (HttpsAuth) is the
+     *                               default
+     *                               - uidValidator <bool> (Default: true) Include Uid Signature Validation
+     *                               - factory <object> (Default: null) A ResponseFactoryInterface to use, if none is
+     *                               provided ResponseFactory will be used
+     *                               - guzzle <array> (Default: []) A configuration to pass to guzzle if required
+     *                               - options <array> (Default: []) A set of options to pass to each request
      */
     public function __construct($apiKey, $secretKey, $userKey = null, array $config = [])
     {

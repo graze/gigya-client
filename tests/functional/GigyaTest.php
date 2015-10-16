@@ -17,7 +17,7 @@ class GigyaTest extends TestCase
 {
     /**
      * @param Gigya       $gigya
-     * @param string|null $body Optional body text
+     * @param string|null $body  Optional body text
      *
      * @return History
      */

@@ -8,16 +8,18 @@ use Graze\Gigya\Gigya;
 use Graze\Gigya\Test\TestCase;
 use Graze\Gigya\Test\TestFixtures;
 use Graze\Gigya\Validation\Signature;
+use GuzzleHttp\Event\SubscriberInterface;
 use GuzzleHttp\Message\Response;
 use GuzzleHttp\Stream\Stream;
 use GuzzleHttp\Subscriber\History;
 use GuzzleHttp\Subscriber\Mock;
+use Mockery as m;
 
 class GigyaTest extends TestCase
 {
     /**
      * @param Gigya       $gigya
-     * @param string|null $body Optional body text
+     * @param string|null $body  Optional body text
      *
      * @return History
      */
@@ -25,6 +27,20 @@ class GigyaTest extends TestCase
     {
         $history = new History();
         $mock    = new Mock([
+            new Response(
+                '200',
+                [],
+                Stream::factory(
+                    $body ?: TestFixtures::getFixture('basic')
+                )
+            ),
+            new Response(
+                '200',
+                [],
+                Stream::factory(
+                    $body ?: TestFixtures::getFixture('basic')
+                )
+            ),
             new Response(
                 '200',
                 [],
@@ -197,7 +213,7 @@ class GigyaTest extends TestCase
         $client->accounts()->getAccountInfo(['uid' => $uid]);
     }
 
-    public function testRequestWillThrowTimestampExpceptionWhenBothTimestampAndSignatureAreInvalid()
+    public function testRequestWillThrowTimestampExceptionWhenBothTimestampAndSignatureAreInvalid()
     {
         $uid       = 'diofu90ifgdf';
         $timestamp = time() - 181;
@@ -226,5 +242,30 @@ class GigyaTest extends TestCase
         );
 
         $client->accounts()->getAccountInfo(['uid' => $uid]);
+    }
+
+    public function testGigyaWillTriggerSubscriberOnlyWhenItIsAddedInARequest()
+    {
+        $client = new Gigya('key', 'secret');
+        $this->setUpGigyaHistory($client);
+
+        $client->accounts()->getAccountInfo();
+
+        $subscriber = m::mock(SubscriberInterface::class);
+        $subscriber->shouldReceive('getEvents')
+                   ->andReturn([
+                       'complete' => ['someMethod'],
+                   ]);
+
+        $client->addSubscriber($subscriber);
+
+        $subscriber->shouldReceive('someMethod')
+                   ->once();
+
+        $client->accounts()->getAccountInfo();
+
+        $client->removeSubscriber($subscriber);
+
+        $client->accounts()->getAccountInfo();
     }
 }

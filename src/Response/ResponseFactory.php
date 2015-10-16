@@ -23,6 +23,7 @@ class ResponseFactory implements ResponseFactoryInterface
         } else {
             $result = new Response($response);
         }
+
         return $result;
     }
 }

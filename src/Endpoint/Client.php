@@ -3,13 +3,11 @@
 namespace Graze\Gigya\Endpoint;
 
 use Exception;
-use Graze\Gigya\Auth\GigyaAuthInterface;
 use Graze\Gigya\Response\ResponseFactory;
 use Graze\Gigya\Response\ResponseFactoryInterface;
 use Graze\Gigya\Response\ResponseInterface;
 use Graze\Gigya\Validation\ResponseValidatorInterface;
 use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Event\SubscriberInterface;
 use GuzzleHttp\Exception\RequestException;
 
 // use Psr\Http\Message\ResponseInterface; Guzzle v6
@@ -41,11 +39,6 @@ class Client
     protected $namespace;
 
     /**
-     * @var GigyaAuthInterface
-     */
-    protected $auth;
-
-    /**
      * @var GuzzleClient
      */
     protected $client;
@@ -54,11 +47,6 @@ class Client
      * @var array
      */
     protected $config;
-
-    /**
-     * @var SubscriberInterface[]
-     */
-    protected $subscribers = [];
 
     /**
      * @var ResponseValidatorInterface[]
@@ -151,6 +139,7 @@ class Client
         $response                = $this->factory->getResponse($guzzleResponse);
 
         $this->assert($response);
+
         return $response;
     }
 
@@ -176,7 +165,7 @@ class Client
      *
      * @return Client
      */
-    protected function clientFactory($className = Client::class)
+    protected function clientFactory($className = self::class)
     {
         return new $className(
             $this->client,

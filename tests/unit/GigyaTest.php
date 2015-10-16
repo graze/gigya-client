@@ -36,11 +36,19 @@ class GigyaTest extends TestCase
      */
     private $certPath;
 
+    /**
+     * @var EmitterInterface|MockInterface
+     */
+    private $emitter;
+
     public function setUp()
     {
         $this->guzzleClient = m::mock('overload:GuzzleHttp\Client');
-        $this->factory      = m::mock('Graze\Gigya\Response\ResponseFactoryInterface');
-        $this->certPath     = realpath(__DIR__ . '/../../src/' . Gigya::CERTIFICATE_FILE);
+        $this->emitter      = m::mock(EmitterInterface::class);
+        $this->guzzleClient->shouldReceive('getEmitter')
+                           ->andReturn($this->emitter);
+        $this->factory  = m::mock('Graze\Gigya\Response\ResponseFactoryInterface');
+        $this->certPath = realpath(__DIR__ . '/../../src/' . Gigya::CERTIFICATE_FILE);
     }
 
     public function tearDown()
@@ -63,6 +71,7 @@ class GigyaTest extends TestCase
             'uidValidator' => false,
             'factory'      => $this->factory,
         ];
+
         return new Gigya($key, $secret, $userKey, $options);
     }
 
@@ -75,23 +84,20 @@ class GigyaTest extends TestCase
      */
     private function setupSubscribers($key, $secret, $userKey = null)
     {
-        $emitter = m::mock(EmitterInterface::class);
-        $this->guzzleClient->shouldReceive('getEmitter')
-                           ->andReturn($emitter);
-        $emitter->shouldReceive('attach')
-                ->with(m::type(ValidGigyaResponseSubscriber::class))
-                ->once();
-        $emitter->shouldReceive('attach')
-                ->with(m::on(function (SubscriberInterface $subscriber) use ($key, $secret, $userKey) {
-                    if ($subscriber instanceof GigyaAuthInterface) {
-                        static::assertEquals($key, $subscriber->getApiKey());
-                        static::assertEquals($secret, $subscriber->getSecret());
-                        static::assertEquals($userKey, $subscriber->getUserKey());
-                    }
+        $this->emitter->shouldReceive('attach')
+                      ->with(m::type(ValidGigyaResponseSubscriber::class))
+                      ->once();
+        $this->emitter->shouldReceive('attach')
+                      ->with(m::on(function (SubscriberInterface $subscriber) use ($key, $secret, $userKey) {
+                        if ($subscriber instanceof GigyaAuthInterface) {
+                            static::assertEquals($key, $subscriber->getApiKey());
+                            static::assertEquals($secret, $subscriber->getSecret());
+                            static::assertEquals($userKey, $subscriber->getUserKey());
+                        }
 
-                    return true;
-                }))
-                ->once();
+                          return true;
+                      }))
+                      ->once();
     }
 
     /**
@@ -521,7 +527,7 @@ class GigyaTest extends TestCase
 
         $result = $client->accounts()->getAccountInfo(
             ['params' => 'passedThrough'],
-            ['query' => 'value', 'verify' => false]
+            ['query'  => 'value', 'verify' => false]
         );
 
         static::assertSame($gigyaResponse, $result);
@@ -568,7 +574,7 @@ class GigyaTest extends TestCase
         );
         $client        = $this->createClient();
 
-        $result = $client->fidm()->{"saml.idp.getConfig"}(
+        $result = $client->fidm()->{'saml.idp.getConfig'}(
             ['secret' => 'newSecret']
         );
 
@@ -699,6 +705,37 @@ class GigyaTest extends TestCase
                    ->andReturn(false);
 
         static::assertSame($response, $client->accounts()->getAccountInfo());
+    }
+
+    public function testRemoveSubscriberWillDetachFromEmitter()
+    {
+        $response = $this->setupCall(
+            'accounts.getAccountInfo',
+            'https://accounts.eu1.gigya.com/accounts.getAccountInfo',
+            [
+                'auth'   => 'gigya',
+                'verify' => $this->certPath,
+                'query'  => [],
+            ],
+            'key',
+            'secret'
+        );
+        $client   = $this->createClient();
+
+        static::assertSame($response, $client->accounts()->getAccountInfo());
+
+        $subscriber = m::mock(SubscriberInterface::class);
+        $this->emitter->shouldReceive('attach')
+                      ->with($subscriber)
+                      ->once();
+
+        $client->addSubscriber($subscriber);
+
+        $this->emitter->shouldReceive('detach')
+                      ->with($subscriber)
+                      ->once();
+
+        $client->removeSubscriber($subscriber);
     }
 
     public function clientCallDataProvider()

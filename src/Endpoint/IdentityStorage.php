@@ -1,6 +1,6 @@
 <?php
 
-namespace Graze\Gigya\Endpoints;
+namespace Graze\Gigya\Endpoint;
 
 use Graze\Gigya\Response\ResponseInterface;
 

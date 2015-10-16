@@ -4,16 +4,23 @@ namespace Graze\Gigya;
 
 use BadMethodCallException;
 use Graze\Gigya\Auth\GigyaHttpsAuth;
-use Graze\Gigya\Endpoints\Accounts;
-use Graze\Gigya\Endpoints\Audit;
-use Graze\Gigya\Endpoints\Client;
-use Graze\Gigya\Endpoints\Comments;
-use Graze\Gigya\Endpoints\DataStore;
-use Graze\Gigya\Endpoints\GameMechanics;
-use Graze\Gigya\Endpoints\IdentityStorage;
-use Graze\Gigya\Endpoints\Reports;
-use Graze\Gigya\Endpoints\Saml;
-use Graze\Gigya\Endpoints\Socialize;
+use Graze\Gigya\Endpoint\Accounts;
+use Graze\Gigya\Endpoint\Audit;
+use Graze\Gigya\Endpoint\Client;
+use Graze\Gigya\Endpoint\Comments;
+use Graze\Gigya\Endpoint\DataStore;
+use Graze\Gigya\Endpoint\GameMechanics;
+use Graze\Gigya\Endpoint\IdentityStorage;
+use Graze\Gigya\Endpoint\Reports;
+use Graze\Gigya\Endpoint\Saml;
+use Graze\Gigya\Endpoint\Socialize;
+use Graze\Gigya\Response\ResponseFactoryInterface;
+use Graze\Gigya\Validation\ResponseValidatorInterface;
+use Graze\Gigya\Validation\Signature;
+use Graze\Gigya\Validation\UidSignatureValidator;
+use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Event\SubscriberInterface;
 
 class Gigya
 {
@@ -59,20 +66,67 @@ class Gigya
      *
      * @var array
      */
-    protected $guzzleConfig = [];
+    protected $config = [];
+
+    /**
+     * @var ResponseValidatorInterface[]
+     */
+    protected $validators = [];
+
+    /**
+     * @var SubscriberInterface[]
+     */
+    protected $subscribers = [];
+
+    /**
+     * @var ResponseFactoryInterface
+     */
+    protected $factory = null;
+
+    /**
+     * @var ClientInterface
+     */
+    private $guzzle;
 
     /**
      * @param string      $apiKey
      * @param string      $secretKey
-     * @param string|null $dataCenter
      * @param string|null $userKey
+     * @param array       $config Gigya configuration:
+     *                            - dataCenter <string> (Default: DC_EU) Data Center to use
+     *                            - auth <string> (Default: gigya) Type of authentication, gigya (HttpsAuth) is the
+     *                            default
+     *                            - uidValidator <bool> (Default: true) Include Uid Signature Validation
+     *                            - factory <object> (Default: null) A ResponseFactoryInterface to use, if none is
+     *                            provided ResponseFactory will be used
+     *                            - guzzle <array> (Default: []) A configuration to pass to guzzle if required
+     *                            - options <array> (Default: []) A set of options to pass to each request
      */
-    public function __construct($apiKey, $secretKey, $dataCenter = null, $userKey = null)
+    public function __construct($apiKey, $secretKey, $userKey = null, array $config = [])
     {
-        $this->auth       = new GigyaHttpsAuth($apiKey, $secretKey, $userKey);
-        $this->dataCenter = $dataCenter ?: self::DC_EU;
-        $this->addOption('auth', 'gigya');
+        $guzzleConfig = (isset($config['guzzle'])) ? $config['guzzle'] : [];
+        $this->guzzle = new GuzzleClient($guzzleConfig);
+
+        if (isset($config['options'])) {
+            $this->addOptions($config['options']);
+        }
         $this->addOption('verify', __DIR__ . '/' . static::CERTIFICATE_FILE);
+
+        if (!isset($config['auth']) || $config['auth'] == 'gigya') {
+            $this->addOption('auth', 'gigya');
+            $this->addSubscriber(new GigyaHttpsAuth($apiKey, $secretKey, $userKey));
+        } else {
+            $this->addOption('auth', $config['auth']);
+        }
+
+        if (!isset($config['uidValidator']) || $config['uidValidator'] === true) {
+            $this->addValidator(new UidSignatureValidator(new Signature(), $secretKey));
+        }
+
+        if (isset($config['factory'])) {
+            $this->setFactory($config['factory']);
+        }
+        $this->dataCenter = (isset($config['dataCenter'])) ? $config['dataCenter'] : self::DC_EU;
     }
 
     /**
@@ -111,13 +165,39 @@ class Gigya
     }
 
     /**
-     * Set the configuration information to pass to Guzzle.
+     * @param ResponseValidatorInterface $validator
      *
-     * @param array $config
+     * @return $this
      */
-    public function setGuzzleConfig(array $config)
+    public function addValidator(ResponseValidatorInterface $validator)
     {
-        $this->guzzleConfig = $config;
+        $this->validators[] = $validator;
+
+        return $this;
+    }
+
+    /**
+     * @param SubscriberInterface $subscriber
+     *
+     * @return $this
+     */
+    public function addSubscriber(SubscriberInterface $subscriber)
+    {
+        $this->guzzle->getEmitter()->attach($subscriber);
+
+        return $this;
+    }
+
+    /**
+     * @param ResponseFactoryInterface $factory
+     *
+     * @return $this
+     */
+    public function setFactory(ResponseFactoryInterface $factory)
+    {
+        $this->factory = $factory;
+
+        return $this;
     }
 
     /**
@@ -132,7 +212,26 @@ class Gigya
             throw new BadMethodCallException('No Arguments should be supplied for Gigya call');
         }
 
-        return new Client($method, $this->auth, $this->dataCenter, $this->guzzleConfig, $this->options);
+        return $this->clientFactory($method);
+    }
+
+    /**
+     * @param string $namespace
+     * @param string $className
+     *
+     * @return Client
+     */
+    private function clientFactory($namespace, $className = Client::class)
+    {
+        return new $className(
+            $this->guzzle,
+            $namespace,
+            $this->dataCenter,
+            $this->config,
+            $this->options,
+            $this->validators,
+            $this->factory
+        );
     }
 
     /**
@@ -140,13 +239,7 @@ class Gigya
      */
     public function accounts()
     {
-        return new Accounts(
-            static::NAMESPACE_ACCOUNTS,
-            $this->auth,
-            $this->dataCenter,
-            $this->guzzleConfig,
-            $this->options
-        );
+        return $this->clientFactory(static::NAMESPACE_ACCOUNTS, Accounts::class);
     }
 
     /**
@@ -154,7 +247,7 @@ class Gigya
      */
     public function audit()
     {
-        return new Audit(static::NAMESPACE_AUDIT, $this->auth, $this->dataCenter, $this->guzzleConfig, $this->options);
+        return $this->clientFactory(static::NAMESPACE_AUDIT, Audit::class);
     }
 
     /**
@@ -162,13 +255,7 @@ class Gigya
      */
     public function socialize()
     {
-        return new Socialize(
-            static::NAMESPACE_SOCIALIZE,
-            $this->auth,
-            $this->dataCenter,
-            $this->guzzleConfig,
-            $this->options
-        );
+        return $this->clientFactory(static::NAMESPACE_SOCIALIZE, Socialize::class);
     }
 
     /**
@@ -176,13 +263,7 @@ class Gigya
      */
     public function comments()
     {
-        return new Comments(
-            static::NAMESPACE_COMMENTS,
-            $this->auth,
-            $this->dataCenter,
-            $this->guzzleConfig,
-            $this->options
-        );
+        return $this->clientFactory(static::NAMESPACE_COMMENTS, Comments::class);
     }
 
     /**
@@ -190,13 +271,7 @@ class Gigya
      */
     public function gameMechanics()
     {
-        return new GameMechanics(
-            static::NAMESPACE_GAME_MECHANICS,
-            $this->auth,
-            $this->dataCenter,
-            $this->guzzleConfig,
-            $this->options
-        );
+        return $this->clientFactory(static::NAMESPACE_GAME_MECHANICS, GameMechanics::class);
     }
 
     /**
@@ -204,13 +279,7 @@ class Gigya
      */
     public function reports()
     {
-        return new Reports(
-            static::NAMESPACE_REPORTS,
-            $this->auth,
-            $this->dataCenter,
-            $this->guzzleConfig,
-            $this->options
-        );
+        return $this->clientFactory(static::NAMESPACE_REPORTS, Reports::class);
     }
 
     /**
@@ -218,13 +287,7 @@ class Gigya
      */
     public function dataStore()
     {
-        return new DataStore(
-            static::NAMESPACE_DATA_STORE,
-            $this->auth,
-            $this->dataCenter,
-            $this->guzzleConfig,
-            $this->options
-        );
+        return $this->clientFactory(static::NAMESPACE_DATA_STORE, DataStore::class);
     }
 
     /**
@@ -232,13 +295,7 @@ class Gigya
      */
     public function identityStorage()
     {
-        return new IdentityStorage(
-            static::NAMESPACE_IDENTITY_STORAGE,
-            $this->auth,
-            $this->dataCenter,
-            $this->guzzleConfig,
-            $this->options
-        );
+        return $this->clientFactory(static::NAMESPACE_IDENTITY_STORAGE, IdentityStorage::class);
     }
 
     /**
@@ -246,6 +303,6 @@ class Gigya
      */
     public function saml()
     {
-        return new Saml(static::NAMESPACE_FIDM, $this->auth, $this->dataCenter, $this->guzzleConfig, $this->options);
+        return $this->clientFactory(static::NAMESPACE_FIDM, Saml::class);
     }
 }

@@ -28,21 +28,16 @@ class GigyaTest extends TestCase
      */
     private $memory;
 
-    public function setUp()
-    {
-        parent::setUp();
-        $this->gigya = new Gigya('key', 'secret');
-    }
-
     public function createBasicHandler()
     {
-        $handler = new MockHandler([
+        $handler     = new MockHandler([
             'status' => 200,
             'body'   => TestFixtures::getFixture('basic'),
         ]);
-
-        $this->gigya->setGuzzleConfig([
-            'handler' => $handler,
+        $this->gigya = new Gigya('key', 'secret', null, [
+            'guzzle' => [
+                'handler' => $handler,
+            ],
         ]);
     }
 
@@ -75,8 +70,10 @@ class GigyaTest extends TestCase
             ];
         });
 
-        $this->gigya->setGuzzleConfig([
-            'handler' => $handler,
+        $this->gigya = new Gigya('key', 'secret', null, [
+            'guzzle' => [
+                'handler' => $handler,
+            ],
         ]);
     }
 

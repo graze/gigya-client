@@ -8,7 +8,6 @@ use Graze\Gigya\Gigya;
 use Graze\Gigya\Test\TestCase;
 use Graze\Gigya\Test\TestFixtures;
 use Graze\Gigya\Validation\Signature;
-use GuzzleHttp\Event\Emitter;
 use GuzzleHttp\Message\Response;
 use GuzzleHttp\Stream\Stream;
 use GuzzleHttp\Subscriber\History;
@@ -18,13 +17,12 @@ class GigyaTest extends TestCase
 {
     /**
      * @param Gigya       $gigya
-     * @param string|null $body  Optional body text
+     * @param string|null $body Optional body text
      *
      * @return History
      */
     public function setUpGigyaHistory(Gigya $gigya, $body = null)
     {
-        $emitter = new Emitter();
         $history = new History();
         $mock    = new Mock([
             new Response(
@@ -35,10 +33,8 @@ class GigyaTest extends TestCase
                 )
             ),
         ]);
-        $emitter->attach($history);
-        $emitter->attach($mock);
-
-        $gigya->setGuzzleConfig(['emitter' => $emitter]);
+        $gigya->addSubscriber($history);
+        $gigya->addSubscriber($mock);
 
         return $history;
     }
@@ -66,7 +62,7 @@ class GigyaTest extends TestCase
 
     public function testAuthInjectsKeySecretAndUserKeyIntoParams()
     {
-        $client  = new Gigya('key', 'secret', Gigya::DC_EU, 'userKey');
+        $client  = new Gigya('key', 'secret', 'userKey');
         $history = $this->setUpGigyaHistory($client);
 
         $response = $client->accounts()->getAccountInfo();
@@ -111,11 +107,24 @@ class GigyaTest extends TestCase
             $timestamp
         );
 
-        $client = new Gigya('key', 'secret');
-        $this->setUpGigyaHistory($client, $body);
+        $client  = new Gigya('key', 'secret');
+        $history = $this->setUpGigyaHistory($client, $body);
 
         $response = $client->accounts()->getAccountInfo(['uid' => $uid]);
         static::assertEquals(0, $response->getErrorCode());
+        static::assertEquals(1, $history->count());
+        $request = $history->getLastRequest();
+        static::assertEquals(
+            "https://accounts.eu1.gigya.com/accounts.getAccountInfo?uid=$uid&apiKey=key&secret=secret",
+            $request->getUrl()
+        );
+        $query = $request->getQuery();
+        static::assertArrayHasKey('apiKey', $query);
+        static::assertArrayHasKey('secret', $query);
+        static::assertArrayHasKey('uid', $query);
+        static::assertEquals('key', $query['apiKey']);
+        static::assertEquals('secret', $query['secret']);
+        static::assertEquals($uid, $query['uid']);
 
         $data = $response->getData();
         static::assertEquals($uid, $data->get('UID'));

@@ -1,4 +1,4 @@
-.PHONY: test test-coverage test-unit test-unit-coverage test-functional test-functional-coverage install
+.PHONY: test lint lint-auto-fix test-coverage test-unit test-unit-coverage test-functional test-functional-coverage test-performance install
 
 test:
 	@./vendor/bin/phpunit --exclude-group performance
@@ -10,7 +10,7 @@ lint-auto-fix:
 	@./vendor/bin/phpcbf -p --standard=PSR2 src/ tests/
 
 test-coverage:
-	@./vendor/bin/phpunit --coverage-text --coverage-html ./tests/report
+	@./vendor/bin/phpunit --coverage-text --coverage-html ./tests/report --exclude-group performance
 
 test-unit:
 	@./vendor/bin/phpunit --testsuite unit

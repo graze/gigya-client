@@ -117,13 +117,12 @@ class GigyaTest extends TestCase
         $response = m::mock('GuzzleHttp\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture($fixtureName));
 
-        $this->guzzleClient
-            ->shouldReceive('get')
-            ->with(
-                $uri,
-                $getOptions
-            )
-            ->andReturn($response);
+        $this->guzzleClient->shouldReceive('get')
+                           ->with(
+                               $uri,
+                               $getOptions
+                           )
+                           ->andReturn($response);
 
         $gigyaResponse = m::mock('Graze\Gigya\Response\ResponseInterface');
 
@@ -132,6 +131,58 @@ class GigyaTest extends TestCase
                       ->andReturn($gigyaResponse);
 
         return $gigyaResponse;
+    }
+
+    public function testConstructorConfig()
+    {
+
+        $this->guzzleClient->shouldReceive('__construct')
+                           ->once()
+                           ->with([
+                               'emitter' => $this->emitter,
+                           ])
+                           ->andReturn($this->guzzleClient);
+
+        $this->emitter->shouldReceive('attach')
+                      ->with(m::type(ValidGigyaResponseSubscriber::class))
+                      ->once();
+
+        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
+        $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('account.getAccountInfo'));
+
+        $this->guzzleClient->shouldReceive('get')
+                           ->with(
+                               'https://accounts.au1.gigya.com/accounts.getAccountInfo',
+                               [
+                                   'cert'   => 'some_cert.pem',
+                                   'auth'   => 'oauth',
+                                   'verify' => $this->certPath,
+                                   'query'  => [],
+                               ]
+                           )
+                           ->andReturn($response);
+
+        $gigyaResponse = m::mock('Graze\Gigya\Response\ResponseInterface');
+
+        $this->factory->shouldReceive('getResponse')
+                      ->with($response)
+                      ->andReturn($gigyaResponse);
+
+        $config = [
+            'dataCenter'   => Gigya::DC_AU,
+            'auth'         => 'oauth',
+            'uidValidator' => false,
+            'factory'      => $this->factory,
+            'guzzle'       => [
+                'emitter' => $this->emitter,
+            ],
+            'options'      => [
+                'cert' => 'some_cert.pem',
+            ],
+        ];
+        $client = new Gigya('key', 'secret', null, $config);
+
+        static::assertSame($gigyaResponse, $client->accounts()->getAccountInfo());
     }
 
     public function testSettingKeyAndSecretWillPassToGuzzleClient()

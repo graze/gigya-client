@@ -2,6 +2,7 @@
 
 namespace Graze\Gigya\Test\Unit\Validation;
 
+use Graze\Gigya\Exception\UnknownResponseException;
 use Graze\Gigya\Test\TestCase;
 use Graze\Gigya\Test\TestFixtures;
 use Graze\Gigya\Validation\ValidGigyaResponseSubscriber;
@@ -114,5 +115,20 @@ class ValidGigyaResponseSubscriberTest extends TestCase
         );
 
         $this->validator->onComplete($completeEvent, 'name');
+    }
+
+    public function testUnknownResponseContainsTheOriginalResponse()
+    {
+        $completeEvent = m::mock(CompleteEvent::class);
+        $response      = m::mock('GuzzleHttp\Message\ResponseInterface');
+        $completeEvent->shouldReceive('getResponse')
+                      ->andReturn($response);
+        $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('invalid_json'));
+
+        try {
+            $this->validator->onComplete($completeEvent, 'name');
+        } catch (UnknownResponseException $e) {
+            static::assertSame($response, $e->getResponse());
+        }
     }
 }

@@ -39,6 +39,6 @@ class Saml extends Client
      */
     public function idp()
     {
-        return $this->clientFactory(SamlIdp::class);
+        return $this->endpointFactory(SamlIdp::class);
     }
 }

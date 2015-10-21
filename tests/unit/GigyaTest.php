@@ -67,12 +67,11 @@ class GigyaTest extends TestCase
     public function createClient($key = 'key', $secret = 'secret', $dc = Gigya::DC_EU, $userKey = null)
     {
         $options = [
-            'dataCenter'   => $dc,
             'uidValidator' => false,
             'factory'      => $this->factory,
         ];
 
-        return new Gigya($key, $secret, $userKey, $options);
+        return new Gigya($key, $secret, $dc, $userKey, $options);
     }
 
     /**
@@ -135,7 +134,6 @@ class GigyaTest extends TestCase
 
     public function testConstructorConfig()
     {
-
         $this->guzzleClient->shouldReceive('__construct')
                            ->once()
                            ->with([
@@ -169,7 +167,6 @@ class GigyaTest extends TestCase
                       ->andReturn($gigyaResponse);
 
         $config = [
-            'dataCenter'   => Gigya::DC_AU,
             'auth'         => 'oauth',
             'uidValidator' => false,
             'factory'      => $this->factory,
@@ -180,7 +177,7 @@ class GigyaTest extends TestCase
                 'cert' => 'some_cert.pem',
             ],
         ];
-        $client = new Gigya('key', 'secret', null, $config);
+        $client = new Gigya('key', 'secret', Gigya::DC_AU, null, $config);
 
         static::assertSame($gigyaResponse, $client->accounts()->getAccountInfo());
     }

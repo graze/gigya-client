@@ -165,7 +165,7 @@ class Client
      *
      * @return Client
      */
-    protected function clientFactory($className = self::class)
+    protected function endpointFactory($className = self::class)
     {
         return new $className(
             $this->client,

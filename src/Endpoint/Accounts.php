@@ -84,6 +84,6 @@ class Accounts extends Client
      */
     public function tfa()
     {
-        return $this->clientFactory(AccountsTfa::class);
+        return $this->endpointFactory(AccountsTfa::class);
     }
 }

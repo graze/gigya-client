@@ -78,7 +78,7 @@ class GigyaTest extends TestCase
 
     public function testAuthInjectsKeySecretAndUserKeyIntoParams()
     {
-        $client  = new Gigya('key', 'secret', 'userKey');
+        $client  = new Gigya('key', 'secret', null, 'userKey');
         $history = $this->setUpGigyaHistory($client);
 
         $response = $client->accounts()->getAccountInfo();

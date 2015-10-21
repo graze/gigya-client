@@ -70,7 +70,7 @@ class GigyaTest extends TestCase
             ];
         });
 
-        $this->gigya = new Gigya('key', 'secret', null, [
+        $this->gigya = new Gigya('key', 'secret', null, null, [
             'guzzle' => [
                 'handler' => $handler,
             ],

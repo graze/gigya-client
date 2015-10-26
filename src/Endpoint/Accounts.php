@@ -1,14 +1,12 @@
 <?php
 
-namespace Graze\Gigya\Endpoints;
+namespace Graze\Gigya\Endpoint;
 
-use Graze\Gigya\Gigya;
 use Graze\Gigya\Response\ResponseInterface;
 
 /**
- * Class Accounts
+ * Class Accounts.
  *
- * @package  Graze\Gigya\Endpoints
  *
  * @link     http://developers.gigya.com/display/GD/Accounts+REST
  *
@@ -86,6 +84,6 @@ class Accounts extends Client
      */
     public function tfa()
     {
-        return new AccountsTfa(Gigya::NAMESPACE_ACCOUNTS, $this->params, $this->dataCenter, $this->options);
+        return $this->endpointFactory(AccountsTfa::class);
     }
 }

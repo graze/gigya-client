@@ -1,13 +1,12 @@
 <?php
 
-namespace Graze\Gigya\Endpoints;
+namespace Graze\Gigya\Endpoint;
 
 use Graze\Gigya\Response\ResponseInterface;
 
 /**
- * Class DataStore
+ * Class DataStore.
  *
- * @package  Graze\Gigya\Endpoints
  *
  * @link     http://developers.gigya.com/display/GD/Data+Store+REST
  *

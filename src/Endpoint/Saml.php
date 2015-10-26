@@ -1,16 +1,15 @@
 <?php
 
-namespace Graze\Gigya\Endpoints;
+namespace Graze\Gigya\Endpoint;
 
 use Graze\Gigya\Gigya;
 use Graze\Gigya\Response\ResponseInterface;
 
 /**
- * Class Saml
+ * Class Saml.
  *
- * @package  Graze\Gigya\Endpoints
  *
- * @link     http://developers.gigya.com/display/GD/FIdM+SAML+REST
+ * @link   http://developers.gigya.com/display/GD/FIdM+SAML+REST
  *
  * @method ResponseInterface delIdP(array $params = [], array $options = []) @link
  *         http://developers.gigya.com/display/GD/fidm.saml.delIdP+REST
@@ -40,6 +39,6 @@ class Saml extends Client
      */
     public function idp()
     {
-        return new SamlIdp($this->namespace, $this->params, $this->dataCenter, $this->options);
+        return $this->endpointFactory(SamlIdp::class);
     }
 }

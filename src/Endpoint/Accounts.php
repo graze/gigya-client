@@ -62,6 +62,8 @@ use Graze\Gigya\Response\ResponseInterface;
  *         http://developers.gigya.com/display/GD/accounts.search+REST
  * @method ResponseInterface setAccountInfo(array $params = [], array $options = []) @link
  *         http://developers.gigya.com/display/GD/accounts.setAccountInfo+REST
+ * @method ResponseInterface setPassword(array $params = [], array $options = []) Undocumented call to set the hashed
+ *         value of a password
  * @method ResponseInterface setPolicies(array $params = [], array $options = []) @link
  *         http://developers.gigya.com/display/GD/accounts.setPolicies+REST
  * @method ResponseInterface setProfilePhoto(array $params = [], array $options = []) @link

@@ -3,7 +3,7 @@
 namespace Graze\Gigya\Test\Unit\Response;
 
 use DateTimeImmutable;
-use Graze\Gigya\Response\Response;
+use Graze\Gigya\Gigya;
 use Graze\Gigya\Response\ResponseCollectionInterface;
 use Graze\Gigya\Response\ResponseFactory;
 use Graze\Gigya\Test\TestCase;
@@ -48,7 +48,7 @@ class ResponseFactoryTest extends TestCase
         static::assertEquals('e6f891ac17f24810bee6eb533524a152', $gigyaResponse->getCallId());
         static::assertInstanceOf('DateTimeInterface', $gigyaResponse->getTime());
         static::assertEquals(
-            DateTimeImmutable::createFromFormat(Response::DATE_TIME_FORMAT, '2015-03-22T11:42:25.943Z'),
+            DateTimeImmutable::createFromFormat(Gigya::DATE_TIME_FORMAT, '2015-03-22T11:42:25.943Z'),
             $gigyaResponse->getTime()
         );
         $data = $gigyaResponse->getData();

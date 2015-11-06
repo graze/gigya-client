@@ -61,7 +61,6 @@ class UidSignatureValidator implements ResponseValidatorInterface
         return $this->validateUid(
             $data->get('UID'),
             $data->get('signatureTimestamp'),
-            $this->secret,
             $data->get('UIDSignature')
         );
     }
@@ -81,7 +80,6 @@ class UidSignatureValidator implements ResponseValidatorInterface
         $this->assertUid(
             $data->get('UID'),
             $data->get('signatureTimestamp'),
-            $this->secret,
             $data->get('UIDSignature'),
             $response
         );
@@ -92,21 +90,19 @@ class UidSignatureValidator implements ResponseValidatorInterface
      *
      * @param string $uid
      * @param int    $timestamp Unix Timestamp
-     * @param string $secret
      * @param string $signature
      *
      * @return bool
      */
-    private function validateUid($uid, $timestamp, $secret, $signature)
+    public function validateUid($uid, $timestamp, $signature)
     {
         return ($this->signature->checkTimestamp($timestamp) &&
-            $signature == $this->signature->getUidSignature($uid, $timestamp, $secret));
+            $signature == $this->signature->getUidSignature($uid, $timestamp, $this->secret));
     }
 
     /**
      * @param string            $uid
      * @param int               $timestamp Unix Timestamp
-     * @param string            $secret
      * @param string            $signature
      * @param ResponseInterface $response
      *
@@ -115,12 +111,12 @@ class UidSignatureValidator implements ResponseValidatorInterface
      *
      * @return bool
      */
-    private function assertUid($uid, $timestamp, $secret, $signature, ResponseInterface $response)
+    private function assertUid($uid, $timestamp, $signature, ResponseInterface $response)
     {
         if (!$this->signature->checkTimestamp($timestamp)) {
             throw new InvalidTimestampException($timestamp, $response);
         }
-        $expected = $this->signature->getUidSignature($uid, $timestamp, $secret);
+        $expected = $this->signature->getUidSignature($uid, $timestamp, $this->secret);
         if ($signature !== $expected) {
             throw new InvalidUidSignatureException($uid, $expected, $signature, $response);
         }

@@ -10,6 +10,12 @@ use Graze\Gigya\Response\ResponseInterface;
  *
  * @link     http://developers.gigya.com/display/GD/Socialize+REST
  *
+ * @method ResponseInterface addConnection(array $params = [], array $options = []) @link
+ *         http://developers.gigya.com/display/GD/socialize.addConnection+REST
+ * @method ResponseInterface getToken(array $params = [], array $options = []) @link
+ *         http://developers.gigya.com/display/GD/socialize.getToken+REST
+ * @method ResponseInterface login(array $params = [], array $options = []) @link
+ *         http://developers.gigya.com/display/GD/socialize.login+REST
  * @method ResponseInterface checkin(array $params = [], array $options = []) @link
  *         http://developers.gigya.com/display/GD/socialize.checkin+REST
  * @method ResponseInterface deleteAccount(array $params = [], array $options = []) @link

@@ -43,6 +43,8 @@ class Gigya
 
     const CERTIFICATE_FILE = 'cacert.pem';
 
+    const DATE_TIME_FORMAT = 'Y-m-d\TH:i:s.uP';
+
     /**
      * Data Center ID to use.
      *

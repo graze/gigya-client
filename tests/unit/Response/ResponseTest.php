@@ -3,6 +3,7 @@
 namespace Graze\Gigya\Test\Unit\Response;
 
 use DateTime;
+use Graze\Gigya\Gigya;
 use Graze\Gigya\Response\Response;
 use Graze\Gigya\Test\TestCase;
 use Graze\Gigya\Test\TestFixtures;
@@ -18,7 +19,7 @@ class ResponseTest extends TestCase
 
     public function testDateFormat()
     {
-        $time = DateTime::createFromFormat(Response::DATE_TIME_FORMAT, '2015-03-22T11:42:25.943Z');
+        $time = DateTime::createFromFormat(Gigya::DATE_TIME_FORMAT, '2015-03-22T11:42:25.943Z');
 
         static::assertInstanceOf('DateTimeInterface', $time);
         static::assertEquals('2015', $time->format('Y'));
@@ -33,7 +34,7 @@ class ResponseTest extends TestCase
 
     public function testOtherTimeZoneFormat()
     {
-        $time = DateTime::createFromFormat(Response::DATE_TIME_FORMAT, '2015-03-22T11:42:25.943+02:00');
+        $time = DateTime::createFromFormat(Gigya::DATE_TIME_FORMAT, '2015-03-22T11:42:25.943+02:00');
 
         static::assertInstanceOf('DateTimeInterface', $time);
         static::assertEquals('2015', $time->format('Y'));

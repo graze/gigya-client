@@ -21,14 +21,14 @@ made them including any relevant information or justifications that will aid the
 
 ## Development Environment
 
-If you need a vagrant box for development, we recommend using [adlawson/vagrantfiles](https://github.com/adlawson/vagrantfiles), for PHP:
+A Dockerfile is included in this repository for development. All make commands use the docker container to run the code.
+An initial setup will need to be run to install the environment:
 
 ```shell
-$ curl -O https://raw.githubusercontent.com/adlawson/vagrantfiles/master/php/Vagrantfile
-$ vagrant up
-$ vagrant ssh
-$ cd /srv
+$ make install
 ```
+
+A complete list of commands can be found by running: `$ make help`
 
 ## Running Tests
 
@@ -42,23 +42,15 @@ Or run individual suites using:
 
 ```shell
 $ make test-unit
+$ make test-integration
+£ make test-performance
+$ make test-matrix
 ```
 
-You can get a coverage report in text and HTML by running:
+You can get a coverage report in text, html and clover XML formats:
 
 ```shell
 $ make test-coverage
-$ make test-unit-coverage
-```
-
-You can lint the code by running:
-
-```shell
-$ make lint
-```
-
-And auto-fix errors using:
-
-```shell
-$ make lint-auto-fix
+$ make test-coverage-html
+$ make test-coverage-clover
 ```

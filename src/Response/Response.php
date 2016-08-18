@@ -24,7 +24,7 @@ use Illuminate\Support\Collection;
 class Response implements ResponseInterface
 {
     /**
-     * @var array
+     * @var object
      */
     protected $body;
 
@@ -79,7 +79,7 @@ class Response implements ResponseInterface
     public function __construct(GuzzleResponseInterface $response)
     {
         $this->response = $response;
-        $this->body = $response->json(['object' => true]);
+        $this->body = (object) $response->json(['object' => true]);
         $this->errorCode = (int) $this->popField('errorCode');
         $this->errorMessage = $this->popField('errorMessage');
         $this->errorDetails = $this->popField('errorDetails');

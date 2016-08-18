@@ -28,7 +28,7 @@ class ResponseFactory implements ResponseFactoryInterface
      */
     public function getResponse(GuzzleResponseInterface $response)
     {
-        $body = json_decode($response->getBody(), true);
+        $body = $response->json();
         if (array_key_exists('results', $body)) {
             $result = new ResponseCollection($response);
         } else {

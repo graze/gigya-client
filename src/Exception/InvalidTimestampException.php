@@ -22,9 +22,9 @@ class InvalidTimestampException extends ResponseException
     /**
      * @param int               $timestamp
      * @param ResponseInterface $response
-     * @param Exception|null    $e
+     * @param Exception|null    $previous
      */
-    public function __construct($timestamp, ResponseInterface $response, Exception $e = null)
+    public function __construct($timestamp, ResponseInterface $response, Exception $previous = null)
     {
         $message = sprintf(
             'The supplied timestamp: %d is more than %d seconds different to now: %d',
@@ -33,6 +33,6 @@ class InvalidTimestampException extends ResponseException
             time()
         );
 
-        parent::__construct($response, $message, $e);
+        parent::__construct($response, $message, $previous);
     }
 }

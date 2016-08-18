@@ -61,7 +61,7 @@ class ResponseTest extends TestCase
     public function testToString()
     {
         $guzzleResponse = m::mock(GuzzleResponseInterface::class);
-        $guzzleResponse->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.getAccountInfo'));
+        $guzzleResponse->shouldReceive('json')->andReturn(json_decode(TestFixtures::getFixture('accounts.getAccountInfo')));
         $response = new Response($guzzleResponse);
 
         static::assertRegExp('/Response: \d+: \w+ - \d+: .+\n.+/s', $response->__toString());
@@ -70,7 +70,7 @@ class ResponseTest extends TestCase
     public function testToStringForFailure()
     {
         $guzzleResponse = m::mock(GuzzleResponseInterface::class);
-        $guzzleResponse->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('failure_403'));
+        $guzzleResponse->shouldReceive('json')->andReturn(json_decode(TestFixtures::getFixture('failure_403')));
         $response = new Response($guzzleResponse);
 
         static::assertRegExp('/Response: \d+: \w+ - \d+: .+\n.+\n.+\n.+/s', $response->__toString());

@@ -39,6 +39,8 @@ class AccountsTfa extends Client
 {
     /**
      * {@inheritdoc}
+     *
+     * @return string
      */
     public function getMethodNamespace()
     {

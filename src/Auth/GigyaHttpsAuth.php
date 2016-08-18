@@ -90,7 +90,7 @@ class GigyaHttpsAuth implements GigyaAuthInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getUserKey()
     {

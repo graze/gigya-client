@@ -48,10 +48,10 @@ class ResponseCollection extends Response implements ResponseCollectionInterface
     public function __construct(GuzzleResponseInterface $response)
     {
         parent::__construct($response);
-        $this->count      = (int) $this->popField('objectsCount');
-        $this->total      = (int) $this->popField('totalCount');
+        $this->count = (int) $this->popField('objectsCount');
+        $this->total = (int) $this->popField('totalCount');
         $this->nextCursor = $this->popField('nextCursorId');
-        $this->results    = $this->popField('results');
+        $this->results = (array) $this->popField('results');
     }
 
     /**

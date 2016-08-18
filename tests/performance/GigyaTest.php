@@ -54,7 +54,7 @@ class GigyaTest extends TestCase
 
     public function createAccountInfoHandler()
     {
-        $handler = new MockHandler(function ($request) {
+        $handler = new MockHandler(function () {
             $uid = 'diofu90ifgdf';
             $timestamp = time();
 
@@ -156,7 +156,7 @@ class GigyaTest extends TestCase
 
         $this->printBenchmark(__METHOD__, $num);
 
-        list($duration, $memory) = $this->endBenchmark();
+        list($duration) = $this->endBenchmark();
         static::assertLessThan(
             2,
             $duration * 1000 / $num,
@@ -175,7 +175,7 @@ class GigyaTest extends TestCase
         }
 
         $this->printBenchmark(__METHOD__, $num);
-        list($duration, $memory) = $this->endBenchmark();
+        list($duration) = $this->endBenchmark();
         static::assertLessThan(
             2,
             $duration * 1000 / $num,

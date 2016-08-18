@@ -107,7 +107,7 @@ class GigyaTest extends TestCase
      * @param string      $secret
      * @param string|null $userKey
      *
-     * @return ResponseInterface
+     * @return mixed MockInterface and ResponseInterface
      */
     private function setupCall($fixtureName, $uri, array $getOptions, $key, $secret, $userKey = null)
     {

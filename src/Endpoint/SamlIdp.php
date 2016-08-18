@@ -39,6 +39,8 @@ class SamlIdp extends Client
 {
     /**
      * {@inheritdoc}
+     *
+     * @return string
      */
     public function getMethodNamespace()
     {

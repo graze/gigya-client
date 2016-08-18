@@ -48,7 +48,8 @@ class ResponseFactoryTest extends TestCase
     public function testAccountModel()
     {
         $response = m::mock('GuzzleHttp\Message\ResponseInterface');
-        $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.getAccountInfo'));
+        $response->shouldReceive('json')
+                 ->andReturn(json_decode(TestFixtures::getFixture('accounts.getAccountInfo')));
 
         $gigyaResponse = $this->factory->getResponse($response);
 
@@ -70,7 +71,8 @@ class ResponseFactoryTest extends TestCase
     public function testCollectionModel()
     {
         $response = m::mock('GuzzleHttp\Message\ResponseInterface');
-        $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.search_simple'));
+        $response->shouldReceive('json')
+                 ->andReturn(json_decode(TestFixtures::getFixture('accounts.search_simple')));
 
         /** @var ResponseCollectionInterface $gigyaResponse */
         $gigyaResponse = $this->factory->getResponse($response);
@@ -90,7 +92,8 @@ class ResponseFactoryTest extends TestCase
     public function testError403()
     {
         $response = m::mock('GuzzleHttp\Message\ResponseInterface');
-        $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('failure_403'));
+        $response->shouldReceive('json')
+                 ->andReturn(json_decode(TestFixtures::getFixture('failure_403')));
 
         $gigyaResponse = $this->factory->getResponse($response);
 

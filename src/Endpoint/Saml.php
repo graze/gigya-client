@@ -39,6 +39,8 @@ class Saml extends Client
 {
     /**
      * {@inheritdoc}
+     *
+     * @return string
      */
     public function getMethodNamespace()
     {

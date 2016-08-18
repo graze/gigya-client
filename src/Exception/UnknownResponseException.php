@@ -28,16 +28,16 @@ class UnknownResponseException extends Exception
     /**
      * @param GuzzleResponseInterface|null $response
      * @param string                       $message
-     * @param Exception|null               $e
+     * @param Exception|null               $previous
      */
-    public function __construct(GuzzleResponseInterface $response = null, $message = '', Exception $e = null)
+    public function __construct(GuzzleResponseInterface $response = null, $message = '', Exception $previous = null)
     {
         $message = "The contents of the response could not be determined. {$message}" .
             ($response ? "\n Body:\n" . $response->getBody() : '');
 
         $this->response = $response;
 
-        parent::__construct($message, 0, $e);
+        parent::__construct($message, 0, $previous);
     }
 
     /**

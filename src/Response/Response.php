@@ -78,15 +78,15 @@ class Response implements ResponseInterface
      */
     public function __construct(GuzzleResponseInterface $response)
     {
-        $this->response     = $response;
-        $this->body         = json_decode($response->getBody());
-        $this->errorCode    = (int) $this->popField('errorCode');
+        $this->response = $response;
+        $this->body = $response->json();
+        $this->errorCode = (int) $this->popField('errorCode');
         $this->errorMessage = $this->popField('errorMessage');
         $this->errorDetails = $this->popField('errorDetails');
-        $this->statusCode   = (int) $this->popField('statusCode');
+        $this->statusCode = (int) $this->popField('statusCode');
         $this->statusReason = $this->popField('statusReason');
-        $this->callId       = $this->popField('callId');
-        $this->time         = DateTimeImmutable::createFromFormat(Gigya::DATE_TIME_FORMAT, $this->popField('time'));
+        $this->callId = $this->popField('callId');
+        $this->time = DateTimeImmutable::createFromFormat(Gigya::DATE_TIME_FORMAT, $this->popField('time'));
     }
 
     /**
@@ -117,7 +117,7 @@ class Response implements ResponseInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getErrorMessage()
     {

@@ -65,13 +65,13 @@ class Client
     protected $validators = [];
 
     /**
-     * @param GuzzleClient             $client
-     * @param string                   $namespace
-     * @param string                   $dataCenter
-     * @param array                    $config     List of configuration settings for Guzzle
-     * @param array                    $options    Options to pass to each request
-     * @param array                    $validators Response validators
-     * @param ResponseFactoryInterface $factory
+     * @param GuzzleClient                  $client
+     * @param string                        $namespace
+     * @param string                        $dataCenter
+     * @param array                         $config     List of configuration settings for Guzzle
+     * @param array                         $options    Options to pass to each request
+     * @param array                         $validators Response validators
+     * @param ResponseFactoryInterface|null $factory
      */
     public function __construct(
         GuzzleClient $client,
@@ -82,12 +82,12 @@ class Client
         array $validators = [],
         ResponseFactoryInterface $factory = null
     ) {
-        $this->client     = $client;
-        $this->namespace  = $namespace;
+        $this->client = $client;
+        $this->namespace = $namespace;
         $this->dataCenter = $dataCenter;
-        $this->config     = $config;
-        $this->options    = $options;
-        $this->factory    = $factory ?: new ResponseFactory();
+        $this->config = $config;
+        $this->options = $options;
+        $this->factory = $factory ?: new ResponseFactory();
         array_map([$this, 'addValidator'], $validators);
     }
 
@@ -104,7 +104,7 @@ class Client
      *
      * Overload this to handle different method namespaces
      *
-     * @return mixed
+     * @return string
      */
     public function getMethodNamespace()
     {
@@ -144,10 +144,10 @@ class Client
      */
     public function request($method, array $params = [], array $options = [])
     {
-        $requestOptions          = array_merge($this->options, $options);
+        $requestOptions = array_merge($this->options, $options);
         $requestOptions['query'] = $params;
-        $guzzleResponse          = $this->client->get($this->getEndpoint($method), $requestOptions);
-        $response                = $this->factory->getResponse($guzzleResponse);
+        $guzzleResponse = $this->client->get($this->getEndpoint($method), $requestOptions);
+        $response = $this->factory->getResponse($guzzleResponse);
 
         $this->assert($response);
 

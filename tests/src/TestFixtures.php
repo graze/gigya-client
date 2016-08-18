@@ -25,7 +25,7 @@ class TestFixtures
         if (array_key_exists($name, static::$fixtures)) {
             return static::$fixtures[$name];
         } else {
-            return;
+            return null;
         }
     }
 

@@ -28,7 +28,7 @@ interface GigyaAuthInterface extends SubscriberInterface
     public function getSecret();
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getUserKey();
 }

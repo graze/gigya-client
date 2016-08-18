@@ -69,4 +69,4 @@ help: ## Show this help message.
 	echo "usage: make [target] ..."
 	echo ""
 	echo "targets:"
-	fgrep --no-filename "##" $(MAKEFILE_LIST) | fgrep --invert-match $$'\t' | sed -e 's/: ## / - /'
+	egrep '^(.+)\:\ ##\ (.+)' ${MAKEFILE_LIST} | column -t -c 2 -s ':#'

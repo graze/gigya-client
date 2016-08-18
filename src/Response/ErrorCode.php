@@ -436,7 +436,7 @@ class ErrorCode
     /**
      * @var array [CODE => [Name, Description]]
      */
-    private static $errors = [
+    protected static $errors = [
         self::OK                                      => ['OK ', 'Success.'],
         self::DATA_PENDING                            => [
             'Data pending',

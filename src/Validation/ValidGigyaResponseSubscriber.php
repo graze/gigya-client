@@ -72,12 +72,11 @@ class ValidGigyaResponseSubscriber implements SubscriberInterface
      * like.
      *
      * @param CompleteEvent $event
-     * @param string        $name
      *
      * @throws InvalidTimestampException
      * @throws UnknownResponseException
      */
-    public function onComplete(CompleteEvent $event, $name)
+    public function onComplete(CompleteEvent $event)
     {
         $response = $event->getResponse();
 

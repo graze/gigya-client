@@ -1,4 +1,15 @@
 <?php
+/**
+ * This file is part of graze/gigya-client
+ *
+ * Copyright (c) 2016 Nature Delivered Ltd. <https://www.graze.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @license https://github.com/graze/gigya-client/blob/master/LICENSE.md
+ * @link    https://github.com/graze/gigya-client
+ */
 
 namespace Graze\Gigya\Test\Performance;
 
@@ -30,11 +41,11 @@ class GigyaTest extends TestCase
 
     public function createBasicHandler()
     {
-        $handler     = new MockHandler([
+        $handler = new MockHandler([
             'status' => 200,
             'body'   => TestFixtures::getFixture('basic'),
         ]);
-        $this->gigya = new Gigya('key', 'secret', null, [
+        $this->gigya = new Gigya('key', 'secret', null, null, [
             'guzzle' => [
                 'handler' => $handler,
             ],
@@ -44,11 +55,11 @@ class GigyaTest extends TestCase
     public function createAccountInfoHandler()
     {
         $handler = new MockHandler(function ($request) {
-            $uid       = 'diofu90ifgdf';
+            $uid = 'diofu90ifgdf';
             $timestamp = time();
 
             $signatureValidator = new Signature();
-            $signature          = $signatureValidator->calculateSignature($timestamp . '_' . $uid, 'secret');
+            $signature = $signatureValidator->calculateSignature($timestamp . '_' . $uid, 'secret');
 
             return [
                 'status' => 200,
@@ -79,18 +90,25 @@ class GigyaTest extends TestCase
 
     private function startBenchmark()
     {
-        $this->time   = microtime(true);
+        $this->time = microtime(true);
         $this->memory = memory_get_usage(true);
     }
 
+    /**
+     * @return array
+     */
     private function endBenchmark()
     {
-        $duration   = microtime(true) - $this->time;
+        $duration = microtime(true) - $this->time;
         $memoryUsed = memory_get_usage(true) - $this->memory;
 
         return [$duration, $memoryUsed];
     }
 
+    /**
+     * @param string $name
+     * @param int    $iterations
+     */
     private function printBenchmark($name, $iterations)
     {
         list($duration, $memoryUsed) = $this->endBenchmark();

@@ -1,4 +1,15 @@
 <?php
+/**
+ * This file is part of graze/gigya-client
+ *
+ * Copyright (c) 2016 Nature Delivered Ltd. <https://www.graze.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @license https://github.com/graze/gigya-client/blob/master/LICENSE.md
+ * @link    https://github.com/graze/gigya-client
+ */
 
 namespace Graze\Gigya\Test\Unit\Validation;
 
@@ -38,6 +49,9 @@ class SignatureTest extends TestCase
         static::assertEquals($expected, $this->validator->calculateSignature($base, $secret));
     }
 
+    /**
+     * @return array
+     */
     public function signatureTests()
     {
         return [
@@ -63,16 +77,19 @@ class SignatureTest extends TestCase
     /**
      * @dataProvider getUidSignatures
      *
-     * @param $uid
-     * @param $time
-     * @param $secret
-     * @param $expected
+     * @param string $uid
+     * @param int    $time
+     * @param string $secret
+     * @param string $expected
      */
     public function testGetUidSignature($uid, $time, $secret, $expected)
     {
         static::assertEquals($expected, $this->validator->getUidSignature($uid, $time, $secret));
     }
 
+    /**
+     * @return array
+     */
     public function getUidSignatures()
     {
         return [
@@ -88,16 +105,20 @@ class SignatureTest extends TestCase
     /**
      * @dataProvider getFriendUidSignatures
      *
-     * @param $uid
-     * @param $time
-     * @param $secret
-     * @param $expected
+     * @param string $uid
+     * @param string $friendUid
+     * @param int    $time
+     * @param string $secret
+     * @param string $expected
      */
     public function testGetFriendUidSignature($uid, $friendUid, $time, $secret, $expected)
     {
         static::assertEquals($expected, $this->validator->getFriendUidSignature($uid, $friendUid, $time, $secret));
     }
 
+    /**
+     * @return array
+     */
     public function getFriendUidSignatures()
     {
         return [

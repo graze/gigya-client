@@ -1,4 +1,15 @@
 <?php
+/**
+ * This file is part of graze/gigya-client
+ *
+ * Copyright (c) 2016 Nature Delivered Ltd. <https://www.graze.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @license https://github.com/graze/gigya-client/blob/master/LICENSE.md
+ * @link    https://github.com/graze/gigya-client
+ */
 
 namespace Graze\Gigya\Test\Unit;
 
@@ -44,10 +55,10 @@ class GigyaTest extends TestCase
     public function setUp()
     {
         $this->guzzleClient = m::mock('overload:GuzzleHttp\Client');
-        $this->emitter      = m::mock(EmitterInterface::class);
+        $this->emitter = m::mock(EmitterInterface::class);
         $this->guzzleClient->shouldReceive('getEmitter')
                            ->andReturn($this->emitter);
-        $this->factory  = m::mock('Graze\Gigya\Response\ResponseFactoryInterface');
+        $this->factory = m::mock('Graze\Gigya\Response\ResponseFactoryInterface');
         $this->certPath = realpath(__DIR__ . '/../../src/' . Gigya::CERTIFICATE_FILE);
     }
 
@@ -57,10 +68,10 @@ class GigyaTest extends TestCase
     }
 
     /**
-     * @param string $key
-     * @param string $secret
-     * @param string $dc
-     * @param null   $userKey
+     * @param string      $key
+     * @param string      $secret
+     * @param string      $dc
+     * @param string|null $userKey
      *
      * @return Gigya
      */
@@ -94,7 +105,7 @@ class GigyaTest extends TestCase
                             static::assertEquals($userKey, $subscriber->getUserKey());
                         }
 
-                          return true;
+                        return true;
                       }))
                       ->once();
     }
@@ -109,7 +120,7 @@ class GigyaTest extends TestCase
      *
      * @return ResponseInterface
      */
-    private function setupCall($fixtureName, $uri, $getOptions, $key, $secret, $userKey = null)
+    private function setupCall($fixtureName, $uri, array $getOptions, $key, $secret, $userKey = null)
     {
         $this->setupSubscribers($key, $secret, $userKey);
 
@@ -184,7 +195,7 @@ class GigyaTest extends TestCase
 
     public function testSettingKeyAndSecretWillPassToGuzzleClient()
     {
-        $key    = 'key' . rand(1, 1000);
+        $key = 'key' . rand(1, 1000);
         $secret = 'secret' . rand(1001, 2000002);
 
         $gigyaResponse = $this->setupCall(
@@ -198,7 +209,7 @@ class GigyaTest extends TestCase
             $key,
             $secret
         );
-        $client        = $this->createClient($key, $secret, Gigya::DC_EU, null);
+        $client = $this->createClient($key, $secret, Gigya::DC_EU, null);
         $client->setFactory($this->factory);
 
         $result = $client->accounts()->getAccountInfo([]);
@@ -219,7 +230,7 @@ class GigyaTest extends TestCase
             'key',
             'secret'
         );
-        $client        = $this->createClient('key', 'secret', Gigya::DC_AU);
+        $client = $this->createClient('key', 'secret', Gigya::DC_AU);
 
         $result = $client->accounts()->getAccountInfo([]);
 
@@ -239,7 +250,7 @@ class GigyaTest extends TestCase
             'key',
             'secret'
         );
-        $client        = $this->createClient('key', 'secret', Gigya::DC_US);
+        $client = $this->createClient('key', 'secret', Gigya::DC_US);
 
         $result = $client->accounts()->getAccountInfo([]);
 
@@ -260,7 +271,7 @@ class GigyaTest extends TestCase
             'userSecret',
             'userKey'
         );
-        $client        = $this->createClient('key', 'userSecret', Gigya::DC_EU, 'userKey');
+        $client = $this->createClient('key', 'userSecret', Gigya::DC_EU, 'userKey');
         $client->setFactory($this->factory);
 
         $result = $client->accounts()->getAccountInfo([]);
@@ -283,7 +294,7 @@ class GigyaTest extends TestCase
             'key',
             'secret'
         );
-        $client        = $this->createClient();
+        $client = $this->createClient();
 
         $result = $client->socialize()->notifyLogin(['param' => 'passedThrough']);
 
@@ -305,7 +316,7 @@ class GigyaTest extends TestCase
             'key',
             'secret'
         );
-        $client        = $this->createClient();
+        $client = $this->createClient();
 
         $result = $client->saml()->idp()->getConfig(['params' => 'passedThrough']);
 
@@ -327,7 +338,7 @@ class GigyaTest extends TestCase
             'key',
             'secret'
         );
-        $client        = $this->createClient();
+        $client = $this->createClient();
 
         $result = $client->accounts()->tfa()->getCertificate(['params' => 'passedThrough']);
 
@@ -337,9 +348,9 @@ class GigyaTest extends TestCase
     /**
      * @dataProvider clientCallDataProvider
      *
-     * @param $namespace
-     * @param $method
-     * @param $expectedUri
+     * @param string $namespace
+     * @param string $method
+     * @param string $expectedUri
      */
     public function testClientCalls($namespace, $method, $expectedUri)
     {
@@ -356,7 +367,7 @@ class GigyaTest extends TestCase
             'key',
             'secret'
         );
-        $client        = $this->createClient();
+        $client = $this->createClient();
 
         $result = $client->{$namespace}()->{$method}(['params' => 'passedThrough']);
 
@@ -392,7 +403,7 @@ class GigyaTest extends TestCase
             'key',
             'secret'
         );
-        $client        = $this->createClient();
+        $client = $this->createClient();
 
         $client->addOption('option1', 'value1');
         $client->addOption('option2', false);
@@ -419,7 +430,7 @@ class GigyaTest extends TestCase
             'key',
             'secret'
         );
-        $client        = $this->createClient();
+        $client = $this->createClient();
 
         $client->addOptions([
             'option1' => 'value1',
@@ -447,7 +458,7 @@ class GigyaTest extends TestCase
             'key',
             'secret'
         );
-        $client        = $this->createClient();
+        $client = $this->createClient();
 
         $client->addOption('option1', 'value1');
         $client->addOption('option1', false);
@@ -473,7 +484,7 @@ class GigyaTest extends TestCase
             'key',
             'secret'
         );
-        $client        = $this->createClient();
+        $client = $this->createClient();
 
         $client->addOption('option1', 'value1');
         $client->addOptions(['option1' => true]);
@@ -498,7 +509,7 @@ class GigyaTest extends TestCase
             'key',
             'secret'
         );
-        $client        = $this->createClient();
+        $client = $this->createClient();
 
         $client->addOption('query', 'random');
         $client->addOption('verify', 'notAFile');
@@ -524,7 +535,7 @@ class GigyaTest extends TestCase
             'key',
             'secret'
         );
-        $client        = $this->createClient();
+        $client = $this->createClient();
 
         $result = $client->accounts()->getAccountInfo(['params' => 'passedThrough'], ['custom' => 'value']);
 
@@ -547,7 +558,7 @@ class GigyaTest extends TestCase
             'key',
             'secret'
         );
-        $client        = $this->createClient();
+        $client = $this->createClient();
 
         $client->addOption('custom', 'notUsed');
 
@@ -571,11 +582,11 @@ class GigyaTest extends TestCase
             'key',
             'secret'
         );
-        $client        = $this->createClient();
+        $client = $this->createClient();
 
         $result = $client->accounts()->getAccountInfo(
             ['params' => 'passedThrough'],
-            ['query'  => 'value', 'verify' => false]
+            ['query' => 'value', 'verify' => false]
         );
 
         static::assertSame($gigyaResponse, $result);
@@ -596,7 +607,7 @@ class GigyaTest extends TestCase
             'key',
             'secret'
         );
-        $client        = $this->createClient();
+        $client = $this->createClient();
 
         $result = $client->accounts()->getAccountInfo(
             ['secret' => 'newSecret']
@@ -620,7 +631,7 @@ class GigyaTest extends TestCase
             'key',
             'secret'
         );
-        $client        = $this->createClient();
+        $client = $this->createClient();
 
         $result = $client->fidm()->{'saml.idp.getConfig'}(
             ['secret' => 'newSecret']
@@ -642,7 +653,7 @@ class GigyaTest extends TestCase
             'key',
             'secret'
         );
-        $client   = $this->createClient();
+        $client = $this->createClient();
 
         $validator = m::mock(ResponseValidatorInterface::class);
         $client->addValidator($validator);
@@ -669,7 +680,7 @@ class GigyaTest extends TestCase
             'key',
             'secret'
         );
-        $client   = $this->createClient();
+        $client = $this->createClient();
 
         $validator = m::mock(ResponseValidatorInterface::class);
         $client->addValidator($validator);
@@ -704,9 +715,9 @@ class GigyaTest extends TestCase
             'key',
             'secret'
         );
-        $client   = $this->createClient();
+        $client = $this->createClient();
 
-        $validator  = m::mock(ResponseValidatorInterface::class);
+        $validator = m::mock(ResponseValidatorInterface::class);
         $validator2 = m::mock(ResponseValidatorInterface::class);
         $client->addValidator($validator);
         $client->addValidator($validator2);
@@ -736,9 +747,9 @@ class GigyaTest extends TestCase
             'key',
             'secret'
         );
-        $client   = $this->createClient();
+        $client = $this->createClient();
 
-        $validator  = m::mock(ResponseValidatorInterface::class);
+        $validator = m::mock(ResponseValidatorInterface::class);
         $validator2 = m::mock(ResponseValidatorInterface::class);
         $client->addValidator($validator);
         $client->addValidator($validator2);
@@ -768,7 +779,7 @@ class GigyaTest extends TestCase
             'key',
             'secret'
         );
-        $client   = $this->createClient();
+        $client = $this->createClient();
 
         static::assertSame($response, $client->accounts()->getAccountInfo());
 
@@ -786,6 +797,9 @@ class GigyaTest extends TestCase
         $client->removeSubscriber($subscriber);
     }
 
+    /**
+     * @return array
+     */
     public function clientCallDataProvider()
     {
         return [

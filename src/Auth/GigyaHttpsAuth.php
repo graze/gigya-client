@@ -1,4 +1,15 @@
 <?php
+/**
+ * This file is part of graze/gigya-client
+ *
+ * Copyright (c) 2016 Nature Delivered Ltd. <https://www.graze.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @license https://github.com/graze/gigya-client/blob/master/LICENSE.md
+ * @link    https://github.com/graze/gigya-client
+ */
 
 namespace Graze\Gigya\Auth;
 
@@ -29,8 +40,8 @@ class GigyaHttpsAuth implements GigyaAuthInterface
      */
     public function __construct($apiKey, $secret, $userKey = null)
     {
-        $this->apiKey  = $apiKey;
-        $this->secret  = $secret;
+        $this->apiKey = $apiKey;
+        $this->secret = $secret;
         $this->userKey = $userKey;
     }
 
@@ -53,10 +64,10 @@ class GigyaHttpsAuth implements GigyaAuthInterface
     {
         $request = $event->getRequest();
         if ($request->getScheme() == 'https' && $request->getConfig()->get('auth') == 'gigya') {
-            $query           = $request->getQuery();
+            $query = $request->getQuery();
             $query['apiKey'] = $this->apiKey;
             $query['secret'] = $this->secret;
-            if ($this->userKey) {
+            if ((bool) $this->userKey) {
                 $query['userKey'] = $this->userKey;
             }
         }

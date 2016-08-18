@@ -1,31 +1,72 @@
-.PHONY: test lint lint-auto-fix test-coverage test-unit test-unit-coverage test-functional test-functional-coverage test-performance install
+SHELL = /bin/sh
 
-test:
-	@./vendor/bin/phpunit --exclude-group performance
+DOCKER ?= $(shell which docker)
+DOCKER_REPOSITORY := graze/gigya-client
+VOLUME := /opt/graze/gigya-client
+VOLUME_MAP := -v $$(pwd):${VOLUME}
+DOCKER_RUN_BASE := ${DOCKER} run --rm -t ${VOLUME_MAP} -w ${VOLUME}
+DOCKER_RUN := ${DOCKER_RUN_BASE} ${DOCKER_REPOSITORY}:latest
 
-lint:
-	@./vendor/bin/phpcs -p --standard=PSR2 --warning-severity=0 src/ tests/
+.PHONY: install composer clean help
+.PHONY: test lint lint-fix test-unit test-integration test-matrix test-coverage test-coverage-html test-coverage-clover
 
-lint-auto-fix:
-	@./vendor/bin/phpcbf -p --standard=PSR2 src/ tests/
+.SILENT: help
 
-test-coverage:
-	@./vendor/bin/phpunit --coverage-text --coverage-html ./tests/report --exclude-group performance
+# Building
 
-test-unit:
-	@./vendor/bin/phpunit --testsuite unit
+install: ## Download the dependencies then build the image :rocket:.
+	make 'composer-install --optimize-autoloader --ignore-platform-reqs'
+	$(DOCKER) build --tag ${DOCKER_REPOSITORY}:latest .
 
-test-unit-coverage:
-	@./vendor/bin/phpunit --testsuite unit --coverage-text --coverage-html ./tests/report
+composer-%: ## Run a composer command, `make "composer-<command> [...]"`.
+	${DOCKER} run -t --rm \
+        -v $$(pwd):/usr/src/app \
+        -v ~/.composer:/root/composer \
+        -v ~/.ssh:/root/.ssh:ro \
+        graze/composer --ansi --no-interaction $* $(filter-out $@,$(MAKECMDGOALS))
 
-test-functional:
-	@./vendor/bin/phpunit --testsuite functional
+clean: ## Clean up any images.
+	$(DOCKER) rmi ${DOCKER_REPOSITORY}:latest
 
-test-functional-coverage:
-	@./vendor/bin/phpunit --testsuite functional --coverage-text --coverage-html ./tests/report
+# Testing
 
-test-performance:
-	@./vendor/bin/phpunit --testsuite performance
+test: ## Run the unit and integration testsuites.
+test: lint test-unit test-integration
 
-install:
-	@composer install
+lint: ## Run phpcs against the code.
+	$(DOCKER_RUN) vendor/bin/phpcs -p --warning-severity=0 src/ tests/
+
+lint-fix: ## Run phpcsf and fix lint errors.
+	$(DOCKER_RUN) vendor/bin/phpcbf -p src/ tests/
+
+test-unit: ## Run the unit testsuite.
+	$(DOCKER_RUN) vendor/bin/phpunit --colors=always --testsuite unit
+
+test-matrix: ## Run the unit tests against multiple targets.
+	make DOCKER_RUN="${DOCKER_RUN_BASE} php:5.6-cli" test
+	make DOCKER_RUN="${DOCKER_RUN_BASE} php:7.0-cli" test
+	make DOCKER_RUN="${DOCKER_RUN_BASE} diegomarangoni/hhvm:cli" test
+
+test-integration: ## Run the integration testsuite.
+	$(DOCKER_RUN) vendor/bin/phpunit --colors=always --testsuite integration
+
+test-performance: ## Run the performance testsuite.
+	$(DOCKER_RUN) vendor/bin/phpunit --colors=always --testsuite performance
+
+test-coverage: ## Run all tests and output coverage to the console.
+	$(DOCKER_RUN) vendor/bin/phpunit --coverage-text --testsuite coverage
+
+test-coverage-html: ## Run all tests and output html results
+	$(DOCKER_RUN) vendor/bin/phpunit --coverage-html ./tests/report/html --testsuite coverage
+
+test-coverage-clover: ## Run all tests and output clover coverage to file.
+	$(DOCKER_RUN) vendor/bin/phpunit --coverage-clover=./tests/report/coverage.clover --testsuite coverage
+
+
+# Help
+
+help: ## Show this help message.
+	echo "usage: make [target] ..."
+	echo ""
+	echo "targets:"
+	fgrep --no-filename "##" $(MAKEFILE_LIST) | fgrep --invert-match $$'\t' | sed -e 's/: ## / - /'

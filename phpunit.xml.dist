@@ -13,12 +13,12 @@
         <testsuite name="unit">
             <directory>tests/unit</directory>
         </testsuite>
-        <testsuite name="functional">
-            <directory>tests/functional</directory>
+        <testsuite name="integration">
+            <directory>tests/integration</directory>
         </testsuite>
         <testsuite name="coverage">
             <directory>tests/unit</directory>
-            <directory>tests/functional</directory>
+            <directory>tests/integration</directory>
         </testsuite>
         <testsuite name="performance">
             <directory>tests/performance</directory>

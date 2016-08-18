@@ -11,7 +11,7 @@
  * @link    https://github.com/graze/gigya-client
  */
 
-namespace Graze\Gigya\Test\Functional;
+namespace Graze\Gigya\Test\Integration;
 
 use Graze\Gigya\Exception\InvalidTimestampException;
 use Graze\Gigya\Exception\InvalidUidSignatureException;

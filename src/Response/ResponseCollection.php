@@ -1,4 +1,15 @@
 <?php
+/**
+ * This file is part of graze/gigya-client
+ *
+ * Copyright (c) 2016 Nature Delivered Ltd. <https://www.graze.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @license https://github.com/graze/gigya-client/blob/master/LICENSE.md
+ * @link    https://github.com/graze/gigya-client
+ */
 
 namespace Graze\Gigya\Response;
 
@@ -30,15 +41,17 @@ class ResponseCollection extends Response implements ResponseCollectionInterface
     protected $results;
 
     /**
-     * {@inheritdoc}
+     * ResponseCollection constructor.
+     *
+     * @param GuzzleResponseInterface $response
      */
     public function __construct(GuzzleResponseInterface $response)
     {
         parent::__construct($response);
-        $this->count      = (int) $this->popField('objectsCount');
-        $this->total      = (int) $this->popField('totalCount');
+        $this->count = (int) $this->popField('objectsCount');
+        $this->total = (int) $this->popField('totalCount');
         $this->nextCursor = $this->popField('nextCursorId');
-        $this->results    = $this->popField('results');
+        $this->results = (array) $this->popField('results');
     }
 
     /**

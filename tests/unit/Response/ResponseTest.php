@@ -1,4 +1,15 @@
 <?php
+/**
+ * This file is part of graze/gigya-client
+ *
+ * Copyright (c) 2016 Nature Delivered Ltd. <https://www.graze.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @license https://github.com/graze/gigya-client/blob/master/LICENSE.md
+ * @link    https://github.com/graze/gigya-client
+ */
 
 namespace Graze\Gigya\Test\Unit\Response;
 
@@ -50,7 +61,7 @@ class ResponseTest extends TestCase
     public function testToString()
     {
         $guzzleResponse = m::mock(GuzzleResponseInterface::class);
-        $guzzleResponse->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.getAccountInfo'));
+        $guzzleResponse->shouldReceive('json')->andReturn(json_decode(TestFixtures::getFixture('accounts.getAccountInfo')));
         $response = new Response($guzzleResponse);
 
         static::assertRegExp('/Response: \d+: \w+ - \d+: .+\n.+/s', $response->__toString());
@@ -59,7 +70,7 @@ class ResponseTest extends TestCase
     public function testToStringForFailure()
     {
         $guzzleResponse = m::mock(GuzzleResponseInterface::class);
-        $guzzleResponse->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('failure_403'));
+        $guzzleResponse->shouldReceive('json')->andReturn(json_decode(TestFixtures::getFixture('failure_403')));
         $response = new Response($guzzleResponse);
 
         static::assertRegExp('/Response: \d+: \w+ - \d+: .+\n.+\n.+\n.+/s', $response->__toString());

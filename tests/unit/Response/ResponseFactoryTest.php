@@ -1,4 +1,15 @@
 <?php
+/**
+ * This file is part of graze/gigya-client
+ *
+ * Copyright (c) 2016 Nature Delivered Ltd. <https://www.graze.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @license https://github.com/graze/gigya-client/blob/master/LICENSE.md
+ * @link    https://github.com/graze/gigya-client
+ */
 
 namespace Graze\Gigya\Test\Unit\Response;
 
@@ -37,7 +48,8 @@ class ResponseFactoryTest extends TestCase
     public function testAccountModel()
     {
         $response = m::mock('GuzzleHttp\Message\ResponseInterface');
-        $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.getAccountInfo'));
+        $response->shouldReceive('json')
+                 ->andReturn(json_decode(TestFixtures::getFixture('accounts.getAccountInfo')));
 
         $gigyaResponse = $this->factory->getResponse($response);
 
@@ -59,7 +71,8 @@ class ResponseFactoryTest extends TestCase
     public function testCollectionModel()
     {
         $response = m::mock('GuzzleHttp\Message\ResponseInterface');
-        $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('accounts.search_simple'));
+        $response->shouldReceive('json')
+                 ->andReturn(json_decode(TestFixtures::getFixture('accounts.search_simple')));
 
         /** @var ResponseCollectionInterface $gigyaResponse */
         $gigyaResponse = $this->factory->getResponse($response);
@@ -79,7 +92,8 @@ class ResponseFactoryTest extends TestCase
     public function testError403()
     {
         $response = m::mock('GuzzleHttp\Message\ResponseInterface');
-        $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('failure_403'));
+        $response->shouldReceive('json')
+                 ->andReturn(json_decode(TestFixtures::getFixture('failure_403')));
 
         $gigyaResponse = $this->factory->getResponse($response);
 

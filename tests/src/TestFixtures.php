@@ -1,4 +1,15 @@
 <?php
+/**
+ * This file is part of graze/gigya-client
+ *
+ * Copyright (c) 2016 Nature Delivered Ltd. <https://www.graze.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @license https://github.com/graze/gigya-client/blob/master/LICENSE.md
+ * @link    https://github.com/graze/gigya-client
+ */
 
 namespace Graze\Gigya\Test;
 
@@ -14,11 +25,12 @@ class TestFixtures
         if (array_key_exists($name, static::$fixtures)) {
             return static::$fixtures[$name];
         } else {
-            return;
+            return null;
         }
     }
 
-    private static $fixtures = [
+    /** @var array */
+    protected static $fixtures = [
         'accounts.getAccountInfo' => '{
   "UID": "_gid_30A3XVJciH95WEEnoRmfZS7ee3MY+lUAtpVxvUWNseU=",
   "UIDSignature": "HHPLo/TC7KobjnGB7JflcWvAXfg=",

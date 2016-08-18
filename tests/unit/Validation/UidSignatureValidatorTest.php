@@ -1,4 +1,15 @@
 <?php
+/**
+ * This file is part of graze/gigya-client
+ *
+ * Copyright (c) 2016 Nature Delivered Ltd. <https://www.graze.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @license https://github.com/graze/gigya-client/blob/master/LICENSE.md
+ * @link    https://github.com/graze/gigya-client
+ */
 
 namespace Graze\Gigya\Test\Unit\Validation;
 
@@ -11,20 +22,14 @@ use Graze\Gigya\Validation\Signature;
 use Graze\Gigya\Validation\UidSignatureValidator;
 use Illuminate\Support\Collection;
 use Mockery as m;
-use Mockery\MockInterface;
 
 class UidSignatureValidatorTest extends TestCase
 {
     const SECRET = '8j9h0g-opko;dk]=id0f[sjo';
 
-    /**
-     * @var MockInterface|Signature
-     */
+    /** @var mixed */
     private $signature;
-
-    /**
-     * @var UidSignatureValidator
-     */
+    /** @var UidSignatureValidator */
     private $validator;
 
     public function setUp()
@@ -45,7 +50,7 @@ class UidSignatureValidatorTest extends TestCase
 
     public function testUidSignature()
     {
-        $response   = m::mock(ResponseInterface::class);
+        $response = m::mock(ResponseInterface::class);
         $collection = m::mock(Collection::class);
         $response->shouldReceive('getData')
                  ->andReturn($collection);
@@ -80,7 +85,7 @@ class UidSignatureValidatorTest extends TestCase
 
     public function testInvalidUidSignature()
     {
-        $response   = m::mock(ResponseInterface::class);
+        $response = m::mock(ResponseInterface::class);
         $collection = m::mock(Collection::class);
         $response->shouldReceive('getData')
                  ->andReturn($collection);
@@ -121,7 +126,7 @@ class UidSignatureValidatorTest extends TestCase
 
     public function testInvalidTimestamp()
     {
-        $response   = m::mock(ResponseInterface::class);
+        $response = m::mock(ResponseInterface::class);
         $collection = m::mock(Collection::class);
         $response->shouldReceive('getData')
                  ->andReturn($collection);
@@ -159,7 +164,7 @@ class UidSignatureValidatorTest extends TestCase
 
     public function testCanValidationReturnsFalseWhenTheRequiredFieldsAreNotPresent()
     {
-        $response   = m::mock(ResponseInterface::class);
+        $response = m::mock(ResponseInterface::class);
         $collection = m::mock(Collection::class);
         $response->shouldReceive('getData')
                  ->andReturn($collection);

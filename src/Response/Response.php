@@ -1,4 +1,15 @@
 <?php
+/**
+ * This file is part of graze/gigya-client
+ *
+ * Copyright (c) 2016 Nature Delivered Ltd. <https://www.graze.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @license https://github.com/graze/gigya-client/blob/master/LICENSE.md
+ * @link    https://github.com/graze/gigya-client
+ */
 
 namespace Graze\Gigya\Response;
 
@@ -13,7 +24,7 @@ use Illuminate\Support\Collection;
 class Response implements ResponseInterface
 {
     /**
-     * @var array
+     * @var object
      */
     protected $body;
 
@@ -67,15 +78,15 @@ class Response implements ResponseInterface
      */
     public function __construct(GuzzleResponseInterface $response)
     {
-        $this->response     = $response;
-        $this->body         = json_decode($response->getBody());
-        $this->errorCode    = (int) $this->popField('errorCode');
+        $this->response = $response;
+        $this->body = (object) $response->json(['object' => true]);
+        $this->errorCode = (int) $this->popField('errorCode');
         $this->errorMessage = $this->popField('errorMessage');
         $this->errorDetails = $this->popField('errorDetails');
-        $this->statusCode   = (int) $this->popField('statusCode');
+        $this->statusCode = (int) $this->popField('statusCode');
         $this->statusReason = $this->popField('statusReason');
-        $this->callId       = $this->popField('callId');
-        $this->time         = DateTimeImmutable::createFromFormat(Gigya::DATE_TIME_FORMAT, $this->popField('time'));
+        $this->callId = $this->popField('callId');
+        $this->time = DateTimeImmutable::createFromFormat(Gigya::DATE_TIME_FORMAT, $this->popField('time'));
     }
 
     /**
@@ -106,7 +117,7 @@ class Response implements ResponseInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getErrorMessage()
     {

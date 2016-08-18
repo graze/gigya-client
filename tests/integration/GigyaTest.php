@@ -1,6 +1,17 @@
 <?php
+/**
+ * This file is part of graze/gigya-client
+ *
+ * Copyright (c) 2016 Nature Delivered Ltd. <https://www.graze.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @license https://github.com/graze/gigya-client/blob/master/LICENSE.md
+ * @link    https://github.com/graze/gigya-client
+ */
 
-namespace Graze\Gigya\Test\Functional;
+namespace Graze\Gigya\Test\Integration;
 
 use Graze\Gigya\Exception\InvalidTimestampException;
 use Graze\Gigya\Exception\InvalidUidSignatureException;
@@ -19,36 +30,24 @@ class GigyaTest extends TestCase
 {
     /**
      * @param Gigya       $gigya
-     * @param string|null $body  Optional body text
+     * @param string|null $body Optional body text
      *
      * @return History
      */
     public function setUpGigyaHistory(Gigya $gigya, $body = null)
     {
         $history = new History();
-        $mock    = new Mock([
+        $mock = new Mock(array_pad(
+            [],
+            3,
             new Response(
                 '200',
                 [],
                 Stream::factory(
                     $body ?: TestFixtures::getFixture('basic')
                 )
-            ),
-            new Response(
-                '200',
-                [],
-                Stream::factory(
-                    $body ?: TestFixtures::getFixture('basic')
-                )
-            ),
-            new Response(
-                '200',
-                [],
-                Stream::factory(
-                    $body ?: TestFixtures::getFixture('basic')
-                )
-            ),
-        ]);
+            )
+        ));
         $gigya->addSubscriber($history);
         $gigya->addSubscriber($mock);
 
@@ -57,7 +56,7 @@ class GigyaTest extends TestCase
 
     public function testAuthInjectsKeyAndSecretIntoParams()
     {
-        $client  = new Gigya('key', 'secret');
+        $client = new Gigya('key', 'secret');
         $history = $this->setUpGigyaHistory($client);
 
         $response = $client->accounts()->getAccountInfo();
@@ -78,7 +77,7 @@ class GigyaTest extends TestCase
 
     public function testAuthInjectsKeySecretAndUserKeyIntoParams()
     {
-        $client  = new Gigya('key', 'secret', null, 'userKey');
+        $client = new Gigya('key', 'secret', null, 'userKey');
         $history = $this->setUpGigyaHistory($client);
 
         $response = $client->accounts()->getAccountInfo();
@@ -101,11 +100,11 @@ class GigyaTest extends TestCase
 
     public function testUidSignatureWhenValidDoesNotThrowException()
     {
-        $uid       = 'diofu90ifgdf';
+        $uid = 'diofu90ifgdf';
         $timestamp = time();
 
         $signatureValidator = new Signature();
-        $signature          = $signatureValidator->calculateSignature($timestamp . '_' . $uid, 'secret');
+        $signature = $signatureValidator->calculateSignature($timestamp . '_' . $uid, 'secret');
 
         $body = sprintf(
             '{
@@ -123,7 +122,7 @@ class GigyaTest extends TestCase
             $timestamp
         );
 
-        $client  = new Gigya('key', 'secret');
+        $client = new Gigya('key', 'secret');
         $history = $this->setUpGigyaHistory($client, $body);
 
         $response = $client->accounts()->getAccountInfo(['uid' => $uid]);
@@ -150,11 +149,11 @@ class GigyaTest extends TestCase
 
     public function testUidSignatureWhenIncorrectTimestampThrowsAnException()
     {
-        $uid       = 'diofu90ifgdf';
+        $uid = 'diofu90ifgdf';
         $timestamp = time() - 181;
 
         $signatureValidator = new Signature();
-        $signature          = $signatureValidator->calculateSignature($timestamp . '_' . $uid, 'secret');
+        $signature = $signatureValidator->calculateSignature($timestamp . '_' . $uid, 'secret');
 
         $body = sprintf(
             '{
@@ -184,7 +183,7 @@ class GigyaTest extends TestCase
 
     public function testUidSignatureWhenInvalidSignatureThrowsAnException()
     {
-        $uid       = 'diofu90ifgdf';
+        $uid = 'diofu90ifgdf';
         $timestamp = time();
 
         $body = sprintf(
@@ -215,7 +214,7 @@ class GigyaTest extends TestCase
 
     public function testRequestWillThrowTimestampExceptionWhenBothTimestampAndSignatureAreInvalid()
     {
-        $uid       = 'diofu90ifgdf';
+        $uid = 'diofu90ifgdf';
         $timestamp = time() - 181;
 
         $body = sprintf(

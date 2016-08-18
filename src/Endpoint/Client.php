@@ -1,4 +1,15 @@
 <?php
+/**
+ * This file is part of graze/gigya-client
+ *
+ * Copyright (c) 2016 Nature Delivered Ltd. <https://www.graze.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @license https://github.com/graze/gigya-client/blob/master/LICENSE.md
+ * @link    https://github.com/graze/gigya-client
+ */
 
 namespace Graze\Gigya\Endpoint;
 
@@ -54,13 +65,13 @@ class Client
     protected $validators = [];
 
     /**
-     * @param GuzzleClient             $client
-     * @param string                   $namespace
-     * @param string                   $dataCenter
-     * @param array                    $config     List of configuration settings for Guzzle
-     * @param array                    $options    Options to pass to each request
-     * @param array                    $validators Response validators
-     * @param ResponseFactoryInterface $factory
+     * @param GuzzleClient                  $client
+     * @param string                        $namespace
+     * @param string                        $dataCenter
+     * @param array                         $config     List of configuration settings for Guzzle
+     * @param array                         $options    Options to pass to each request
+     * @param array                         $validators Response validators
+     * @param ResponseFactoryInterface|null $factory
      */
     public function __construct(
         GuzzleClient $client,
@@ -71,12 +82,12 @@ class Client
         array $validators = [],
         ResponseFactoryInterface $factory = null
     ) {
-        $this->client     = $client;
-        $this->namespace  = $namespace;
+        $this->client = $client;
+        $this->namespace = $namespace;
         $this->dataCenter = $dataCenter;
-        $this->config     = $config;
-        $this->options    = $options;
-        $this->factory    = $factory ?: new ResponseFactory();
+        $this->config = $config;
+        $this->options = $options;
+        $this->factory = $factory ?: new ResponseFactory();
         array_map([$this, 'addValidator'], $validators);
     }
 
@@ -93,7 +104,7 @@ class Client
      *
      * Overload this to handle different method namespaces
      *
-     * @return mixed
+     * @return string
      */
     public function getMethodNamespace()
     {
@@ -133,10 +144,10 @@ class Client
      */
     public function request($method, array $params = [], array $options = [])
     {
-        $requestOptions          = array_merge($this->options, $options);
+        $requestOptions = array_merge($this->options, $options);
         $requestOptions['query'] = $params;
-        $guzzleResponse          = $this->client->get($this->getEndpoint($method), $requestOptions);
-        $response                = $this->factory->getResponse($guzzleResponse);
+        $guzzleResponse = $this->client->get($this->getEndpoint($method), $requestOptions);
+        $response = $this->factory->getResponse($guzzleResponse);
 
         $this->assert($response);
 
@@ -151,7 +162,7 @@ class Client
      *
      * @return ResponseInterface
      */
-    public function __call($method, $arguments)
+    public function __call($method, array $arguments = [])
     {
         return $this->request(
             $method,

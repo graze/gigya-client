@@ -3,8 +3,8 @@ FROM graze/php-alpine
 RUN apk add --no-cache --repository "http://dl-cdn.alpinelinux.org/alpine/edge/testing" \
     php7-xdebug
 
-ADD . /opt/graze/gigya-client
+ADD . /srv
 
-WORKDIR /opt/graze/gigya-client
+WORKDIR /srv
 
 CMD /bin/bash

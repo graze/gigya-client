@@ -82,19 +82,20 @@ class GigyaTest extends TestCase
      */
     private function setupSubscribers($key, $secret, $userKey = null)
     {
+        $subscriber = function (SubscriberInterface $subscriber) use ($key, $secret, $userKey) {
+            if ($subscriber instanceof GigyaAuthInterface) {
+                static::assertEquals($key, $subscriber->getApiKey());
+                static::assertEquals($secret, $subscriber->getSecret());
+                static::assertEquals($userKey, $subscriber->getUserKey());
+            }
+
+            return true;
+        };
         $this->emitter->shouldReceive('attach')
                       ->with(m::type(ValidGigyaResponseSubscriber::class))
                       ->once();
         $this->emitter->shouldReceive('attach')
-                      ->with(m::on(function (SubscriberInterface $subscriber) use ($key, $secret, $userKey) {
-                          if ($subscriber instanceof GigyaAuthInterface) {
-                              static::assertEquals($key, $subscriber->getApiKey());
-                              static::assertEquals($secret, $subscriber->getSecret());
-                              static::assertEquals($userKey, $subscriber->getUserKey());
-                          }
-
-                          return true;
-                      }))
+                      ->with(m::on($subscriber))
                       ->once();
     }
 

@@ -2,7 +2,7 @@ SHELL = /bin/sh
 
 DOCKER ?= $(shell which docker)
 DOCKER_REPOSITORY := graze/gigya-client
-VOLUME := /opt/graze/gigya-client
+VOLUME := /srv
 VOLUME_MAP := -v $$(pwd):${VOLUME}
 DOCKER_RUN_BASE := ${DOCKER} run --rm -t ${VOLUME_MAP} -w ${VOLUME}
 DOCKER_RUN := ${DOCKER_RUN_BASE} ${DOCKER_REPOSITORY}:latest

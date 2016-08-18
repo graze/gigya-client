@@ -16,6 +16,10 @@
         <testsuite name="functional">
             <directory>tests/functional</directory>
         </testsuite>
+        <testsuite name="coverage">
+            <directory>tests/unit</directory>
+            <directory>tests/functional</directory>
+        </testsuite>
         <testsuite name="performance">
             <directory>tests/performance</directory>
         </testsuite>

@@ -24,7 +24,6 @@ use Graze\Gigya\Validation\ValidGigyaResponseSubscriber;
 use GuzzleHttp\Event\EmitterInterface;
 use GuzzleHttp\Event\SubscriberInterface;
 use Mockery as m;
-use Mockery\MockInterface;
 
 /**
  * @runTestsInSeparateProcesses
@@ -32,24 +31,13 @@ use Mockery\MockInterface;
  */
 class GigyaTest extends TestCase
 {
-    /**
-     * @var MockInterface|\GuzzleHttp\Client
-     */
+    /** @var mixed */
     private $guzzleClient;
-
-    /**
-     * @var MockInterface|\Graze\Gigya\Response\ResponseFactoryInterface
-     */
+    /** @var mixed */
     private $factory;
-
-    /**
-     * @var string
-     */
+    /** @var string */
     private $certPath;
-
-    /**
-     * @var EmitterInterface|MockInterface
-     */
+    /** @var mixed */
     private $emitter;
 
     public function setUp()
@@ -99,13 +87,13 @@ class GigyaTest extends TestCase
                       ->once();
         $this->emitter->shouldReceive('attach')
                       ->with(m::on(function (SubscriberInterface $subscriber) use ($key, $secret, $userKey) {
-                        if ($subscriber instanceof GigyaAuthInterface) {
-                            static::assertEquals($key, $subscriber->getApiKey());
-                            static::assertEquals($secret, $subscriber->getSecret());
-                            static::assertEquals($userKey, $subscriber->getUserKey());
-                        }
+                          if ($subscriber instanceof GigyaAuthInterface) {
+                              static::assertEquals($key, $subscriber->getApiKey());
+                              static::assertEquals($secret, $subscriber->getSecret());
+                              static::assertEquals($userKey, $subscriber->getUserKey());
+                          }
 
-                        return true;
+                          return true;
                       }))
                       ->once();
     }

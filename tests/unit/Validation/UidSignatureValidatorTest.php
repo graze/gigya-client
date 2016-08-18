@@ -22,20 +22,14 @@ use Graze\Gigya\Validation\Signature;
 use Graze\Gigya\Validation\UidSignatureValidator;
 use Illuminate\Support\Collection;
 use Mockery as m;
-use Mockery\MockInterface;
 
 class UidSignatureValidatorTest extends TestCase
 {
     const SECRET = '8j9h0g-opko;dk]=id0f[sjo';
 
-    /**
-     * @var MockInterface|Signature
-     */
+    /** @var mixed */
     private $signature;
-
-    /**
-     * @var UidSignatureValidator
-     */
+    /** @var UidSignatureValidator */
     private $validator;
 
     public function setUp()
@@ -56,7 +50,7 @@ class UidSignatureValidatorTest extends TestCase
 
     public function testUidSignature()
     {
-        $response   = m::mock(ResponseInterface::class);
+        $response = m::mock(ResponseInterface::class);
         $collection = m::mock(Collection::class);
         $response->shouldReceive('getData')
                  ->andReturn($collection);
@@ -91,7 +85,7 @@ class UidSignatureValidatorTest extends TestCase
 
     public function testInvalidUidSignature()
     {
-        $response   = m::mock(ResponseInterface::class);
+        $response = m::mock(ResponseInterface::class);
         $collection = m::mock(Collection::class);
         $response->shouldReceive('getData')
                  ->andReturn($collection);
@@ -132,7 +126,7 @@ class UidSignatureValidatorTest extends TestCase
 
     public function testInvalidTimestamp()
     {
-        $response   = m::mock(ResponseInterface::class);
+        $response = m::mock(ResponseInterface::class);
         $collection = m::mock(Collection::class);
         $response->shouldReceive('getData')
                  ->andReturn($collection);
@@ -170,7 +164,7 @@ class UidSignatureValidatorTest extends TestCase
 
     public function testCanValidationReturnsFalseWhenTheRequiredFieldsAreNotPresent()
     {
-        $response   = m::mock(ResponseInterface::class);
+        $response = m::mock(ResponseInterface::class);
         $collection = m::mock(Collection::class);
         $response->shouldReceive('getData')
                  ->andReturn($collection);

@@ -30,7 +30,7 @@ class TestFixtures
     }
 
     /** @var array */
-    private static $fixtures = [
+    protected static $fixtures = [
         'accounts.getAccountInfo' => '{
   "UID": "_gid_30A3XVJciH95WEEnoRmfZS7ee3MY+lUAtpVxvUWNseU=",
   "UIDSignature": "HHPLo/TC7KobjnGB7JflcWvAXfg=",

@@ -28,9 +28,7 @@ class GigyaGrant implements GrantInterface
     private $userKey;
     /** @var AccessToken|null */
     private $token;
-    /**
-     * @var Gigya
-     */
+    /** @var Gigya */
     private $gigya;
 
     /**

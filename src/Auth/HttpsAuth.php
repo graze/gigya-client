@@ -15,9 +15,12 @@ namespace Graze\Gigya\Auth;
 
 use GuzzleHttp\Event\BeforeEvent;
 use GuzzleHttp\Event\RequestEvents;
+use GuzzleHttp\Event\SubscriberInterface;
 
-class GigyaHttpsAuth implements GigyaAuthInterface
+class HttpsAuth implements SubscriberInterface
 {
+    const AUTH_NAME = 'gigya';
+
     /**
      * @var string
      */
@@ -63,7 +66,7 @@ class GigyaHttpsAuth implements GigyaAuthInterface
     public function sign(BeforeEvent $event)
     {
         $request = $event->getRequest();
-        if ($request->getScheme() == 'https' && $request->getConfig()->get('auth') == 'gigya') {
+        if ($request->getScheme() == 'https' && $request->getConfig()->get('auth') == static::AUTH_NAME) {
             $query = $request->getQuery();
             $query['apiKey'] = $this->apiKey;
             $query['secret'] = $this->secret;

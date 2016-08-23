@@ -14,7 +14,9 @@
 namespace Graze\Gigya;
 
 use BadMethodCallException;
-use Graze\Gigya\Auth\GigyaHttpsAuth;
+use Graze\Gigya\Auth\HttpsAuth;
+use Graze\Gigya\Auth\OAuth2\GigyaGrant;
+use Graze\Gigya\Auth\OAuth2\Subscriber;
 use Graze\Gigya\Endpoint\Accounts;
 use Graze\Gigya\Endpoint\Audit;
 use Graze\Gigya\Endpoint\Client;
@@ -127,7 +129,10 @@ class Gigya
 
         if (!isset($config['auth']) || $config['auth'] == 'gigya') {
             $this->addOption('auth', 'gigya');
-            $this->addSubscriber(new GigyaHttpsAuth($apiKey, $secretKey, $userKey));
+            $this->addSubscriber(new HttpsAuth($apiKey, $secretKey, $userKey));
+        } elseif (isset($config['auth']) && $config['auth'] == 'gigya-oauth2') {
+            $this->addOption('auth', 'gigya-oauth2');
+            $this->addSubscriber(new Subscriber(new GigyaGrant($this, $apiKey, $secretKey, $userKey)));
         } else {
             $this->addOption('auth', $config['auth']);
         }

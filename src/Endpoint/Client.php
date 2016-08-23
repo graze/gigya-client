@@ -21,8 +21,6 @@ use Graze\Gigya\Validation\ResponseValidatorInterface;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\RequestException;
 
-// use Psr\Http\Message\ResponseInterface; Guzzle v6
-
 class Client
 {
     const DOMAIN = 'gigya.com';

@@ -11,24 +11,12 @@
  * @link    https://github.com/graze/gigya-client
  */
 
-namespace Graze\Gigya\Auth;
+namespace Graze\Gigya\Auth\OAuth2;
 
-use GuzzleHttp\Event\SubscriberInterface;
-
-interface GigyaAuthInterface extends SubscriberInterface
+interface GrantInterface
 {
     /**
-     * @return string
+     * @return AccessToken|null
      */
-    public function getApiKey();
-
-    /**
-     * @return string
-     */
-    public function getSecret();
-
-    /**
-     * @return string|null
-     */
-    public function getUserKey();
+    public function getToken();
 }

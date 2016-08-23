@@ -14,7 +14,7 @@
 namespace Graze\Gigya\Test\Unit\Auth;
 
 use Graze\Gigya\Auth\GigyaAuthInterface;
-use Graze\Gigya\Auth\GigyaHttpsAuth;
+use Graze\Gigya\Auth\HttpsAuth;
 use Graze\Gigya\Test\TestCase;
 use GuzzleHttp\Collection;
 use GuzzleHttp\Event\BeforeEvent;
@@ -24,18 +24,17 @@ use GuzzleHttp\Message\RequestInterface;
 use GuzzleHttp\Query;
 use Mockery as m;
 
-class GigyaHttpsAuthTest extends TestCase
+class HttpsAuthTest extends TestCase
 {
     public function testInstanceOf()
     {
-        $auth = new GigyaHttpsAuth('key', 'secret');
-        static::assertInstanceOf(GigyaAuthInterface::class, $auth);
+        $auth = new HttpsAuth('key', 'secret');
         static::assertInstanceOf(SubscriberInterface::class, $auth);
     }
 
     public function testGetEventsHandlesBeforeAndSignsRequest()
     {
-        $auth = new GigyaHttpsAuth('key', 'secret');
+        $auth = new HttpsAuth('key', 'secret');
         static::assertEquals(
             ['before' => ['sign', RequestEvents::SIGN_REQUEST]],
             $auth->getEvents()
@@ -67,7 +66,7 @@ class GigyaHttpsAuthTest extends TestCase
                ->with('auth')
                ->andReturn('gigya');
 
-        $auth = new GigyaHttpsAuth('key', 'secret');
+        $auth = new HttpsAuth('key', 'secret');
         $auth->sign($event);
     }
 
@@ -98,13 +97,13 @@ class GigyaHttpsAuthTest extends TestCase
                ->with('auth')
                ->andReturn('gigya');
 
-        $auth = new GigyaHttpsAuth('key', 'secret', 'user');
+        $auth = new HttpsAuth('key', 'secret', 'user');
         $auth->sign($event);
     }
 
     public function testAccessors()
     {
-        $auth = new GigyaHttpsAuth('key', 'secret', 'user');
+        $auth = new HttpsAuth('key', 'secret', 'user');
         static::assertEquals('key', $auth->getApiKey());
         static::assertEquals('secret', $auth->getSecret());
         static::assertEquals('user', $auth->getUserKey());
@@ -120,7 +119,7 @@ class GigyaHttpsAuthTest extends TestCase
         $request->shouldReceive('getScheme')
                 ->andReturn('http');
 
-        $auth = new GigyaHttpsAuth('key', 'secret', 'user');
+        $auth = new HttpsAuth('key', 'secret', 'user');
         $auth->sign($event);
     }
 
@@ -141,7 +140,7 @@ class GigyaHttpsAuthTest extends TestCase
                ->with('auth')
                ->andReturn('oauth');
 
-        $auth = new GigyaHttpsAuth('key', 'secret', 'user');
+        $auth = new HttpsAuth('key', 'secret', 'user');
         $auth->sign($event);
     }
 }

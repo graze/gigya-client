@@ -18,19 +18,23 @@ use GuzzleHttp\Event\ErrorEvent;
 use GuzzleHttp\Event\RequestEvents;
 use GuzzleHttp\Event\SubscriberInterface;
 
-class Subscriber implements SubscriberInterface
+class OAuth2Subscriber implements SubscriberInterface
 {
     const AUTH_NAME = 'gigya-oauth2';
 
     /** @var GrantInterface */
     private $grant;
+    /** @var string|null */
+    private $name;
 
     /**
      * @param GrantInterface $grant
+     * @param string|null    $name
      */
-    public function __construct(GrantInterface $grant)
+    public function __construct(GrantInterface $grant, $name = null)
     {
         $this->grant = $grant;
+        $this->name = $name ?: static::AUTH_NAME;
     }
 
     /**
@@ -55,7 +59,7 @@ class Subscriber implements SubscriberInterface
     {
         $request = $event->getRequest();
         if ($request->getScheme() == 'https'
-            && $request->getConfig()->get('auth') == static::AUTH_NAME
+            && $request->getConfig()->get('auth') == $this->name
         ) {
             $token = $this->grant->getToken();
 
@@ -74,7 +78,7 @@ class Subscriber implements SubscriberInterface
         if ($response && $response->getStatusCode() == 401) {
             $request = $event->getRequest();
             if ($request->getScheme() == 'https'
-                && $request->getConfig()->get('auth') == static::AUTH_NAME
+                && $request->getConfig()->get('auth') == $this->name
                 && !$request->getConfig()->get('retried')
             ) {
                 $token = $this->grant->getToken();

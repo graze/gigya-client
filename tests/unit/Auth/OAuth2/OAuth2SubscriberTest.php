@@ -15,7 +15,7 @@ namespace Graze\Gigya\Test\Unit\Auth\OAuth2;
 
 use Graze\Gigya\Auth\OAuth2\AccessToken;
 use Graze\Gigya\Auth\OAuth2\GrantInterface;
-use Graze\Gigya\Auth\OAuth2\Subscriber;
+use Graze\Gigya\Auth\OAuth2\OAuth2Subscriber;
 use Graze\Gigya\Test\TestCase;
 use GuzzleHttp\Collection;
 use GuzzleHttp\Event\BeforeEvent;
@@ -26,17 +26,17 @@ use GuzzleHttp\Message\RequestInterface;
 use GuzzleHttp\Message\ResponseInterface;
 use Mockery as m;
 
-class SubscriberTest extends TestCase
+class OAuth2SubscriberTest extends TestCase
 {
     /** @var mixed */
     private $grant;
-    /** @var Subscriber */
+    /** @var OAuth2Subscriber */
     private $subscriber;
 
     public function setUp()
     {
         $this->grant = m::mock(GrantInterface::class);
-        $this->subscriber = new Subscriber($this->grant);
+        $this->subscriber = new OAuth2Subscriber($this->grant);
     }
 
     public function testInstanceOf()

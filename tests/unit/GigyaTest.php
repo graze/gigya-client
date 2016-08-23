@@ -16,7 +16,7 @@ namespace Graze\Gigya\Test\Unit;
 use Exception;
 use Graze\Gigya\Auth\GigyaAuthInterface;
 use Graze\Gigya\Auth\HttpsAuth;
-use Graze\Gigya\Auth\OAuth2\Subscriber;
+use Graze\Gigya\Auth\OAuth2\OAuth2Subscriber;
 use Graze\Gigya\Gigya;
 use Graze\Gigya\Response\ResponseInterface;
 use Graze\Gigya\Test\TestCase;
@@ -194,7 +194,7 @@ class GigyaTest extends TestCase
                            ->andReturn($this->guzzleClient);
 
         $this->emitter->shouldReceive('attach')
-                      ->with(m::type(Subscriber::class))
+                      ->with(m::type(OAuth2Subscriber::class))
                       ->once();
 
         $response = m::mock('GuzzleHttp\Message\ResponseInterface');

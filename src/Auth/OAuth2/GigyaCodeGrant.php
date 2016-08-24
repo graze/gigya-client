@@ -17,17 +17,29 @@ class GigyaCodeGrant implements GrantInterface
     private $redirectUri;
     /** @var AccessToken|null */
     private $token;
+    /** @var string */
+    private $apiKey;
+    /** @var string */
+    private $secret;
+    /** @var string|null */
+    private $userKey;
 
     /**
-     * @param Gigya  $gigya
-     * @param string $code
-     * @param string $redirectUri
+     * @param Gigya       $gigya
+     * @param string      $code
+     * @param string      $redirectUri
+     * @param string      $apiKey
+     * @param string      $secret
+     * @param string|null $userKey
      */
-    public function __construct(Gigya $gigya, $code, $redirectUri)
+    public function __construct(Gigya $gigya, $code, $redirectUri, $apiKey, $secret, $userKey = null)
     {
         $this->gigya = $gigya;
         $this->code = $code;
         $this->redirectUri = $redirectUri;
+        $this->apiKey = $apiKey;
+        $this->secret = $secret;
+        $this->userKey = $userKey;
     }
 
     /**
@@ -37,9 +49,11 @@ class GigyaCodeGrant implements GrantInterface
     {
         if (is_null($this->token)) {
             $response = $this->gigya->socialize()->getToken([
-                'authorization_code' => $this->code,
-                'redirect_uri'       => $this->redirectUri,
-                'grant_type'         => 'code',
+                'client_id'     => $this->userKey ?: $this->apiKey,
+                'client_secret' => $this->secret,
+                'code'          => $this->code,
+                'redirect_uri'  => $this->redirectUri,
+                'grant_type'    => 'authorization_code',
             ], ['auth' => 'none']);
             if ($response->getErrorCode() == ErrorCode::OK) {
                 $data = $response->getData();

@@ -15,7 +15,7 @@ namespace Graze\Gigya\Test\Unit\Auth\OAuth2;
 
 use DateInterval;
 use DateTime;
-use Graze\Gigya\Auth\OAuth2\GigyaGrant;
+use Graze\Gigya\Auth\OAuth2\GigyaCodeGrant;
 use Graze\Gigya\Auth\OAuth2\GrantInterface;
 use Graze\Gigya\Gigya;
 use Graze\Gigya\Response\ErrorCode;
@@ -24,34 +24,39 @@ use Graze\Gigya\Test\TestCase;
 use Illuminate\Support\Collection;
 use Mockery as m;
 
-class GigyaGrantTest extends TestCase
+class GigyaCodeGrantTest extends TestCase
 {
     /** @var mixed */
     private $gigya;
-    /** @var GigyaGrant */
-    private $grant;
 
     /**
-     * @return GigyaGrant
+     * @param string $code
+     * @param string $uri
+     *
+     * @return GigyaCodeGrant
      */
-    public function setUp()
+    private function getGrant($code, $uri)
     {
         $this->gigya = m::mock(Gigya::class);
-        $this->grant = new GigyaGrant($this->gigya);
+        return new GigyaCodeGrant($this->gigya, $code, $uri);
     }
 
     public function testInstanceOf()
     {
-        static::assertInstanceOf(GrantInterface::class, $this->grant);
+        $grant = $this->getGrant('code', 'uri');
+        static::assertInstanceOf(GrantInterface::class, $grant);
     }
 
-    public function testGetTokenWhenOneHasNotBeenSet()
+    public function testGetToken()
     {
-        $response = m::mock(ResponseInterface::class);
+        $grant = $this->getGrant('code', 'uri');
 
+        $response = m::mock(ResponseInterface::class);
         $this->gigya->shouldReceive('socialize->getToken')
                     ->with([
-                        'grant_type' => 'none',
+                        'code'         => 'code',
+                        'redirect_uri' => 'uri',
+                        'grant_type'   => 'authorization_code',
                     ], ['auth' => 'credentials'])
                     ->andReturn($response);
 
@@ -60,9 +65,10 @@ class GigyaGrantTest extends TestCase
         $data = m::mock(Collection::class);
         $response->shouldReceive('getData')
                  ->andReturn($data);
+
         $data->shouldReceive('get')
              ->with('access_token')
-             ->andReturn('some_token');
+             ->andReturn('some_access_token');
         $data->shouldReceive('has')
              ->with('expires_in')
              ->andReturn(true);
@@ -70,24 +76,25 @@ class GigyaGrantTest extends TestCase
              ->with('expires_in', 0)
              ->andReturn(3600);
 
-        $token = $this->grant->getToken();
+        $token = $grant->getToken();
 
         $expires = (new DateTime())->add(new DateInterval(sprintf('PT%dS', 3600)));
 
-        static::assertEquals('some_token', $token->getToken());
+        static::assertEquals('some_access_token', $token->getToken());
         static::assertLessThanOrEqual($expires, $token->getExpires());
         static::assertFalse($token->isExpired());
-
-        static::assertSame($token, $this->grant->getToken(), 'Calling getToken again, should return the same token');
     }
 
-    public function testGetTokenWithNoExpiry()
+    public function testGetTokenWithNoExpiresReturnsAnUnExpiredToken()
     {
-        $response = m::mock(ResponseInterface::class);
+        $grant = $this->getGrant('code', 'uri');
 
+        $response = m::mock(ResponseInterface::class);
         $this->gigya->shouldReceive('socialize->getToken')
                     ->with([
-                        'grant_type' => 'none',
+                        'code'         => 'code',
+                        'redirect_uri' => 'uri',
+                        'grant_type'   => 'authorization_code',
                     ], ['auth' => 'credentials'])
                     ->andReturn($response);
 
@@ -96,84 +103,96 @@ class GigyaGrantTest extends TestCase
         $data = m::mock(Collection::class);
         $response->shouldReceive('getData')
                  ->andReturn($data);
+
         $data->shouldReceive('get')
              ->with('access_token')
-             ->andReturn('some_token');
+             ->andReturn('some_access_token');
         $data->shouldReceive('has')
              ->with('expires_in')
              ->andReturn(false);
 
-        $token = $this->grant->getToken();
+        $token = $grant->getToken();
 
-        static::assertEquals('some_token', $token->getToken());
+        static::assertEquals('some_access_token', $token->getToken());
         static::assertNull($token->getExpires());
         static::assertFalse($token->isExpired());
-
-        static::assertSame($token, $this->grant->getToken(), 'Calling getToken again, should return the same token');
     }
 
-    public function testGetTokenThatExpiresCallGetTokenAgain()
+    public function testGetTokenCalledTwiceWillAlwaysReturnTheOriginalToken()
     {
-        $response = m::mock(ResponseInterface::class);
+        $grant = $this->getGrant('code', 'uri');
 
+        $response = m::mock(ResponseInterface::class);
         $this->gigya->shouldReceive('socialize->getToken')
                     ->with([
-                        'grant_type' => 'none',
+                        'code'         => 'code',
+                        'redirect_uri' => 'uri',
+                        'grant_type'   => 'authorization_code',
                     ], ['auth' => 'credentials'])
-                    ->twice()
                     ->andReturn($response);
 
         $response->shouldReceive('getErrorCode')
-                 ->twice()
                  ->andReturn(ErrorCode::OK);
         $data = m::mock(Collection::class);
         $response->shouldReceive('getData')
                  ->andReturn($data);
+
         $data->shouldReceive('get')
              ->with('access_token')
-             ->twice()
-             ->andReturn('some_token');
+             ->andReturn('some_access_token');
         $data->shouldReceive('has')
              ->with('expires_in')
-             ->twice()
              ->andReturn(true);
         $data->shouldReceive('get')
              ->with('expires_in', 0)
-             ->twice()
              ->andReturn(0);
 
-        $token = $this->grant->getToken();
+        $token = $grant->getToken();
 
         $expires = new DateTime();
 
-        static::assertEquals('some_token', $token->getToken());
+        static::assertEquals('some_access_token', $token->getToken());
         static::assertLessThanOrEqual($expires, $token->getExpires());
         static::assertTrue($token->isExpired());
 
-        $newToken = $this->grant->getToken();
-
-        static::assertNotSame($token, $newToken, 'Calling getToken again, should return the same token');
-
-        static::assertEquals('some_token', $token->getToken());
-        static::assertLessThanOrEqual($expires, $token->getExpires());
-        static::assertTrue($token->isExpired());
+        static::assertSame($token, $grant->getToken());
     }
 
-    public function testNonOkResponseReturnsANullToken()
+    public function testGetTokenWithUserKey()
     {
-        $response = m::mock(ResponseInterface::class);
+        $grant = $this->getGrant('code', 'uri', 'siteKey', 'siteSecret', 'userKey');
 
+        $response = m::mock(ResponseInterface::class);
         $this->gigya->shouldReceive('socialize->getToken')
                     ->with([
-                        'grant_type' => 'none',
+                        'code'         => 'code',
+                        'redirect_uri' => 'uri',
+                        'grant_type'   => 'authorization_code',
                     ], ['auth' => 'credentials'])
                     ->andReturn($response);
 
         $response->shouldReceive('getErrorCode')
-                 ->andReturn(ErrorCode::ERROR_GENERAL_SERVER_ERROR);
+                 ->andReturn(ErrorCode::OK);
+        $data = m::mock(Collection::class);
+        $response->shouldReceive('getData')
+                 ->andReturn($data);
 
-        $token = $this->grant->getToken();
+        $data->shouldReceive('get')
+             ->with('access_token')
+             ->andReturn('some_access_token');
+        $data->shouldReceive('has')
+             ->with('expires_in')
+             ->andReturn(true);
+        $data->shouldReceive('get')
+             ->with('expires_in', null)
+             ->andReturn(3600);
 
-        static::assertNull($token);
+        $token = $grant->getToken();
+
+        $expires = (new DateTime())->add(new DateInterval(sprintf('PT%dS', 3600)));
+
+        static::assertEquals('some_access_token', $token->getToken());
+        static::assertLessThanOrEqual($expires, $token->getExpires());
+        static::assertFalse($token->isExpired());
     }
 }

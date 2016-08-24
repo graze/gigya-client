@@ -143,6 +143,13 @@ class GigyaTest extends TestCase
                            ->andReturn($this->guzzleClient);
 
         $this->emitter->shouldReceive('attach')
+                      ->with(m::type(HttpsAuth::class))
+                      ->once();
+        $this->emitter->shouldReceive('attach')
+                      ->with(m::type(CredentialsAuth::class))
+                      ->once();
+
+        $this->emitter->shouldReceive('attach')
                       ->with(m::type(ValidGigyaResponseSubscriber::class))
                       ->once();
 
@@ -193,6 +200,12 @@ class GigyaTest extends TestCase
                            ->andReturn($this->guzzleClient);
 
         $this->emitter->shouldReceive('attach')
+                      ->with(m::type(HttpsAuth::class))
+                      ->once();
+        $this->emitter->shouldReceive('attach')
+                      ->with(m::type(CredentialsAuth::class))
+                      ->once();
+        $this->emitter->shouldReceive('attach')
                       ->with(m::type(OAuth2Subscriber::class))
                       ->once();
 
@@ -242,6 +255,9 @@ class GigyaTest extends TestCase
                            ->once()
                            ->andReturn($this->guzzleClient);
 
+        $this->emitter->shouldReceive('attach')
+                      ->with(m::type(HttpsAuth::class))
+                      ->once();
         $this->emitter->shouldReceive('attach')
                       ->with(m::type(CredentialsAuth::class))
                       ->once();

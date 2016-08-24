@@ -129,22 +129,17 @@ class Gigya
         }
         $this->addOption('verify', __DIR__ . '/' . static::CERTIFICATE_FILE);
 
+        $this->addSubscriber(new HttpsAuth($apiKey, $secretKey, $userKey));
+        $this->addSubscriber(new CredentialsAuth($apiKey, $secretKey, $userKey));
+
         $auth = isset($config['auth']) ? $config['auth'] : 'gigya';
         switch ($auth) {
-            case 'gigya':
-                $this->addOption('auth', 'gigya');
-                $this->addSubscriber(new HttpsAuth($apiKey, $secretKey, $userKey));
-                break;
-            case 'credentials':
-                $this->addOption('auth', 'credentials');
-                $this->addSubscriber(new CredentialsAuth($apiKey, $secretKey, $userKey));
-                break;
             case 'gigya-oauth2':
                 $this->addOption('auth', 'gigya-oauth2');
                 $this->addSubscriber(new OAuth2Subscriber(new GigyaGrant($this, $apiKey, $secretKey, $userKey)));
                 break;
             default:
-                $this->addOption('auth', $config['auth']);
+                $this->addOption('auth', $auth);
                 break;
         }
 

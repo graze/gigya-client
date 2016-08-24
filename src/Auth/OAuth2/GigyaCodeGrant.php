@@ -18,22 +18,27 @@ use DateTime;
 use Graze\Gigya\Gigya;
 use Graze\Gigya\Response\ErrorCode;
 
-class GigyaGrant implements GrantInterface
+class GigyaCodeGrant implements GrantInterface
 {
-    /** @var AccessToken|null */
-    private $token;
     /** @var Gigya */
     private $gigya;
+    /** @var string */
+    private $code;
+    /** @var string */
+    private $redirectUri;
+    /** @var AccessToken|null */
+    private $token;
 
     /**
-     * GigyaGrant constructor.
-     *
-     * @param Gigya $gigya
+     * @param Gigya  $gigya
+     * @param string $code
+     * @param string $redirectUri
      */
-    public function __construct(Gigya $gigya)
+    public function __construct(Gigya $gigya, $code, $redirectUri)
     {
         $this->gigya = $gigya;
-        $this->token = null;
+        $this->code = $code;
+        $this->redirectUri = $redirectUri;
     }
 
     /**
@@ -41,13 +46,11 @@ class GigyaGrant implements GrantInterface
      */
     public function getToken()
     {
-        if (!is_null($this->token) && $this->token->isExpired()) {
-            $this->token = null;
-        }
-
         if (is_null($this->token)) {
             $response = $this->gigya->socialize()->getToken([
-                'grant_type' => 'none',
+                'code'         => $this->code,
+                'redirect_uri' => $this->redirectUri,
+                'grant_type'   => 'authorization_code',
             ], ['auth' => 'credentials']);
             if ($response->getErrorCode() == ErrorCode::OK) {
                 $data = $response->getData();

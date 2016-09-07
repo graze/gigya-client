@@ -31,9 +31,6 @@ class GigyaGrantTest extends TestCase
     /** @var GigyaGrant */
     private $grant;
 
-    /**
-     * @return GigyaGrant
-     */
     public function setUp()
     {
         $this->gigya = m::mock(Gigya::class);

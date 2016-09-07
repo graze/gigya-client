@@ -136,7 +136,7 @@ class Gigya
         switch ($auth) {
             case 'gigya-oauth2':
                 $this->addOption('auth', 'gigya-oauth2');
-                $this->addSubscriber(new OAuth2Subscriber(new GigyaGrant($this, $apiKey, $secretKey, $userKey)));
+                $this->addSubscriber(new OAuth2Subscriber(new GigyaGrant($this)));
                 break;
             default:
                 $this->addOption('auth', $auth);

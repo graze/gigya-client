@@ -11,6 +11,13 @@
 
 Client for Gigya's REST API
 
+* Endpoint call hierarchy: `$gigya->accounts()->tfa()->getCertificate()`
+* List of endpoints: `accounts`, `accounts->tfa`, `audit`, `socialize`, `comments`, `gameMechanics`, `reports`, `dataStore`, `identityStorage`, `saml`, `saml->idp`
+* Different authentication methods:
+  * `standard`: add api_key and secret to https web requests
+  * `gigya-oauth2`: gets an oauth2 token and uses that each time
+  * `custom`: provide you own token retrieved independently
+
 ## Install
 
 The simplest way to install the client is with composer and running:
@@ -26,20 +33,6 @@ $gigya = new Gigya($key, $secret);
 $response = $gigya->accounts()->getAccountInfo(['uid' => $uid]);
 $account = $response->getData();
 ```
-
-**Endpoints**
-
- - `accounts`
-   - `tfa`
- - `audit`
- - `socialize`
- - `comments`
- - `gameMechanics`
- - `reports`
- - `dataStore`
- - `identityStorage`
- - `saml`
-   - `idp`
 
 ### OAuth 2
 

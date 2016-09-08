@@ -14,9 +14,10 @@
 namespace Graze\Gigya\Test\Unit;
 
 use Exception;
-use Graze\Gigya\Auth\GigyaAuthInterface;
+use Graze\Gigya\Auth\CredentialsAuth;
+use Graze\Gigya\Auth\HttpsAuth;
+use Graze\Gigya\Auth\OAuth2\OAuth2Subscriber;
 use Graze\Gigya\Gigya;
-use Graze\Gigya\Response\ResponseInterface;
 use Graze\Gigya\Test\TestCase;
 use Graze\Gigya\Test\TestFixtures;
 use Graze\Gigya\Validation\ResponseValidatorInterface;
@@ -83,7 +84,7 @@ class GigyaTest extends TestCase
     private function setupSubscribers($key, $secret, $userKey = null)
     {
         $subscriber = function (SubscriberInterface $subscriber) use ($key, $secret, $userKey) {
-            if ($subscriber instanceof GigyaAuthInterface) {
+            if ($subscriber instanceof HttpsAuth) {
                 static::assertEquals($key, $subscriber->getApiKey());
                 static::assertEquals($secret, $subscriber->getSecret());
                 static::assertEquals($userKey, $subscriber->getUserKey());
@@ -142,6 +143,13 @@ class GigyaTest extends TestCase
                            ->andReturn($this->guzzleClient);
 
         $this->emitter->shouldReceive('attach')
+                      ->with(m::type(HttpsAuth::class))
+                      ->once();
+        $this->emitter->shouldReceive('attach')
+                      ->with(m::type(CredentialsAuth::class))
+                      ->once();
+
+        $this->emitter->shouldReceive('attach')
                       ->with(m::type(ValidGigyaResponseSubscriber::class))
                       ->once();
 
@@ -168,6 +176,117 @@ class GigyaTest extends TestCase
 
         $config = [
             'auth'         => 'oauth',
+            'uidValidator' => false,
+            'factory'      => $this->factory,
+            'guzzle'       => [
+                'emitter' => $this->emitter,
+            ],
+            'options'      => [
+                'cert' => 'some_cert.pem',
+            ],
+        ];
+        $client = new Gigya('key', 'secret', Gigya::DC_AU, null, $config);
+
+        static::assertSame($gigyaResponse, $client->accounts()->getAccountInfo());
+    }
+
+    public function testOAuth2AuthConstructor()
+    {
+        $this->guzzleClient->shouldReceive('__construct')
+                           ->once()
+                           ->with([
+                               'emitter' => $this->emitter,
+                           ])
+                           ->andReturn($this->guzzleClient);
+
+        $this->emitter->shouldReceive('attach')
+                      ->with(m::type(HttpsAuth::class))
+                      ->once();
+        $this->emitter->shouldReceive('attach')
+                      ->with(m::type(CredentialsAuth::class))
+                      ->once();
+        $this->emitter->shouldReceive('attach')
+                      ->with(m::type(OAuth2Subscriber::class))
+                      ->once();
+
+        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
+        $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('account.getAccountInfo'));
+
+        $this->guzzleClient->shouldReceive('get')
+                           ->with(
+                               'https://accounts.au1.gigya.com/accounts.getAccountInfo',
+                               [
+                                   'cert'   => 'some_cert.pem',
+                                   'auth'   => 'gigya-oauth2',
+                                   'verify' => $this->certPath,
+                                   'query'  => [],
+                               ]
+                           )
+                           ->andReturn($response);
+
+        $gigyaResponse = m::mock('Graze\Gigya\Response\ResponseInterface');
+
+        $this->factory->shouldReceive('getResponse')
+                      ->with($response)
+                      ->andReturn($gigyaResponse);
+
+        $config = [
+            'auth'         => 'gigya-oauth2',
+            'uidValidator' => false,
+            'factory'      => $this->factory,
+            'guzzle'       => [
+                'emitter' => $this->emitter,
+            ],
+            'options'      => [
+                'cert' => 'some_cert.pem',
+            ],
+        ];
+        $client = new Gigya('key', 'secret', Gigya::DC_AU, null, $config);
+
+        static::assertSame($gigyaResponse, $client->accounts()->getAccountInfo());
+    }
+
+    public function testCredentialsAuthConstructor()
+    {
+        $this->guzzleClient->shouldReceive('__construct')
+                           ->with([
+                               'emitter' => $this->emitter,
+                           ])
+                           ->once()
+                           ->andReturn($this->guzzleClient);
+
+        $this->emitter->shouldReceive('attach')
+                      ->with(m::type(HttpsAuth::class))
+                      ->once();
+        $this->emitter->shouldReceive('attach')
+                      ->with(m::type(CredentialsAuth::class))
+                      ->once();
+
+        $response = m::mock('GuzzleHttp\Message\ResponseInterface');
+        $response->shouldReceive('getBody')->andReturn(TestFixtures::getFixture('account.getAccountInfo'));
+
+        $this->guzzleClient->shouldReceive('get')
+                           ->with(
+                               'https://accounts.au1.gigya.com/accounts.getAccountInfo',
+                               [
+                                   'cert'   => 'some_cert.pem',
+                                   'auth'   => 'credentials',
+                                   'verify' => $this->certPath,
+                                   'query'  => [
+                                   ],
+                               ]
+                           )
+                           ->once()
+                           ->andReturn($response);
+
+        $gigyaResponse = m::mock('Graze\Gigya\Response\ResponseInterface');
+
+        $this->factory->shouldReceive('getResponse')
+                      ->with($response)
+                      ->andReturn($gigyaResponse);
+
+        $config = [
+            'auth'         => 'credentials',
             'uidValidator' => false,
             'factory'      => $this->factory,
             'guzzle'       => [

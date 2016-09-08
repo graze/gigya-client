@@ -13,8 +13,8 @@
 
 namespace Graze\Gigya\Test\Unit\Auth;
 
+use Graze\Gigya\Auth\CredentialsAuth;
 use Graze\Gigya\Auth\GigyaAuthInterface;
-use Graze\Gigya\Auth\GigyaHttpsAuth;
 use Graze\Gigya\Test\TestCase;
 use GuzzleHttp\Collection;
 use GuzzleHttp\Event\BeforeEvent;
@@ -24,18 +24,17 @@ use GuzzleHttp\Message\RequestInterface;
 use GuzzleHttp\Query;
 use Mockery as m;
 
-class GigyaHttpsAuthTest extends TestCase
+class CredentialsAuthTest extends TestCase
 {
     public function testInstanceOf()
     {
-        $auth = new GigyaHttpsAuth('key', 'secret');
-        static::assertInstanceOf(GigyaAuthInterface::class, $auth);
+        $auth = new CredentialsAuth('key', 'client_secret');
         static::assertInstanceOf(SubscriberInterface::class, $auth);
     }
 
     public function testGetEventsHandlesBeforeAndSignsRequest()
     {
-        $auth = new GigyaHttpsAuth('key', 'secret');
+        $auth = new CredentialsAuth('key', 'client_secret');
         static::assertEquals(
             ['before' => ['sign', RequestEvents::SIGN_REQUEST]],
             $auth->getEvents()
@@ -45,11 +44,11 @@ class GigyaHttpsAuthTest extends TestCase
     public function testKeyAndSecretIsPassedToParams()
     {
         $request = m::mock(RequestInterface::class);
-        $event   = m::mock(BeforeEvent::class);
+        $event = m::mock(BeforeEvent::class);
         $event->shouldReceive('getRequest')
               ->andReturn($request);
 
-        $query  = m::mock(Query::class);
+        $query = m::mock(Query::class);
         $config = m::mock(Collection::class);
 
         $request->shouldReceive('getScheme')
@@ -60,25 +59,25 @@ class GigyaHttpsAuthTest extends TestCase
                 ->andReturn($query);
 
         $query->shouldReceive('offsetSet')
-              ->with('apiKey', 'key');
+              ->with('client_id', 'key');
         $query->shouldReceive('offsetSet')
-              ->with('secret', 'secret');
+              ->with('client_secret', 'client_secret');
         $config->shouldReceive('get')
                ->with('auth')
-               ->andReturn('gigya');
+               ->andReturn('credentials');
 
-        $auth = new GigyaHttpsAuth('key', 'secret');
+        $auth = new CredentialsAuth('key', 'client_secret');
         $auth->sign($event);
     }
 
     public function testKeySecretAndUserKeyIsPassedToParams()
     {
         $request = m::mock(RequestInterface::class);
-        $event   = m::mock(BeforeEvent::class);
+        $event = m::mock(BeforeEvent::class);
         $event->shouldReceive('getRequest')
               ->andReturn($request);
 
-        $query  = m::mock(Query::class);
+        $query = m::mock(Query::class);
         $config = m::mock(Collection::class);
 
         $request->shouldReceive('getScheme')
@@ -89,45 +88,43 @@ class GigyaHttpsAuthTest extends TestCase
                 ->andReturn($query);
 
         $query->shouldReceive('offsetSet')
-              ->with('apiKey', 'key');
+              ->with('client_id', 'user');
         $query->shouldReceive('offsetSet')
-              ->with('secret', 'secret');
-        $query->shouldReceive('offsetSet')
-              ->with('userKey', 'user');
+              ->with('client_secret', 'client_secret');
         $config->shouldReceive('get')
                ->with('auth')
-               ->andReturn('gigya');
+               ->andReturn('credentials');
 
-        $auth = new GigyaHttpsAuth('key', 'secret', 'user');
+        $auth = new CredentialsAuth('key', 'client_secret', 'user');
         $auth->sign($event);
     }
 
     public function testAccessors()
     {
-        $auth = new GigyaHttpsAuth('key', 'secret', 'user');
+        $auth = new CredentialsAuth('key', 'client_secret', 'user');
         static::assertEquals('key', $auth->getApiKey());
-        static::assertEquals('secret', $auth->getSecret());
+        static::assertEquals('client_secret', $auth->getSecret());
         static::assertEquals('user', $auth->getUserKey());
     }
 
     public function testSubscriberDoesNotDoAnythingForNonHttpsRequests()
     {
         $request = m::mock(RequestInterface::class);
-        $event   = m::mock(BeforeEvent::class);
+        $event = m::mock(BeforeEvent::class);
         $event->shouldReceive('getRequest')
               ->andReturn($request);
 
         $request->shouldReceive('getScheme')
                 ->andReturn('http');
 
-        $auth = new GigyaHttpsAuth('key', 'secret', 'user');
+        $auth = new CredentialsAuth('key', 'client_secret', 'user');
         $auth->sign($event);
     }
 
     public function testSubscriberDoesNotDoAnythingForNonGigyaAuthRequests()
     {
         $request = m::mock(RequestInterface::class);
-        $event   = m::mock(BeforeEvent::class);
+        $event = m::mock(BeforeEvent::class);
         $event->shouldReceive('getRequest')
               ->andReturn($request);
 
@@ -141,7 +138,7 @@ class GigyaHttpsAuthTest extends TestCase
                ->with('auth')
                ->andReturn('oauth');
 
-        $auth = new GigyaHttpsAuth('key', 'secret', 'user');
+        $auth = new CredentialsAuth('key', 'client_secret', 'user');
         $auth->sign($event);
     }
 }

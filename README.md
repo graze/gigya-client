@@ -11,19 +11,53 @@
 
 Client for Gigya's REST API
 
+* Endpoint call hierarchy: `$gigya->accounts()->tfa()->getCertificate()`
+* List of endpoints: `accounts`, `accounts->tfa`, `audit`, `socialize`, `comments`, `gameMechanics`, `reports`, `dataStore`, `identityStorage`, `saml`, `saml->idp`
+* Different authentication methods:
+  * `standard`: add api_key and secret to https web requests
+  * `gigya-oauth2`: gets an oauth2 token and uses that each time
+  * `custom`: provide you own token retrieved independently
+
 ## Install
 
 The simplest way to install the client is with composer and running:
 
-``` bash
+```bash
 $ composer require graze/gigya-client
 ```
 
 ## Usage
 
-``` php
+```php
 $gigya = new Gigya($key, $secret);
 $response = $gigya->accounts()->getAccountInfo(['uid' => $uid]);
+$account = $response->getData();
+```
+
+### OAuth 2
+
+```php
+$gigya = new Gigya($key, $secret, $region, $user, ['auth'=>'gigya-oauth2']);
+$response = $gigya->accounts()->getAccountInfo(['uid' => $uid]);
+$account = $response->getData();
+```
+
+#### Social OAuth 2
+
+```php
+$grant = new ManualGrant();
+$gigya = new Gigya($key, $secret, $region, null, ['auth' => 'oauth2-custom']);
+$gigya->addSubscriber(new OAuth2Subscriber($grant));
+
+$tokenResponse = $gigya->socialize()->getToken([
+    'grant_type' => 'code',
+    'authorization_code' => '<xxxxx>',
+    'redirect_uri' => '<xxxxx>',
+], ['auth' => 'credentials']);
+
+$grant->setToken($tokenResponse->getData()->get('access_token'));
+
+$response = $gigya->accounts()->getAccountInfo();
 $account = $response->getData();
 ```
 
@@ -33,7 +67,7 @@ Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recen
 
 ## Testing
 
-``` bash
+```bash
 $ make install
 $ make test
 ```
@@ -44,7 +78,7 @@ Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ## Security
 
-If you discover any security related issues, please email harry.bragg@graze.com instead of using the issue tracker.
+If you discover any security related issues, please email [security@graze.com](security@graze.com) instead of using the issue tracker.
 
 ## Credits
 

@@ -14,7 +14,10 @@
 namespace Graze\Gigya;
 
 use BadMethodCallException;
-use Graze\Gigya\Auth\GigyaHttpsAuth;
+use Graze\Gigya\Auth\CredentialsAuth;
+use Graze\Gigya\Auth\HttpsAuth;
+use Graze\Gigya\Auth\OAuth2\GigyaGrant;
+use Graze\Gigya\Auth\OAuth2\OAuth2Subscriber;
 use Graze\Gigya\Endpoint\Accounts;
 use Graze\Gigya\Endpoint\Audit;
 use Graze\Gigya\Endpoint\Client;
@@ -108,7 +111,8 @@ class Gigya
      * @param string|null $userKey
      * @param array       $config     Gigya configuration:
      *                                - auth <string> (Default: gigya) Type of authentication, gigya (HttpsAuth) is the
-     *                                default
+     *                                default. 'credentials' provides `client_id,client_secret` params, 'gigya-oauth2'
+     *                                uses an oauth2 access token
      *                                - uidValidator <bool> (Default: true) Include Uid Signature Validation
      *                                - factory <object> (Default: null) A ResponseFactoryInterface to use, if none is
      *                                provided ResponseFactory will be used
@@ -125,11 +129,18 @@ class Gigya
         }
         $this->addOption('verify', __DIR__ . '/' . static::CERTIFICATE_FILE);
 
-        if (!isset($config['auth']) || $config['auth'] == 'gigya') {
-            $this->addOption('auth', 'gigya');
-            $this->addSubscriber(new GigyaHttpsAuth($apiKey, $secretKey, $userKey));
-        } else {
-            $this->addOption('auth', $config['auth']);
+        $this->addSubscriber(new HttpsAuth($apiKey, $secretKey, $userKey));
+        $this->addSubscriber(new CredentialsAuth($apiKey, $secretKey, $userKey));
+
+        $auth = isset($config['auth']) ? $config['auth'] : 'gigya';
+        switch ($auth) {
+            case 'gigya-oauth2':
+                $this->addOption('auth', 'gigya-oauth2');
+                $this->addSubscriber(new OAuth2Subscriber(new GigyaGrant($this)));
+                break;
+            default:
+                $this->addOption('auth', $auth);
+                break;
         }
 
         if (!isset($config['uidValidator']) || $config['uidValidator'] === true) {

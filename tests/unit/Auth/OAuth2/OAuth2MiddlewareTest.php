@@ -39,7 +39,7 @@ class OAuth2MiddlewareTest extends TestCase
     public function testSign()
     {
         $h = new MockHandler([
-            function (RequestInterface $request, array $options) {
+            function (RequestInterface $request) {
                 $this->assertEquals('OAuth test', $request->getHeaderLine('Authorization'));
                 return new Response(200);
             },
@@ -61,7 +61,7 @@ class OAuth2MiddlewareTest extends TestCase
     public function testErrorThatIsNot401()
     {
         $h = new MockHandler([
-            function (RequestInterface $request, array $options) {
+            function (RequestInterface $request) {
                 $this->assertEquals('OAuth test', $request->getHeaderLine('Authorization'));
                 return new Response(503);
             },
@@ -145,7 +145,7 @@ class OAuth2MiddlewareTest extends TestCase
     public function testErrorThatIsNotOauthAuth()
     {
         $h = new MockHandler([
-            function (RequestInterface $request, array $options) {
+            function (RequestInterface $request) {
                 $this->assertEquals('', $request->getHeaderLine('Authorization'));
                 return new Response(401);
             },
@@ -167,7 +167,7 @@ class OAuth2MiddlewareTest extends TestCase
     public function testErrorWhenNoTokenIsReturnedWillNotIntercept()
     {
         $h = new MockHandler([
-            function (RequestInterface $request, array $options) {
+            function (RequestInterface $request) {
                 $this->assertEquals('', $request->getHeaderLine('Authorization'));
                 return new Response(401);
             },

@@ -21,16 +21,13 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Mockery as m;
-use Psr\Http\Message\RequestInterface;
 
 class ValidGigyaResponseMiddlewareTest extends TestCase
 {
     public function testValidResponse()
     {
         $h = new MockHandler([
-            function (RequestInterface $request, array $options) {
-                return new Response(200, [], TestFixtures::getFixture('accounts.search_simple'));
-            },
+            new Response(200, [], TestFixtures::getFixture('accounts.search_simple')),
         ]);
 
         $m = ValidGigyaResponseMiddleware::middleware();
@@ -42,9 +39,7 @@ class ValidGigyaResponseMiddlewareTest extends TestCase
     public function testMissingFieldWillThrowAnException()
     {
         $h = new MockHandler([
-            function (RequestInterface $request, array $options) {
-                return new Response(200, [], TestFixtures::getFixture('missing_field'));
-            },
+            new Response(200, [], TestFixtures::getFixture('missing_field')),
         ]);
 
         $this->expectException(UnknownResponseException::class);
@@ -59,9 +54,7 @@ class ValidGigyaResponseMiddlewareTest extends TestCase
     public function testNoBodyWillFail()
     {
         $h = new MockHandler([
-            function (RequestInterface $request, array $options) {
-                return new Response(200);
-            },
+            new Response(200),
         ]);
 
         $this->expectException(UnknownResponseException::class);
@@ -76,9 +69,7 @@ class ValidGigyaResponseMiddlewareTest extends TestCase
     public function testInvalidBody()
     {
         $h = new MockHandler([
-            function (RequestInterface $request, array $options) {
-                return new Response(200, [], TestFixtures::getFixture('invalid_json'));
-            },
+            new Response(200, [], TestFixtures::getFixture('invalid_json')),
         ]);
 
         $this->expectException(UnknownResponseException::class);
@@ -93,11 +84,7 @@ class ValidGigyaResponseMiddlewareTest extends TestCase
     public function testUnknownResponseContainsTheOriginalResponse()
     {
         $response = new Response(200, [], TestFixtures::getFixture('invalid_json'));
-        $h = new MockHandler([
-            function (RequestInterface $request, array $options) use ($response) {
-                return $response;
-            },
-        ]);
+        $h = new MockHandler([$response]);
 
         $m = ValidGigyaResponseMiddleware::middleware();
 

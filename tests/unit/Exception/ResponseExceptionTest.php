@@ -39,11 +39,9 @@ class ResponseExceptionTest extends TestCase
                  ->andReturn('some description from the response');
         $exception = new ResponseException($response);
 
-        static::setExpectedException(
-            ResponseException::class,
-            'some description from the response',
-            100001
-        );
+        static::expectException(ResponseException::class);
+        static::expectExceptionMessage('some description from the response');
+        static::expectExceptionCode(100001);
 
         throw $exception;
     }

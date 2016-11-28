@@ -29,9 +29,6 @@ use Psr\Http\Message\RequestInterface;
 
 class GigyaTest extends TestCase
 {
-    /** @var Collection List of responses from the server */
-    private $store;
-
     /**
      * @param string|null $body Optional body text
      *
@@ -39,7 +36,6 @@ class GigyaTest extends TestCase
      */
     public function setupHandler($body = null)
     {
-        $this->store = new Collection();
         $mockHandler = new MockHandler(array_pad(
             [],
             3,
@@ -57,13 +53,14 @@ class GigyaTest extends TestCase
     {
         $handler = $this->setupHandler();
         $client = new Gigya('key', 'secret', null, null, ['guzzle' => ['handler' => $handler]]);
-        $handler->push(Middleware::history($this->store));
+        $store = new Collection();
+        $handler->push(Middleware::history($store));
 
         $response = $client->accounts()->getAccountInfo();
 
         static::assertEquals(0, $response->getErrorCode());
-        static::assertCount(1, $this->store);
-        $log = $this->store->last();
+        static::assertCount(1, $store);
+        $log = $store->last();
         static::assertEquals(
             'https://accounts.eu1.gigya.com/accounts.getAccountInfo',
             $log['request']->getUri()->__toString()
@@ -79,13 +76,14 @@ class GigyaTest extends TestCase
     {
         $handler = $this->setupHandler();
         $client = new Gigya('key', 'secret', null, 'userKey', ['guzzle' => ['handler' => $handler]]);
-        $handler->push(Middleware::history($this->store));
+        $store = new Collection();
+        $handler->push(Middleware::history($store));
 
         $response = $client->accounts()->getAccountInfo();
 
         static::assertEquals(0, $response->getErrorCode());
-        static::assertCount(1, $this->store);
-        $log = $this->store->last();
+        static::assertCount(1, $store);
+        $log = $store->last();
         static::assertArrayHasKey('request', $log);
         /** @var RequestInterface $request */
         $request = $log['request'];
@@ -129,12 +127,13 @@ class GigyaTest extends TestCase
 
         $handler = $this->setupHandler($body);
         $client = new Gigya('key', 'secret', null, null, ['guzzle' => ['handler' => $handler]]);
-        $handler->push(Middleware::history($this->store));
+        $store = new Collection();
+        $handler->push(Middleware::history($store));
 
         $response = $client->accounts()->getAccountInfo(['uid' => $uid]);
         static::assertEquals(0, $response->getErrorCode());
-        static::assertCount(1, $this->store);
-        $log = $this->store->last();
+        static::assertCount(1, $store);
+        $log = $store->last();
         static::assertEquals(
             "https://accounts.eu1.gigya.com/accounts.getAccountInfo?uid=$uid",
             $log['request']->getUri()->__toString()

@@ -101,6 +101,11 @@ class Gigya
     private $guzzle;
 
     /**
+     * @var HandlerStack
+     */
+    private $handlerStack;
+
+    /**
      * @param string      $apiKey
      * @param string      $secretKey
      * @param string|null $dataCenter
@@ -117,14 +122,14 @@ class Gigya
      */
     public function __construct($apiKey, $secretKey, $dataCenter = null, $userKey = null, array $config = [])
     {
-        $this->guzzleConfig = (isset($config['guzzle'])) ? $config['guzzle'] : [];
+        $guzzleConfig = (isset($config['guzzle'])) ? $config['guzzle'] : [];
 
-        if (!isset($this->guzzleConfig['handler'])) {
-            $this->guzzleConfig['handler'] = new HandlerStack(new CurlHandler());
+        if (!isset($guzzleConfig['handler'])) {
+            $guzzleConfig['handler'] = new HandlerStack(new CurlHandler());
         }
-        $this->handlerStack = $this->guzzleConfig['handler'];
+        $this->handlerStack = $guzzleConfig['handler'];
 
-        $this->guzzle = new GuzzleClient($this->guzzleConfig);
+        $this->guzzle = new GuzzleClient($guzzleConfig);
 
         if (isset($config['options'])) {
             $this->addOptions($config['options']);

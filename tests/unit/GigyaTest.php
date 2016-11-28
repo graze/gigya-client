@@ -384,9 +384,7 @@ class GigyaTest extends TestCase
                 'query'  => [
                     'params' => 'passedThrough',
                 ],
-            ],
-            'key',
-            'secret'
+            ]
         );
         $client = $this->createClient();
 

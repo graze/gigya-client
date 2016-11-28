@@ -13,11 +13,10 @@
 
 namespace Graze\Gigya\Auth;
 
-use GuzzleHttp\Event\BeforeEvent;
-use GuzzleHttp\Event\RequestEvents;
-use GuzzleHttp\Event\SubscriberInterface;
+use Closure;
+use Psr\Http\Message\RequestInterface;
 
-class HttpsAuth implements SubscriberInterface
+class HttpsAuthMiddleware
 {
     const AUTH_NAME = 'gigya';
 
@@ -35,45 +34,46 @@ class HttpsAuth implements SubscriberInterface
      * @var null|string
      */
     private $userKey;
+    /**
+     * @var callable
+     */
+    private $nextHandler;
 
     /**
+     * @param callable    $nextHandler
      * @param string      $apiKey
      * @param string      $secret
      * @param string|null $userKey
      */
-    public function __construct($apiKey, $secret, $userKey = null)
+    public function __construct(callable $nextHandler, $apiKey, $secret, $userKey = null)
     {
+        $this->nextHandler = $nextHandler;
         $this->apiKey = $apiKey;
         $this->secret = $secret;
         $this->userKey = $userKey;
     }
 
     /**
-     * Returns an array of event names this subscriber wants to listen to.
+     * Inject the https auth into the query string
      *
-     * @return array
-     */
-    public function getEvents()
-    {
-        return ['before' => ['sign', RequestEvents::SIGN_REQUEST]];
-    }
-
-    /**
-     * Add the authentication params to the request.
+     * @param RequestInterface $request
+     * @param array            $options
      *
-     * @param BeforeEvent $event
+     * @return Closure
      */
-    public function sign(BeforeEvent $event)
+    public function __invoke(RequestInterface $request, array $options)
     {
-        $request = $event->getRequest();
-        if ($request->getScheme() == 'https' && $request->getConfig()->get('auth') == static::AUTH_NAME) {
-            $query = $request->getQuery();
+        if ($request->getUri()->getScheme() == 'https' && $options['auth'] == static::AUTH_NAME) {
+            $query = isset($options['query']) ? $options['query'] : [];
             $query['apiKey'] = $this->apiKey;
             $query['secret'] = $this->secret;
             if ((bool) $this->userKey) {
                 $query['userKey'] = $this->userKey;
             }
+            $options['query'] = $query;
         }
+        $fn = $this->nextHandler;
+        return $fn($request, $options);
     }
 
     /**
@@ -98,5 +98,21 @@ class HttpsAuth implements SubscriberInterface
     public function getUserKey()
     {
         return $this->userKey;
+    }
+
+    /**
+     * Return a middleware handler function for https Authentication
+     *
+     * @param string      $apiKey
+     * @param string      $secret
+     * @param string|null $userKey
+     *
+     * @return Closure
+     */
+    public static function middleware($apiKey, $secret, $userKey = null)
+    {
+        return function (callable $handler) use ($apiKey, $secret, $userKey) {
+            return new static($handler, $apiKey, $secret, $userKey);
+        };
     }
 }

@@ -20,10 +20,10 @@ install: ## Download the dependencies then build the image :rocket:.
 
 composer-%: ## Run a composer command, `make "composer-<command> [...]"`.
 	${DOCKER} run -t --rm \
-        -v $$(pwd):/usr/src/app \
+        -v $$(pwd):/app \
         -v ~/.composer:/root/composer \
         -v ~/.ssh:/root/.ssh:ro \
-        graze/composer --ansi --no-interaction $* $(filter-out $@,$(MAKECMDGOALS))
+        composer/composer:alpine --ansi --no-interaction $* $(filter-out $@,$(MAKECMDGOALS))
 
 clean: ## Clean up any images.
 	$(DOCKER) rmi ${DOCKER_REPOSITORY}:latest

@@ -13,7 +13,7 @@
 
 namespace Graze\Gigya\Response;
 
-use GuzzleHttp\Message\ResponseInterface as GuzzleResponseInterface;
+use Psr\Http\Message\ResponseInterface as GuzzleResponseInterface;
 
 interface ResponseFactoryInterface
 {

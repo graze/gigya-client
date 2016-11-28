@@ -14,10 +14,8 @@
 namespace Graze\Gigya\Response;
 
 use DateTimeInterface;
-use GuzzleHttp\Message\ResponseInterface as GuzzleResponseInterface;
 use Illuminate\Support\Collection;
-
-// use Psr\Http\Message\ResponseInterface; Guzzle v6
+use Psr\Http\Message\ResponseInterface as GuzzleResponseInterface;
 
 interface ResponseInterface
 {

@@ -14,10 +14,10 @@
 namespace Graze\Gigya;
 
 use BadMethodCallException;
-use Graze\Gigya\Auth\CredentialsAuth;
-use Graze\Gigya\Auth\HttpsAuth;
+use Graze\Gigya\Auth\CredentialsAuthMiddleware;
+use Graze\Gigya\Auth\HttpsAuthMiddleware;
 use Graze\Gigya\Auth\OAuth2\GigyaGrant;
-use Graze\Gigya\Auth\OAuth2\OAuth2Subscriber;
+use Graze\Gigya\Auth\OAuth2\OAuth2Middleware;
 use Graze\Gigya\Endpoint\Accounts;
 use Graze\Gigya\Endpoint\Audit;
 use Graze\Gigya\Endpoint\Client;
@@ -34,7 +34,8 @@ use Graze\Gigya\Validation\Signature;
 use Graze\Gigya\Validation\UidSignatureValidator;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Event\SubscriberInterface;
+use GuzzleHttp\Handler\CurlHandler;
+use GuzzleHttp\HandlerStack;
 
 class Gigya
 {
@@ -90,11 +91,6 @@ class Gigya
     protected $validators = [];
 
     /**
-     * @var SubscriberInterface[]
-     */
-    protected $subscribers = [];
-
-    /**
      * @var ResponseFactoryInterface
      */
     protected $factory = null;
@@ -110,9 +106,9 @@ class Gigya
      * @param string|null $dataCenter
      * @param string|null $userKey
      * @param array       $config     Gigya configuration:
-     *                                - auth <string> (Default: gigya) Type of authentication, gigya (HttpsAuth) is the
-     *                                default. 'credentials' provides `client_id,client_secret` params, 'gigya-oauth2'
-     *                                uses an oauth2 access token
+     *                                - auth <string> (Default: gigya) Type of authentication, gigya
+     *                                (HttpsAuthMiddleware) is the default. 'credentials' provides
+     *                                `client_id,client_secret` params, 'gigya-oauth2' uses an oauth2 access token
      *                                - uidValidator <bool> (Default: true) Include Uid Signature Validation
      *                                - factory <object> (Default: null) A ResponseFactoryInterface to use, if none is
      *                                provided ResponseFactory will be used
@@ -121,22 +117,28 @@ class Gigya
      */
     public function __construct($apiKey, $secretKey, $dataCenter = null, $userKey = null, array $config = [])
     {
-        $guzzleConfig = (isset($config['guzzle'])) ? $config['guzzle'] : [];
-        $this->guzzle = new GuzzleClient($guzzleConfig);
+        $this->guzzleConfig = (isset($config['guzzle'])) ? $config['guzzle'] : [];
+
+        if (!isset($this->guzzleConfig['handler'])) {
+            $this->guzzleConfig['handler'] = new HandlerStack(new CurlHandler());
+        }
+        $this->handlerStack = $this->guzzleConfig['handler'];
+
+        $this->guzzle = new GuzzleClient($this->guzzleConfig);
 
         if (isset($config['options'])) {
             $this->addOptions($config['options']);
         }
         $this->addOption('verify', __DIR__ . '/' . static::CERTIFICATE_FILE);
 
-        $this->addSubscriber(new HttpsAuth($apiKey, $secretKey, $userKey));
-        $this->addSubscriber(new CredentialsAuth($apiKey, $secretKey, $userKey));
+        $this->addHandler(HttpsAuthMiddleware::middleware($apiKey, $secretKey, $userKey));
+        $this->addHandler(CredentialsAuthMiddleware::middleware($apiKey, $secretKey, $userKey));
 
         $auth = isset($config['auth']) ? $config['auth'] : 'gigya';
         switch ($auth) {
             case 'gigya-oauth2':
                 $this->addOption('auth', 'gigya-oauth2');
-                $this->addSubscriber(new OAuth2Subscriber(new GigyaGrant($this)));
+                $this->addHandler(OAuth2Middleware::middleware(new GigyaGrant($this)));
                 break;
             default:
                 $this->addOption('auth', $auth);
@@ -201,25 +203,25 @@ class Gigya
     }
 
     /**
-     * @param SubscriberInterface $subscriber
+     * @param callable $handler
      *
      * @return $this
      */
-    public function addSubscriber(SubscriberInterface $subscriber)
+    public function addHandler(callable $handler)
     {
-        $this->guzzle->getEmitter()->attach($subscriber);
+        $this->handlerStack->push($handler);
 
         return $this;
     }
 
     /**
-     * @param SubscriberInterface $subscriber
+     * @param callable $handler
      *
      * @return $this
      */
-    public function removeSubscriber(SubscriberInterface $subscriber)
+    public function removeHandler(callable $handler)
     {
-        $this->guzzle->getEmitter()->detach($subscriber);
+        $this->handlerStack->remove($handler);
 
         return $this;
     }

@@ -16,10 +16,8 @@ namespace Graze\Gigya\Response;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Graze\Gigya\Gigya;
-use GuzzleHttp\Message\ResponseInterface as GuzzleResponseInterface;
 use Illuminate\Support\Collection;
-
-// use Psr\Http\Message\ResponseInterface; Guzzle v6
+use Psr\Http\Message\ResponseInterface as GuzzleResponseInterface;
 
 class Response implements ResponseInterface
 {
@@ -79,7 +77,7 @@ class Response implements ResponseInterface
     public function __construct(GuzzleResponseInterface $response)
     {
         $this->response = $response;
-        $this->body = (object) $response->json(['object' => true]);
+        $this->body = json_decode($response->getBody());
         $this->errorCode = (int) $this->popField('errorCode');
         $this->errorMessage = $this->popField('errorMessage');
         $this->errorDetails = $this->popField('errorDetails');

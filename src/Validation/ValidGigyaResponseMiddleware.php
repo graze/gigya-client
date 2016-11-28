@@ -13,16 +13,13 @@
 
 namespace Graze\Gigya\Validation;
 
+use Closure;
 use Graze\Gigya\Exception\InvalidTimestampException;
 use Graze\Gigya\Exception\UnknownResponseException;
-use GuzzleHttp\Event\CompleteEvent;
-use GuzzleHttp\Event\RequestEvents;
-use GuzzleHttp\Event\SubscriberInterface;
-use GuzzleHttp\Message\ResponseInterface as GuzzleResponseInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface as GuzzleResponseInterface;
 
-// use Psr\Http\Message\ResponseInterface; Guzzle v6
-
-class ValidGigyaResponseSubscriber implements SubscriberInterface
+class ValidGigyaResponseMiddleware
 {
     /**
      * @var string[]
@@ -34,6 +31,41 @@ class ValidGigyaResponseSubscriber implements SubscriberInterface
         'callId',
         'time',
     ];
+
+    /**
+     * @var callable
+     */
+    private $handler;
+
+    /**
+     * ValidGigyaResponseMiddleware constructor.
+     *
+     * @param callable $handler
+     */
+    public function __construct(callable $handler)
+    {
+        $this->handler = $handler;
+    }
+
+    /**
+     * Return the handler to assert that the response returned is valid
+     *
+     * @param RequestInterface $request
+     * @param array            $options
+     *
+     * @return Closure
+     */
+    public function __invoke(RequestInterface $request, array $options)
+    {
+        $fn = $this->handler;
+        return $fn($request, $options)
+            ->then(
+                function (GuzzleResponseInterface $response) {
+                    $this->assert($response);
+                    return $response;
+                }
+            );
+    }
 
     /**
      * @param GuzzleResponseInterface $response
@@ -58,32 +90,14 @@ class ValidGigyaResponseSubscriber implements SubscriberInterface
     }
 
     /**
-     * List of events to listen for
+     * Returns a Middleware handler functions for this class
      *
-     * @return array
+     * @return Closure
      */
-    public function getEvents()
+    public static function middleware()
     {
-        return ['complete' => ['onComplete', RequestEvents::VERIFY_RESPONSE]];
-    }
-
-    /**
-     * When the response is complete, validate it against our current knowledge of what a gigya response shoud look
-     * like.
-     *
-     * @param CompleteEvent $event
-     *
-     * @throws InvalidTimestampException
-     * @throws UnknownResponseException
-     */
-    public function onComplete(CompleteEvent $event)
-    {
-        $response = $event->getResponse();
-
-        if (is_null($response)) {
-            throw new UnknownResponseException($response, 'No response provided');
-        }
-
-        $this->assert($response);
+        return function (callable $handler) {
+            return new static($handler);
+        };
     }
 }

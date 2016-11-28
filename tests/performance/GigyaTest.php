@@ -17,7 +17,9 @@ use Graze\Gigya\Gigya;
 use Graze\Gigya\Test\TestCase;
 use Graze\Gigya\Test\TestFixtures;
 use Graze\Gigya\Validation\Signature;
-use GuzzleHttp\Ring\Client\MockHandler;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 
 /**
  * @group performance
@@ -41,49 +43,50 @@ class GigyaTest extends TestCase
 
     public function createBasicHandler()
     {
-        $handler = new MockHandler([
-            'status' => 200,
-            'body'   => TestFixtures::getFixture('basic'),
-        ]);
+        $handler = new MockHandler(array_pad([], 1000, new Response(200, [], TestFixtures::getFixture('basic'))));
         $this->gigya = new Gigya('key', 'secret', null, null, [
             'guzzle' => [
-                'handler' => $handler,
+                'handler' => new HandlerStack($handler),
             ],
         ]);
     }
 
     public function createAccountInfoHandler()
     {
-        $handler = new MockHandler(function () {
-            $uid = 'diofu90ifgdf';
-            $timestamp = time();
+        $handler = new MockHandler();
+        for ($i = 0; $i < 1000; $i++) {
+            $handler->append(function () {
+                $uid = 'diofu90ifgdf';
+                $timestamp = time();
 
-            $signatureValidator = new Signature();
-            $signature = $signatureValidator->calculateSignature($timestamp . '_' . $uid, 'secret');
+                $signatureValidator = new Signature();
+                $signature = $signatureValidator->calculateSignature($timestamp . '_' . $uid, 'secret');
 
-            return [
-                'status' => 200,
-                'body'   => sprintf(
-                    '{
-            "UID": "%s",
-            "UIDSignature": "%s",
-            "signatureTimestamp": "%d",
-            "statusCode": 200,
-            "errorCode": 0,
-            "statusReason": "OK",
-            "callId": "123456",
-            "time": "2015-03-22T11:42:25.943Z"
-        }',
-                    $uid,
-                    $signature,
-                    $timestamp
-                ),
-            ];
-        });
+                return new Response(
+                    200,
+                    [],
+                    sprintf(
+                        '{
+                    "UID": "%s",
+                    "UIDSignature": "%s",
+                    "signatureTimestamp": "%d",
+                    "statusCode": 200,
+                    "errorCode": 0,
+                    "statusReason": "OK",
+                    "callId": "123456",
+                    "time": "2015-03-22T11:42:25.943Z"
+                }',
+                        $uid,
+                        $signature,
+                        $timestamp
+                    )
+                );
+            });
+        }
 
         $this->gigya = new Gigya('key', 'secret', null, null, [
             'guzzle' => [
-                'handler' => $handler,
+                'handler' => new HandlerStack($handler),
             ],
         ]);
     }

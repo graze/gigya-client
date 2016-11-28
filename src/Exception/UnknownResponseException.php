@@ -14,9 +14,7 @@
 namespace Graze\Gigya\Exception;
 
 use Exception;
-use GuzzleHttp\Message\ResponseInterface as GuzzleResponseInterface;
-
-// use Psr\Http\Message\ResponseInterface; Guzzle v6
+use Psr\Http\Message\ResponseInterface as GuzzleResponseInterface;
 
 class UnknownResponseException extends Exception
 {
@@ -33,7 +31,7 @@ class UnknownResponseException extends Exception
     public function __construct(GuzzleResponseInterface $response = null, $message = '', Exception $previous = null)
     {
         $message = "The contents of the response could not be determined. {$message}" .
-            ($response ? "\n Body:\n" . $response->getBody() : '');
+            ($response ? "\n Body:\n" . $response->getBody()->getContents() : '');
 
         $this->response = $response;
 

@@ -27,7 +27,7 @@ class CredentialsAuthMiddlewareTest extends TestCase
 {
     public function testKeyAndSecretIsPassedToParams()
     {
-        $h = new MockHandler([
+        $handler = new MockHandler([
             function (RequestInterface $request, array $options) {
                 $this->assertEquals('key', $options['query']['client_id']);
                 $this->assertEquals('client_secret', $options['query']['client_secret']);
@@ -35,18 +35,18 @@ class CredentialsAuthMiddlewareTest extends TestCase
             },
         ]);
 
-        $stack = new HandlerStack($h);
+        $stack = new HandlerStack($handler);
         $stack->push(CredentialsAuthMiddleware::middleware('key', 'client_secret'));
 
         $comp = $stack->resolve();
 
-        $p = $comp(new Request('GET', 'https://example.com'), ['auth' => 'credentials']);
-        $this->assertInstanceOf(PromiseInterface::class, $p);
+        $promise = $comp(new Request('GET', 'https://example.com'), ['auth' => 'credentials']);
+        $this->assertInstanceOf(PromiseInterface::class, $promise);
     }
 
     public function testKeySecretAndUserKeyIsPassedToParams()
     {
-        $h = new MockHandler([
+        $handler = new MockHandler([
             function (RequestInterface $request, array $options) {
                 $this->assertEquals('user', $options['query']['client_id']);
                 $this->assertEquals('client_secret', $options['query']['client_secret']);
@@ -54,13 +54,13 @@ class CredentialsAuthMiddlewareTest extends TestCase
             },
         ]);
 
-        $stack = new HandlerStack($h);
+        $stack = new HandlerStack($handler);
         $stack->push(CredentialsAuthMiddleware::middleware('key', 'client_secret', 'user'));
 
         $comp = $stack->resolve();
 
-        $p = $comp(new Request('GET', 'https://example.com'), ['auth' => 'credentials']);
-        $this->assertInstanceOf(PromiseInterface::class, $p);
+        $promise = $comp(new Request('GET', 'https://example.com'), ['auth' => 'credentials']);
+        $this->assertInstanceOf(PromiseInterface::class, $promise);
     }
 
     public function testAccessors()
@@ -74,7 +74,7 @@ class CredentialsAuthMiddlewareTest extends TestCase
 
     public function testSubscriberDoesNotDoAnythingForNonHttpsRequests()
     {
-        $h = new MockHandler([
+        $handler = new MockHandler([
             function (RequestInterface $request, array $options) {
                 if (isset($options['query'])) {
                     $this->assertNotContains('client_id', $options['query']);
@@ -84,18 +84,18 @@ class CredentialsAuthMiddlewareTest extends TestCase
             },
         ]);
 
-        $stack = new HandlerStack($h);
+        $stack = new HandlerStack($handler);
         $stack->push(CredentialsAuthMiddleware::middleware('key', 'secret', 'user'));
 
         $comp = $stack->resolve();
 
-        $p = $comp(new Request('GET', 'http://example.com'), ['auth' => 'credentials']);
-        $this->assertInstanceOf(PromiseInterface::class, $p);
+        $promise = $comp(new Request('GET', 'http://example.com'), ['auth' => 'credentials']);
+        $this->assertInstanceOf(PromiseInterface::class, $promise);
     }
 
     public function testSubscriberDoesNotDoAnythingForNonGigyaAuthRequests()
     {
-        $h = new MockHandler([
+        $handler = new MockHandler([
             function (RequestInterface $request, array $options) {
                 if (isset($options['query'])) {
                     $this->assertNotContains('client_id', $options['query']);
@@ -105,12 +105,12 @@ class CredentialsAuthMiddlewareTest extends TestCase
             },
         ]);
 
-        $stack = new HandlerStack($h);
+        $stack = new HandlerStack($handler);
         $stack->push(CredentialsAuthMiddleware::middleware('key', 'secret', 'user'));
 
         $comp = $stack->resolve();
 
-        $p = $comp(new Request('GET', 'https://example.com'), ['auth' => 'oauth']);
-        $this->assertInstanceOf(PromiseInterface::class, $p);
+        $promise = $comp(new Request('GET', 'https://example.com'), ['auth' => 'oauth']);
+        $this->assertInstanceOf(PromiseInterface::class, $promise);
     }
 }

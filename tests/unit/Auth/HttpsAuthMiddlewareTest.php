@@ -27,7 +27,7 @@ class HttpsAuthMiddlewareTest extends TestCase
 {
     public function testKeyAndSecretIsPassedToParams()
     {
-        $h = new MockHandler([
+        $handler = new MockHandler([
             function (RequestInterface $request, array $options) {
                 $this->assertEquals('key', $options['query']['apiKey']);
                 $this->assertEquals('secret', $options['query']['secret']);
@@ -35,18 +35,18 @@ class HttpsAuthMiddlewareTest extends TestCase
             },
         ]);
 
-        $stack = new HandlerStack($h);
+        $stack = new HandlerStack($handler);
         $stack->push(HttpsAuthMiddleware::middleware('key', 'secret'));
 
         $comp = $stack->resolve();
 
-        $p = $comp(new Request('GET', 'https://example.com'), ['auth' => 'gigya']);
-        $this->assertInstanceOf(PromiseInterface::class, $p);
+        $promise = $comp(new Request('GET', 'https://example.com'), ['auth' => 'gigya']);
+        $this->assertInstanceOf(PromiseInterface::class, $promise);
     }
 
     public function testKeySecretAndUserKeyIsPassedToParams()
     {
-        $h = new MockHandler([
+        $handler = new MockHandler([
             function (RequestInterface $request, array $options) {
                 $this->assertEquals('key', $options['query']['apiKey']);
                 $this->assertEquals('secret', $options['query']['secret']);
@@ -55,13 +55,13 @@ class HttpsAuthMiddlewareTest extends TestCase
             },
         ]);
 
-        $stack = new HandlerStack($h);
+        $stack = new HandlerStack($handler);
         $stack->push(HttpsAuthMiddleware::middleware('key', 'secret', 'user'));
 
         $comp = $stack->resolve();
 
-        $p = $comp(new Request('GET', 'https://example.com'), ['auth' => 'gigya']);
-        $this->assertInstanceOf(PromiseInterface::class, $p);
+        $promise = $comp(new Request('GET', 'https://example.com'), ['auth' => 'gigya']);
+        $this->assertInstanceOf(PromiseInterface::class, $promise);
     }
 
     public function testAccessors()
@@ -75,7 +75,7 @@ class HttpsAuthMiddlewareTest extends TestCase
 
     public function testSubscriberDoesNotDoAnythingForNonHttpsRequests()
     {
-        $h = new MockHandler([
+        $handler = new MockHandler([
             function (RequestInterface $request, array $options) {
                 if (isset($options['query'])) {
                     $this->assertNotContains('apiKey', $options['query']);
@@ -85,18 +85,18 @@ class HttpsAuthMiddlewareTest extends TestCase
             },
         ]);
 
-        $stack = new HandlerStack($h);
+        $stack = new HandlerStack($handler);
         $stack->push(HttpsAuthMiddleware::middleware('key', 'secret', 'user'));
 
         $comp = $stack->resolve();
 
-        $p = $comp(new Request('GET', 'http://example.com'), ['auth' => 'gigya']);
-        $this->assertInstanceOf(PromiseInterface::class, $p);
+        $promise = $comp(new Request('GET', 'http://example.com'), ['auth' => 'gigya']);
+        $this->assertInstanceOf(PromiseInterface::class, $promise);
     }
 
     public function testSubscriberDoesNotDoAnythingForNonGigyaAuthRequests()
     {
-        $h = new MockHandler([
+        $handler = new MockHandler([
             function (RequestInterface $request, array $options) {
                 if (isset($options['query'])) {
                     $this->assertNotContains('apiKey', $options['query']);
@@ -106,12 +106,12 @@ class HttpsAuthMiddlewareTest extends TestCase
             },
         ]);
 
-        $stack = new HandlerStack($h);
+        $stack = new HandlerStack($handler);
         $stack->push(HttpsAuthMiddleware::middleware('key', 'secret', 'user'));
 
         $comp = $stack->resolve();
 
-        $p = $comp(new Request('GET', 'http://example.com'), ['auth' => 'oauth']);
-        $this->assertInstanceOf(PromiseInterface::class, $p);
+        $promise = $comp(new Request('GET', 'http://example.com'), ['auth' => 'oauth']);
+        $this->assertInstanceOf(PromiseInterface::class, $promise);
     }
 }

@@ -38,7 +38,7 @@ class OAuth2MiddlewareTest extends TestCase
 
     public function testSign()
     {
-        $h = new MockHandler([
+        $handler = new MockHandler([
             function (RequestInterface $request) {
                 $this->assertEquals('OAuth test', $request->getHeaderLine('Authorization'));
                 return new Response(200);
@@ -49,18 +49,18 @@ class OAuth2MiddlewareTest extends TestCase
         $this->grant->shouldReceive('getToken')
                     ->andReturn($token);
 
-        $stack = new HandlerStack($h);
+        $stack = new HandlerStack($handler);
         $stack->push(OAuth2Middleware::middleware($this->grant));
 
         $comp = $stack->resolve();
 
-        $p = $comp(new Request('GET', 'https://example.com'), ['auth' => 'gigya-oauth2']);
-        $this->assertInstanceOf(PromiseInterface::class, $p);
+        $promise = $comp(new Request('GET', 'https://example.com'), ['auth' => 'gigya-oauth2']);
+        $this->assertInstanceOf(PromiseInterface::class, $promise);
     }
 
     public function testErrorThatIsNot401()
     {
-        $h = new MockHandler([
+        $handler = new MockHandler([
             function (RequestInterface $request) {
                 $this->assertEquals('OAuth test', $request->getHeaderLine('Authorization'));
                 return new Response(503);
@@ -71,18 +71,18 @@ class OAuth2MiddlewareTest extends TestCase
         $this->grant->shouldReceive('getToken')
                     ->andReturn($token);
 
-        $stack = new HandlerStack($h);
+        $stack = new HandlerStack($handler);
         $stack->push(OAuth2Middleware::middleware($this->grant));
 
         $comp = $stack->resolve();
 
-        $p = $comp(new Request('GET', 'https://example.com'), ['auth' => 'gigya-oauth2']);
-        $this->assertInstanceOf(PromiseInterface::class, $p);
+        $promise = $comp(new Request('GET', 'https://example.com'), ['auth' => 'gigya-oauth2']);
+        $this->assertInstanceOf(PromiseInterface::class, $promise);
     }
 
     public function testErrorThatIsNotRetried()
     {
-        $h = new MockHandler([
+        $handler = new MockHandler([
             function (RequestInterface $request, array $options) {
                 $this->assertEquals('OAuth test', $request->getHeaderLine('Authorization'));
                 $this->assertEquals(1, $options['retries']);
@@ -94,22 +94,22 @@ class OAuth2MiddlewareTest extends TestCase
         $this->grant->shouldReceive('getToken')
                     ->andReturn($token);
 
-        $stack = new HandlerStack($h);
+        $stack = new HandlerStack($handler);
         $stack->push(OAuth2Middleware::middleware($this->grant));
 
         $comp = $stack->resolve();
 
-        /** @var PromiseInterface $p */
-        $p = $comp(new Request('GET', 'https://example.com'), ['auth' => 'gigya-oauth2', 'retries' => 1]);
-        $this->assertInstanceOf(PromiseInterface::class, $p);
+        /** @var PromiseInterface $promise */
+        $promise = $comp(new Request('GET', 'https://example.com'), ['auth' => 'gigya-oauth2', 'retries' => 1]);
+        $this->assertInstanceOf(PromiseInterface::class, $promise);
         /** @var ResponseInterface $response */
-        $response = $p->wait();
+        $response = $promise->wait();
         $this->assertEquals(401, $response->getStatusCode());
     }
 
     public function testErrorThatIsRetried()
     {
-        $h = new MockHandler([
+        $handler = new MockHandler([
             function (RequestInterface $request, array $options) {
                 $this->assertEquals('OAuth test', $request->getHeaderLine('Authorization'));
                 if (isset($options['retries'])) {
@@ -129,44 +129,44 @@ class OAuth2MiddlewareTest extends TestCase
         $this->grant->shouldReceive('getToken')
                     ->andReturn($token1, $token2);
 
-        $stack = new HandlerStack($h);
+        $stack = new HandlerStack($handler);
         $stack->push(OAuth2Middleware::middleware($this->grant));
 
         $comp = $stack->resolve();
 
-        /** @var PromiseInterface $p */
-        $p = $comp(new Request('GET', 'https://example.com'), ['auth' => 'gigya-oauth2']);
-        $this->assertInstanceOf(PromiseInterface::class, $p);
+        /** @var PromiseInterface $promise */
+        $promise = $comp(new Request('GET', 'https://example.com'), ['auth' => 'gigya-oauth2']);
+        $this->assertInstanceOf(PromiseInterface::class, $promise);
         /** @var ResponseInterface $response */
-        $response = $p->wait();
+        $response = $promise->wait();
         $this->assertEquals(200, $response->getStatusCode());
     }
 
     public function testErrorThatIsNotOauthAuth()
     {
-        $h = new MockHandler([
+        $handler = new MockHandler([
             function (RequestInterface $request) {
                 $this->assertEquals('', $request->getHeaderLine('Authorization'));
                 return new Response(401);
             },
         ]);
 
-        $stack = new HandlerStack($h);
+        $stack = new HandlerStack($handler);
         $stack->push(OAuth2Middleware::middleware($this->grant));
 
         $comp = $stack->resolve();
 
-        /** @var PromiseInterface $p */
-        $p = $comp(new Request('GET', 'https://example.com'), ['auth' => 'none']);
-        $this->assertInstanceOf(PromiseInterface::class, $p);
+        /** @var PromiseInterface $promise */
+        $promise = $comp(new Request('GET', 'https://example.com'), ['auth' => 'none']);
+        $this->assertInstanceOf(PromiseInterface::class, $promise);
         /** @var ResponseInterface $response */
-        $response = $p->wait(true);
+        $response = $promise->wait(true);
         $this->assertEquals(401, $response->getStatusCode());
     }
 
     public function testErrorWhenNoTokenIsReturnedWillNotIntercept()
     {
-        $h = new MockHandler([
+        $handler = new MockHandler([
             function (RequestInterface $request) {
                 $this->assertEquals('', $request->getHeaderLine('Authorization'));
                 return new Response(401);
@@ -178,16 +178,16 @@ class OAuth2MiddlewareTest extends TestCase
                     ->once()
                     ->andReturn(null);
 
-        $stack = new HandlerStack($h);
+        $stack = new HandlerStack($handler);
         $stack->push(OAuth2Middleware::middleware($this->grant));
 
         $comp = $stack->resolve();
 
-        /** @var PromiseInterface $p */
-        $p = $comp(new Request('GET', 'https://example.com'), ['auth' => 'gigya-oauth2']);
-        $this->assertInstanceOf(PromiseInterface::class, $p);
+        /** @var PromiseInterface $promise */
+        $promise = $comp(new Request('GET', 'https://example.com'), ['auth' => 'gigya-oauth2']);
+        $this->assertInstanceOf(PromiseInterface::class, $promise);
         /** @var ResponseInterface $response */
-        $response = $p->wait(true);
+        $response = $promise->wait(true);
         $this->assertEquals(401, $response->getStatusCode());
     }
 }

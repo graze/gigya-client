@@ -53,14 +53,14 @@ class GigyaTest extends TestCase
     {
         $handler = $this->setupHandler();
         $client = new Gigya('key', 'secret', null, null, ['guzzle' => ['handler' => $handler]]);
-        $store = new Collection();
+        $store = [];
         $handler->push(Middleware::history($store));
 
         $response = $client->accounts()->getAccountInfo();
 
         static::assertEquals(0, $response->getErrorCode());
         static::assertCount(1, $store);
-        $log = $store->last();
+        $log = array_pop($store);
         static::assertEquals(
             'https://accounts.eu1.gigya.com/accounts.getAccountInfo',
             $log['request']->getUri()->__toString()
@@ -76,14 +76,14 @@ class GigyaTest extends TestCase
     {
         $handler = $this->setupHandler();
         $client = new Gigya('key', 'secret', null, 'userKey', ['guzzle' => ['handler' => $handler]]);
-        $store = new Collection();
+        $store = [];
         $handler->push(Middleware::history($store));
 
         $response = $client->accounts()->getAccountInfo();
 
         static::assertEquals(0, $response->getErrorCode());
         static::assertCount(1, $store);
-        $log = $store->last();
+        $log = array_pop($store);
         static::assertArrayHasKey('request', $log);
         /** @var RequestInterface $request */
         $request = $log['request'];
@@ -127,13 +127,13 @@ class GigyaTest extends TestCase
 
         $handler = $this->setupHandler($body);
         $client = new Gigya('key', 'secret', null, null, ['guzzle' => ['handler' => $handler]]);
-        $store = new Collection();
+        $store = [];
         $handler->push(Middleware::history($store));
 
         $response = $client->accounts()->getAccountInfo(['uid' => $uid]);
         static::assertEquals(0, $response->getErrorCode());
         static::assertCount(1, $store);
-        $log = $store->last();
+        $log = array_pop($store);
         static::assertEquals(
             "https://accounts.eu1.gigya.com/accounts.getAccountInfo?uid=$uid",
             $log['request']->getUri()->__toString()

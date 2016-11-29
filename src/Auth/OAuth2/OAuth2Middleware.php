@@ -73,27 +73,35 @@ class OAuth2Middleware
     private function refreshToken(RequestInterface $request, array $options)
     {
         /**
-         * Take a response and if is required authentication, retry the request. Otherwise passthrough
+         * Take a response and if it requires authentication, retry the request. Otherwise pass through the response
          *
          * @param GuzzleResponseInterface $response
          *
          * @return GuzzleResponseInterface
          */
         return function (GuzzleResponseInterface $response) use ($request, $options) {
-            if ($response && $response->getStatusCode() == 401) {
-                if ($request->getUri()->getScheme() == 'https'
-                    && $options['auth'] == $this->name
-                    && (!isset($options['retries']) || $options['retries'] === 0)
-                ) {
-                    $token = $this->grant->getToken();
-                    if (!is_null($token)) {
-                        $options['retries'] = (isset($options['retries'])) ? $options['retries'] + 1 : 1;
-                        return $this($request, $options);
-                    }
+            if ($response->getStatusCode() == 401
+                && $this->canRetry($request, $options)) {
+                if (!is_null($this->grant->getToken())) {
+                    $options['retries'] = (isset($options['retries'])) ? $options['retries'] + 1 : 1;
+                    return $this($request, $options);
                 }
             }
             return $response;
         };
+    }
+
+    /**
+     * @param RequestInterface $request
+     * @param array            $options
+     *
+     * @return bool
+     */
+    private function canRetry(RequestInterface $request, array $options)
+    {
+        return ($request->getUri()->getScheme() == 'https'
+            && $options['auth'] == $this->name
+            && (!isset($options['retries']) || $options['retries'] === 0));
     }
 
     /**

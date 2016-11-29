@@ -28,9 +28,10 @@ class CredentialsAuthMiddlewareTest extends TestCase
     public function testKeyAndSecretIsPassedToParams()
     {
         $handler = new MockHandler([
-            function (RequestInterface $request, array $options) {
-                $this->assertEquals('key', $options['query']['client_id']);
-                $this->assertEquals('client_secret', $options['query']['client_secret']);
+            function (RequestInterface $request) {
+                $query = $request->getUri()->getQuery();
+                $this->assertRegExp('/client_id=key/', $query);
+                $this->assertRegExp('/client_secret=client_secret/', $query);
                 return new Response(200);
             },
         ]);
@@ -47,9 +48,10 @@ class CredentialsAuthMiddlewareTest extends TestCase
     public function testKeySecretAndUserKeyIsPassedToParams()
     {
         $handler = new MockHandler([
-            function (RequestInterface $request, array $options) {
-                $this->assertEquals('user', $options['query']['client_id']);
-                $this->assertEquals('client_secret', $options['query']['client_secret']);
+            function (RequestInterface $request) {
+                $query = $request->getUri()->getQuery();
+                $this->assertRegExp('/client_id=user/', $query);
+                $this->assertRegExp('/client_secret=client_secret/', $query);
                 return new Response(200);
             },
         ]);
@@ -75,11 +77,10 @@ class CredentialsAuthMiddlewareTest extends TestCase
     public function testSubscriberDoesNotDoAnythingForNonHttpsRequests()
     {
         $handler = new MockHandler([
-            function (RequestInterface $request, array $options) {
-                if (isset($options['query'])) {
-                    $this->assertNotContains('client_id', $options['query']);
-                    $this->assertNotContains('client_secret', $options['query']);
-                }
+            function (RequestInterface $request) {
+                $query = $request->getUri()->getQuery();
+                $this->assertNotRegExp('/client_id=/', $query);
+                $this->assertNotRegExp('/client_secret=/', $query);
                 return new Response(200);
             },
         ]);
@@ -96,11 +97,10 @@ class CredentialsAuthMiddlewareTest extends TestCase
     public function testSubscriberDoesNotDoAnythingForNonGigyaAuthRequests()
     {
         $handler = new MockHandler([
-            function (RequestInterface $request, array $options) {
-                if (isset($options['query'])) {
-                    $this->assertNotContains('client_id', $options['query']);
-                    $this->assertNotContains('client_secret', $options['query']);
-                }
+            function (RequestInterface $request) {
+                $query = $request->getUri()->getQuery();
+                $this->assertNotRegExp('/client_id=/', $query);
+                $this->assertNotRegExp('/client_secret=/', $query);
                 return new Response(200);
             },
         ]);

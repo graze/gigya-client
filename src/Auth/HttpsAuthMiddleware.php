@@ -14,6 +14,7 @@
 namespace Graze\Gigya\Auth;
 
 use Closure;
+use GuzzleHttp\Psr7\Uri;
 use Psr\Http\Message\RequestInterface;
 
 class HttpsAuthMiddleware
@@ -64,13 +65,12 @@ class HttpsAuthMiddleware
     public function __invoke(RequestInterface $request, array $options)
     {
         if ($request->getUri()->getScheme() == 'https' && $options['auth'] == static::AUTH_NAME) {
-            $query = isset($options['query']) ? $options['query'] : [];
-            $query['apiKey'] = $this->apiKey;
-            $query['secret'] = $this->secret;
+            $uri = Uri::withQueryValue($request->getUri(), 'apiKey', $this->apiKey);
+            $uri = Uri::withQueryValue($uri, 'secret', $this->secret);
             if ((bool) $this->userKey) {
-                $query['userKey'] = $this->userKey;
+                $uri = Uri::withQueryValue($uri, 'userKey', $this->userKey);
             }
-            $options['query'] = $query;
+            $request = $request->withUri($uri);
         }
         $fn = $this->nextHandler;
         return $fn($request, $options);

@@ -28,9 +28,10 @@ class HttpsAuthMiddlewareTest extends TestCase
     public function testKeyAndSecretIsPassedToParams()
     {
         $handler = new MockHandler([
-            function (RequestInterface $request, array $options) {
-                $this->assertEquals('key', $options['query']['apiKey']);
-                $this->assertEquals('secret', $options['query']['secret']);
+            function (RequestInterface $request) {
+                $query = $request->getUri()->getQuery();
+                $this->assertRegExp('/apiKey=key/', $query);
+                $this->assertRegExp('/secret=secret/', $query);
                 return new Response(200);
             },
         ]);
@@ -47,10 +48,11 @@ class HttpsAuthMiddlewareTest extends TestCase
     public function testKeySecretAndUserKeyIsPassedToParams()
     {
         $handler = new MockHandler([
-            function (RequestInterface $request, array $options) {
-                $this->assertEquals('key', $options['query']['apiKey']);
-                $this->assertEquals('secret', $options['query']['secret']);
-                $this->assertEquals('user', $options['query']['userKey']);
+            function (RequestInterface $request) {
+                $query = $request->getUri()->getQuery();
+                $this->assertRegExp('/apiKey=key/', $query);
+                $this->assertRegExp('/secret=secret/', $query);
+                $this->assertRegExp('/userKey=user/', $query);
                 return new Response(200);
             },
         ]);
@@ -76,11 +78,11 @@ class HttpsAuthMiddlewareTest extends TestCase
     public function testSubscriberDoesNotDoAnythingForNonHttpsRequests()
     {
         $handler = new MockHandler([
-            function (RequestInterface $request, array $options) {
-                if (isset($options['query'])) {
-                    $this->assertNotContains('apiKey', $options['query']);
-                    $this->assertNotContains('secret', $options['query']);
-                }
+            function (RequestInterface $request) {
+                $query = $request->getUri()->getQuery();
+                $this->assertNotRegExp('/apiKey=/', $query);
+                $this->assertNotRegExp('/secret=/', $query);
+                $this->assertNotRegExp('/userKey=/', $query);
                 return new Response(200);
             },
         ]);
@@ -98,10 +100,10 @@ class HttpsAuthMiddlewareTest extends TestCase
     {
         $handler = new MockHandler([
             function (RequestInterface $request, array $options) {
-                if (isset($options['query'])) {
-                    $this->assertNotContains('apiKey', $options['query']);
-                    $this->assertNotContains('secret', $options['query']);
-                }
+                $query = $request->getUri()->getQuery();
+                $this->assertNotRegExp('/apiKey=/', $query);
+                $this->assertNotRegExp('/secret=/', $query);
+                $this->assertNotRegExp('/userKey=/', $query);
                 return new Response(200);
             },
         ]);

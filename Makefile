@@ -1,11 +1,11 @@
 SHELL = /bin/sh
 
 DOCKER ?= $(shell which docker)
-DOCKER_REPOSITORY := graze/gigya-client
+DOCKER_REPOSITORY := graze/php-alpine
 VOLUME := /srv
 VOLUME_MAP := -v $$(pwd):${VOLUME}
 DOCKER_RUN_BASE := ${DOCKER} run --rm -t ${VOLUME_MAP} -w ${VOLUME}
-DOCKER_RUN := ${DOCKER_RUN_BASE} ${DOCKER_REPOSITORY}:latest
+DOCKER_RUN := ${DOCKER_RUN_BASE} ${DOCKER_REPOSITORY}:test
 
 .PHONY: install composer clean help
 .PHONY: test lint lint-fix test-unit test-integration test-matrix test-coverage test-coverage-html test-coverage-clover
@@ -16,7 +16,6 @@ DOCKER_RUN := ${DOCKER_RUN_BASE} ${DOCKER_REPOSITORY}:latest
 
 install: ## Download the dependencies then build the image :rocket:.
 	make 'composer-install --optimize-autoloader --ignore-platform-reqs'
-	$(DOCKER) build --tag ${DOCKER_REPOSITORY}:latest .
 
 composer-%: ## Run a composer command, `make "composer-<command> [...]"`.
 	${DOCKER} run -t --rm \

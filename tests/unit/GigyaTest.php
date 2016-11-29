@@ -92,6 +92,12 @@ class GigyaTest extends TestCase
         return $gigyaResponse;
     }
 
+    public function testDefaultConstructor()
+    {
+        $client = new Gigya('key', 'secret');
+        static::assertInstanceOf(Gigya::class, $client);
+    }
+
     public function testConstructorConfig()
     {
         $this->guzzleClient->shouldReceive('__construct')

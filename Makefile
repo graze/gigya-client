@@ -54,13 +54,13 @@ test-performance: ## Run the performance testsuite.
 	$(DOCKER_RUN) vendor/bin/phpunit --colors=always --testsuite performance
 
 test-coverage: ## Run all tests and output coverage to the console.
-	$(DOCKER_RUN) vendor/bin/phpunit --coverage-text --testsuite coverage
+	$(DOCKER_RUN) phpdbg7 -qrr vendor/bin/phpunit --coverage-text --testsuite coverage
 
 test-coverage-html: ## Run all tests and output html results
-	$(DOCKER_RUN) vendor/bin/phpunit --coverage-html ./tests/report/html --testsuite coverage
+	$(DOCKER_RUN) phpdbg7 -qrr vendor/bin/phpunit --coverage-html ./tests/report/html --testsuite coverage
 
 test-coverage-clover: ## Run all tests and output clover coverage to file.
-	$(DOCKER_RUN) vendor/bin/phpunit --coverage-clover=./tests/report/coverage.clover --testsuite coverage
+	$(DOCKER_RUN) phpdbg7 -qrr vendor/bin/phpunit --coverage-clover=./tests/report/coverage.clover --testsuite coverage
 
 
 # Help

@@ -13,9 +13,7 @@
 
 namespace Graze\Gigya\Response;
 
-use GuzzleHttp\Message\ResponseInterface as GuzzleResponseInterface;
-
-// use Psr\Http\Message\ResponseInterface; Guzzle v6
+use Psr\Http\Message\ResponseInterface as GuzzleResponseInterface;
 
 class ResponseFactory implements ResponseFactoryInterface
 {
@@ -28,7 +26,7 @@ class ResponseFactory implements ResponseFactoryInterface
      */
     public function getResponse(GuzzleResponseInterface $response)
     {
-        $body = $response->json();
+        $body = json_decode($response->getBody(), true);
         if (array_key_exists('results', $body)) {
             $result = new ResponseCollection($response);
         } else {

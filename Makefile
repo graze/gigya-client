@@ -1,11 +1,11 @@
 SHELL = /bin/sh
 
 DOCKER ?= $(shell which docker)
-DOCKER_REPOSITORY := graze/gigya-client
+DOCKER_REPOSITORY := graze/php-alpine
 VOLUME := /srv
 VOLUME_MAP := -v $$(pwd):${VOLUME}
 DOCKER_RUN_BASE := ${DOCKER} run --rm -t ${VOLUME_MAP} -w ${VOLUME}
-DOCKER_RUN := ${DOCKER_RUN_BASE} ${DOCKER_REPOSITORY}:latest
+DOCKER_RUN := ${DOCKER_RUN_BASE} ${DOCKER_REPOSITORY}:test
 
 .PHONY: install composer clean help
 .PHONY: test lint lint-fix test-unit test-integration test-matrix test-coverage test-coverage-html test-coverage-clover
@@ -16,14 +16,13 @@ DOCKER_RUN := ${DOCKER_RUN_BASE} ${DOCKER_REPOSITORY}:latest
 
 install: ## Download the dependencies then build the image :rocket:.
 	make 'composer-install --optimize-autoloader --ignore-platform-reqs'
-	$(DOCKER) build --tag ${DOCKER_REPOSITORY}:latest .
 
 composer-%: ## Run a composer command, `make "composer-<command> [...]"`.
 	${DOCKER} run -t --rm \
-        -v $$(pwd):/usr/src/app \
+        -v $$(pwd):/app \
         -v ~/.composer:/root/composer \
         -v ~/.ssh:/root/.ssh:ro \
-        graze/composer --ansi --no-interaction $* $(filter-out $@,$(MAKECMDGOALS))
+        composer/composer:alpine --ansi --no-interaction $* $(filter-out $@,$(MAKECMDGOALS))
 
 clean: ## Clean up any images.
 	$(DOCKER) rmi ${DOCKER_REPOSITORY}:latest
@@ -54,13 +53,13 @@ test-performance: ## Run the performance testsuite.
 	$(DOCKER_RUN) vendor/bin/phpunit --colors=always --testsuite performance
 
 test-coverage: ## Run all tests and output coverage to the console.
-	$(DOCKER_RUN) vendor/bin/phpunit --coverage-text --testsuite coverage
+	$(DOCKER_RUN) phpdbg7 -qrr vendor/bin/phpunit --coverage-text --testsuite coverage
 
 test-coverage-html: ## Run all tests and output html results
-	$(DOCKER_RUN) vendor/bin/phpunit --coverage-html ./tests/report/html --testsuite coverage
+	$(DOCKER_RUN) phpdbg7 -qrr vendor/bin/phpunit --coverage-html ./tests/report/html --testsuite coverage
 
 test-coverage-clover: ## Run all tests and output clover coverage to file.
-	$(DOCKER_RUN) vendor/bin/phpunit --coverage-clover=./tests/report/coverage.clover --testsuite coverage
+	$(DOCKER_RUN) phpdbg7 -qrr vendor/bin/phpunit --coverage-clover=./tests/report/coverage.clover --testsuite coverage
 
 
 # Help

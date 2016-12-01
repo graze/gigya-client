@@ -13,10 +13,8 @@
 
 namespace Graze\Gigya\Response;
 
-use GuzzleHttp\Message\ResponseInterface as GuzzleResponseInterface;
 use Illuminate\Support\Collection;
-
-// use Psr\Http\Message\ResponseInterface; Guzzle v6
+use Psr\Http\Message\ResponseInterface as GuzzleResponseInterface;
 
 class ResponseCollection extends Response implements ResponseCollectionInterface
 {

@@ -19,83 +19,74 @@ use Graze\Gigya\Gigya;
 use Graze\Gigya\Test\TestCase;
 use Graze\Gigya\Test\TestFixtures;
 use Graze\Gigya\Validation\Signature;
-use GuzzleHttp\Event\SubscriberInterface;
-use GuzzleHttp\Message\Response;
-use GuzzleHttp\Stream\Stream;
-use GuzzleHttp\Subscriber\History;
-use GuzzleHttp\Subscriber\Mock;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\Psr7\Response;
+use Illuminate\Support\Collection;
 use Mockery as m;
+use Psr\Http\Message\RequestInterface;
 
 class GigyaTest extends TestCase
 {
     /**
-     * @param Gigya       $gigya
      * @param string|null $body Optional body text
      *
-     * @return History
+     * @return HandlerStack
      */
-    public function setUpGigyaHistory(Gigya $gigya, $body = null)
+    public function setupHandler($body = null)
     {
-        $history = new History();
-        $mock = new Mock(array_pad(
+        $mockHandler = new MockHandler(array_pad(
             [],
             3,
             new Response(
                 '200',
                 [],
-                Stream::factory(
-                    $body ?: TestFixtures::getFixture('basic')
-                )
+                $body ?: TestFixtures::getFixture('basic')
             )
         ));
-        $gigya->addSubscriber($history);
-        $gigya->addSubscriber($mock);
 
-        return $history;
+        return new HandlerStack($mockHandler);
     }
 
     public function testAuthInjectsKeyAndSecretIntoParams()
     {
-        $client = new Gigya('key', 'secret');
-        $history = $this->setUpGigyaHistory($client);
+        $handler = $this->setupHandler();
+        $client = new Gigya('key', 'secret', null, null, ['guzzle' => ['handler' => $handler]]);
+        $store = [];
+        $handler->push(Middleware::history($store));
 
         $response = $client->accounts()->getAccountInfo();
 
         static::assertEquals(0, $response->getErrorCode());
-        static::assertEquals(1, $history->count());
-        $request = $history->getLastRequest();
+        static::assertCount(1, $store);
+        $log = array_pop($store);
         static::assertEquals(
             'https://accounts.eu1.gigya.com/accounts.getAccountInfo?apiKey=key&secret=secret',
-            $request->getUrl()
+            $log['request']->getUri()->__toString()
         );
-        $query = $request->getQuery();
-        static::assertArrayHasKey('apiKey', $query);
-        static::assertArrayHasKey('secret', $query);
-        static::assertEquals('key', $query['apiKey']);
-        static::assertEquals('secret', $query['secret']);
     }
 
     public function testAuthInjectsKeySecretAndUserKeyIntoParams()
     {
-        $client = new Gigya('key', 'secret', null, 'userKey');
-        $history = $this->setUpGigyaHistory($client);
+        $handler = $this->setupHandler();
+        $client = new Gigya('key', 'secret', null, 'userKey', ['guzzle' => ['handler' => $handler]]);
+        $store = [];
+        $handler->push(Middleware::history($store));
 
         $response = $client->accounts()->getAccountInfo();
 
         static::assertEquals(0, $response->getErrorCode());
-        static::assertEquals(1, $history->count());
-        $request = $history->getLastRequest();
+        static::assertCount(1, $store);
+        $log = array_pop($store);
+        static::assertArrayHasKey('request', $log);
+        /** @var RequestInterface $request */
+        $request = $log['request'];
+        static::assertInstanceOf(RequestInterface::class, $request);
         static::assertEquals(
             'https://accounts.eu1.gigya.com/accounts.getAccountInfo?apiKey=key&secret=secret&userKey=userKey',
-            $request->getUrl()
+            $request->getUri()->__toString()
         );
-        $query = $request->getQuery();
-        static::assertArrayHasKey('apiKey', $query);
-        static::assertArrayHasKey('secret', $query);
-        static::assertArrayHasKey('userKey', $query);
-        static::assertEquals('key', $query['apiKey']);
-        static::assertEquals('secret', $query['secret']);
-        static::assertEquals('userKey', $query['userKey']);
     }
 
     public function testUidSignatureWhenValidDoesNotThrowException()
@@ -122,24 +113,19 @@ class GigyaTest extends TestCase
             $timestamp
         );
 
-        $client = new Gigya('key', 'secret');
-        $history = $this->setUpGigyaHistory($client, $body);
+        $handler = $this->setupHandler($body);
+        $client = new Gigya('key', 'secret', null, null, ['guzzle' => ['handler' => $handler]]);
+        $store = [];
+        $handler->push(Middleware::history($store));
 
         $response = $client->accounts()->getAccountInfo(['uid' => $uid]);
         static::assertEquals(0, $response->getErrorCode());
-        static::assertEquals(1, $history->count());
-        $request = $history->getLastRequest();
+        static::assertCount(1, $store);
+        $log = array_pop($store);
         static::assertEquals(
             "https://accounts.eu1.gigya.com/accounts.getAccountInfo?uid=$uid&apiKey=key&secret=secret",
-            $request->getUrl()
+            $log['request']->getUri()->__toString()
         );
-        $query = $request->getQuery();
-        static::assertArrayHasKey('apiKey', $query);
-        static::assertArrayHasKey('secret', $query);
-        static::assertArrayHasKey('uid', $query);
-        static::assertEquals('key', $query['apiKey']);
-        static::assertEquals('secret', $query['secret']);
-        static::assertEquals($uid, $query['uid']);
 
         $data = $response->getData();
         static::assertEquals($uid, $data->get('UID'));
@@ -171,12 +157,10 @@ class GigyaTest extends TestCase
             $timestamp
         );
 
-        $client = new Gigya('key', 'secret');
-        $this->setUpGigyaHistory($client, $body);
+        $handler = $this->setupHandler($body);
+        $client = new Gigya('key', 'secret', null, null, ['guzzle' => ['handler' => $handler]]);
 
-        static::setExpectedException(
-            InvalidTimestampException::class
-        );
+        static::expectException(InvalidTimestampException::class);
 
         $client->accounts()->getAccountInfo(['uid' => $uid]);
     }
@@ -202,12 +186,10 @@ class GigyaTest extends TestCase
             $timestamp
         );
 
-        $client = new Gigya('key', 'secret');
-        $this->setUpGigyaHistory($client, $body);
+        $handler = $this->setupHandler($body);
+        $client = new Gigya('key', 'secret', null, null, ['guzzle' => ['handler' => $handler]]);
 
-        static::setExpectedException(
-            InvalidUidSignatureException::class
-        );
+        static::expectException(InvalidUidSignatureException::class);
 
         $client->accounts()->getAccountInfo(['uid' => $uid]);
     }
@@ -233,38 +215,40 @@ class GigyaTest extends TestCase
             $timestamp
         );
 
-        $client = new Gigya('key', 'secret');
-        $this->setUpGigyaHistory($client, $body);
+        $handler = $this->setupHandler($body);
+        $client = new Gigya('key', 'secret', null, null, ['guzzle' => ['handler' => $handler]]);
 
-        static::setExpectedException(
-            InvalidTimestampException::class
-        );
+        static::expectException(InvalidTimestampException::class);
 
         $client->accounts()->getAccountInfo(['uid' => $uid]);
     }
 
     public function testGigyaWillTriggerSubscriberOnlyWhenItIsAddedInARequest()
     {
-        $client = new Gigya('key', 'secret');
-        $this->setUpGigyaHistory($client);
+        $handler = $this->setupHandler();
+        $client = new Gigya('key', 'secret', null, null, ['guzzle' => ['handler' => $handler]]);
 
         $client->accounts()->getAccountInfo();
 
-        $subscriber = m::mock(SubscriberInterface::class);
-        $subscriber->shouldReceive('getEvents')
-                   ->andReturn([
-                       'complete' => ['someMethod'],
-                   ]);
+        $called = 0;
 
-        $client->addSubscriber($subscriber);
+        $fn = function (callable $handler) use (&$called) {
+            return function (RequestInterface $request, $options) use ($handler, &$called) {
+                $called++;
+                return $handler($request, $options);
+            };
+        };
 
-        $subscriber->shouldReceive('someMethod')
-                   ->once();
+        $client->addHandler($fn);
+
+        $client->accounts()->getAccountInfo();
+
+        $this->assertEquals(1, $called);
+
+        $client->removeHandler($fn);
 
         $client->accounts()->getAccountInfo();
 
-        $client->removeSubscriber($subscriber);
-
-        $client->accounts()->getAccountInfo();
+        $this->assertEquals(1, $called);
     }
 }

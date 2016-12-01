@@ -18,8 +18,8 @@ use Graze\Gigya\Gigya;
 use Graze\Gigya\Response\Response;
 use Graze\Gigya\Test\TestCase;
 use Graze\Gigya\Test\TestFixtures;
-use GuzzleHttp\Message\ResponseInterface as GuzzleResponseInterface;
 use Mockery as m;
+use Psr\Http\Message\ResponseInterface as GuzzleResponseInterface;
 
 class ResponseTest extends TestCase
 {
@@ -61,7 +61,7 @@ class ResponseTest extends TestCase
     public function testToString()
     {
         $guzzleResponse = m::mock(GuzzleResponseInterface::class);
-        $guzzleResponse->shouldReceive('json')->andReturn(json_decode(TestFixtures::getFixture('accounts.getAccountInfo')));
+        $guzzleResponse->shouldReceive('getBody')->andReturn($this->toStream(TestFixtures::getFixture('accounts.getAccountInfo')));
         $response = new Response($guzzleResponse);
 
         static::assertRegExp('/Response: \d+: \w+ - \d+: .+\n.+/s', $response->__toString());
@@ -70,7 +70,7 @@ class ResponseTest extends TestCase
     public function testToStringForFailure()
     {
         $guzzleResponse = m::mock(GuzzleResponseInterface::class);
-        $guzzleResponse->shouldReceive('json')->andReturn(json_decode(TestFixtures::getFixture('failure_403')));
+        $guzzleResponse->shouldReceive('getBody')->andReturn($this->toStream(TestFixtures::getFixture('failure_403')));
         $response = new Response($guzzleResponse);
 
         static::assertRegExp('/Response: \d+: \w+ - \d+: .+\n.+\n.+\n.+/s', $response->__toString());

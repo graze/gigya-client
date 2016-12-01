@@ -120,7 +120,7 @@ class UidSignatureValidatorTest extends TestCase
         $response->shouldReceive('getErrorCode')
                  ->andReturn(0);
 
-        static::setExpectedException(InvalidUidSignatureException::class);
+        static::expectException(InvalidUidSignatureException::class);
         $this->validator->assert($response);
     }
 
@@ -158,7 +158,7 @@ class UidSignatureValidatorTest extends TestCase
         $response->shouldReceive('getErrorCode')
                  ->andReturn(0);
 
-        static::setExpectedException(InvalidTimestampException::class);
+        static::expectException(InvalidTimestampException::class);
         $this->validator->assert($response);
     }
 

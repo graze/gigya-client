@@ -13,6 +13,20 @@
 
 namespace Graze\Gigya\Test;
 
+use GuzzleHttp\Psr7\Stream;
+
 class TestCase extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @param string $text
+     *
+     * @return Stream
+     */
+    protected function toStream($text)
+    {
+        $stream = fopen('php://temp', 'a+');
+        fwrite($stream, $text);
+        rewind($stream);
+        return new Stream($stream);
+    }
 }

@@ -47,7 +47,7 @@ $account = $response->getData();
 ```php
 $grant = new ManualGrant();
 $gigya = new Gigya($key, $secret, $region, null, ['auth' => 'oauth2-custom']);
-$gigya->addSubscriber(new OAuth2Subscriber($grant));
+$gigya->addHandler(OAuth2Subscriber::middleware($grant));
 
 $tokenResponse = $gigya->socialize()->getToken([
     'grant_type' => 'code',

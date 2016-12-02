@@ -13,6 +13,7 @@ Client for Gigya's REST API
 
 * Endpoint call hierarchy: `$gigya->accounts()->tfa()->getCertificate()`
 * List of endpoints: `accounts`, `accounts->tfa`, `audit`, `socialize`, `comments`, `gameMechanics`, `reports`, `dataStore`, `identityStorage`, `saml`, `saml->idp`
+* Populated classes with auto completion helpers for the available methods from Gigya
 * Different authentication methods:
   * `gigya`: add `api_key` and `secret` to https web requests
   * `credentials`: uses `client_id` and `client_secret` for use with oauth2 token retrieval
@@ -33,8 +34,11 @@ By Default the Gigya client uses `gigya` auth and appends the api_key and secret
 
 ```php
 $gigya = new Gigya($key, $secret);
+
 $response = $gigya->accounts()->getAccountInfo(['uid' => $uid]);
-$account = $response->getData();
+if ($response->getErrorCode() === ErrorCode::OK) {
+    $account = $response->getData();
+}
 ```
 
 ### OAuth 2

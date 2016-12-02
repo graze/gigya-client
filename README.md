@@ -14,7 +14,8 @@ Client for Gigya's REST API
 * Endpoint call hierarchy: `$gigya->accounts()->tfa()->getCertificate()`
 * List of endpoints: `accounts`, `accounts->tfa`, `audit`, `socialize`, `comments`, `gameMechanics`, `reports`, `dataStore`, `identityStorage`, `saml`, `saml->idp`
 * Different authentication methods:
-  * `standard`: add api_key and secret to https web requests
+  * `gigya`: add api_key and secret to https web requests
+  * `credentials`: uses `client_id` and `client_secret` for use with oauth2 token retrieval
   * `gigya-oauth2`: gets an oauth2 token and uses that each time
   * `custom`: provide you own token retrieved independently
 
@@ -28,6 +29,8 @@ $ composer require graze/gigya-client
 
 ## Usage
 
+By Default the Gigya client uses `gigya` auth and appends the api_key and secret onto the query string when calling gigya over https.
+
 ```php
 $gigya = new Gigya($key, $secret);
 $response = $gigya->accounts()->getAccountInfo(['uid' => $uid]);
@@ -36,6 +39,8 @@ $account = $response->getData();
 
 ### OAuth 2
 
+You can also use `oauth2` in server mode and retrieve information about all accounts
+
 ```php
 $gigya = new Gigya($key, $secret, $region, $user, ['auth'=>'gigya-oauth2']);
 $response = $gigya->accounts()->getAccountInfo(['uid' => $uid]);
@@ -43,6 +48,8 @@ $account = $response->getData();
 ```
 
 #### Social OAuth 2
+
+OAuth2 can also be used to retrieve information about a single account without knowledge of the uid.
 
 ```php
 $grant = new ManualGrant();

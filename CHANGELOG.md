@@ -2,7 +2,7 @@
 
 All Notable changes to `gigya-client` will be documented in this file
 
-## 1.0 - 2016-11-28
+## 1.0 - 2016-12-02
 
 ### Changed
 - Upgrade Guzzle from v5 to v6

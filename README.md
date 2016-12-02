@@ -14,10 +14,10 @@ Client for Gigya's REST API
 * Endpoint call hierarchy: `$gigya->accounts()->tfa()->getCertificate()`
 * List of endpoints: `accounts`, `accounts->tfa`, `audit`, `socialize`, `comments`, `gameMechanics`, `reports`, `dataStore`, `identityStorage`, `saml`, `saml->idp`
 * Different authentication methods:
-  * `gigya`: add api_key and secret to https web requests
+  * `gigya`: add `api_key` and `secret` to https web requests
   * `credentials`: uses `client_id` and `client_secret` for use with oauth2 token retrieval
-  * `gigya-oauth2`: gets an oauth2 token and uses that each time
-  * `custom`: provide you own token retrieved independently
+  * `gigya-oauth2`: uses an automatically retrieved OAuth2 token
+  * `custom`: use your own custom authentication (or use oauth2 with a provided token)
 
 ## Install
 
@@ -49,12 +49,12 @@ $account = $response->getData();
 
 #### Social OAuth 2
 
-OAuth2 can also be used to retrieve information about a single account without knowledge of the uid.
+OAuth2 can also be used to retrieve information about a single account without knowledge of the `uid`.
 
 ```php
 $grant = new ManualGrant();
 $gigya = new Gigya($key, $secret, $region, null, ['auth' => 'oauth2-custom']);
-$gigya->addHandler(OAuth2Subscriber::middleware($grant));
+$gigya->addHandler(OAuth2Subscriber::middleware($grant, 'oauth2-custom'));
 
 $tokenResponse = $gigya->socialize()->getToken([
     'grant_type' => 'code',

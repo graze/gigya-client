@@ -132,6 +132,13 @@ class GigyaTest extends TestCase
         $this->gigya->accounts()->getAccountInfo(['uid' => 'some_uid']);
 
         $this->printBenchmark(__METHOD__, 1);
+
+        list($duration) = $this->endBenchmark();
+        static::assertLessThan(
+            1000,
+            $duration,
+            'An individual request should take less than 2s of prep and response validation'
+        );
     }
 
     public function testSingleChildCall()
@@ -145,6 +152,13 @@ class GigyaTest extends TestCase
         }
 
         $this->printBenchmark(__METHOD__, $num);
+
+        list($duration) = $this->endBenchmark();
+        static::assertLessThan(
+            1000,
+            $duration,
+            'An individual request should take less than 2s of prep and response validation'
+        );
     }
 
     public function testDoubleChildCall()
@@ -184,15 +198,5 @@ class GigyaTest extends TestCase
             $duration * 1000 / $num,
             'An individual request should take less than 2ms of prep and response validation'
         );
-    }
-
-    public function testSingleCallAgain()
-    {
-        $this->createBasicHandler();
-        $this->startBenchmark();
-
-        $this->gigya->accounts()->getAccountInfo(['uid' => 'some_uid']);
-
-        $this->printBenchmark(__METHOD__, 1);
     }
 }

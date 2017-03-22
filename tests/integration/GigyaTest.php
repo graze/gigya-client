@@ -23,7 +23,6 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Response;
-use Illuminate\Support\Collection;
 use Mockery as m;
 use Psr\Http\Message\RequestInterface;
 
@@ -61,9 +60,16 @@ class GigyaTest extends TestCase
         static::assertEquals(0, $response->getErrorCode());
         static::assertCount(1, $store);
         $log = array_pop($store);
+
+        /** @var RequestInterface $request */
+        $request = $log['request'];
+        parse_str($request->getBody()->__toString(), $body);
+        static::assertEquals('key', $body['apiKey']);
+        static::assertEquals('secret', $body['secret']);
+
         static::assertEquals(
-            'https://accounts.eu1.gigya.com/accounts.getAccountInfo?apiKey=key&secret=secret',
-            $log['request']->getUri()->__toString()
+            'https://accounts.eu1.gigya.com/accounts.getAccountInfo',
+            $request->getUri()->__toString()
         );
     }
 
@@ -83,8 +89,11 @@ class GigyaTest extends TestCase
         /** @var RequestInterface $request */
         $request = $log['request'];
         static::assertInstanceOf(RequestInterface::class, $request);
+        parse_str($request->getBody()->__toString(), $body);
+        static::assertEquals('key', $body['apiKey']);
+        static::assertEquals('secret', $body['secret']);
         static::assertEquals(
-            'https://accounts.eu1.gigya.com/accounts.getAccountInfo?apiKey=key&secret=secret&userKey=userKey',
+            'https://accounts.eu1.gigya.com/accounts.getAccountInfo',
             $request->getUri()->__toString()
         );
     }
@@ -122,9 +131,16 @@ class GigyaTest extends TestCase
         static::assertEquals(0, $response->getErrorCode());
         static::assertCount(1, $store);
         $log = array_pop($store);
+
+        /** @var RequestInterface $request */
+        $request = $log['request'];
+        static::assertInstanceOf(RequestInterface::class, $request);
+        parse_str($request->getBody()->__toString(), $body);
+        static::assertEquals('key', $body['apiKey']);
+        static::assertEquals('secret', $body['secret']);
         static::assertEquals(
-            "https://accounts.eu1.gigya.com/accounts.getAccountInfo?apiKey=key&secret=secret",
-            $log['request']->getUri()->__toString()
+            'https://accounts.eu1.gigya.com/accounts.getAccountInfo',
+            $request->getUri()->__toString()
         );
 
         $data = $response->getData();

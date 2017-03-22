@@ -99,7 +99,7 @@ class HttpsAuthMiddlewareTest extends TestCase
     public function testSubscriberDoesNotDoAnythingForNonGigyaAuthRequests()
     {
         $handler = new MockHandler([
-            function (RequestInterface $request, array $options) {
+            function (RequestInterface $request) {
                 $query = $request->getUri()->getQuery();
                 $this->assertNotRegExp('/apiKey=/', $query);
                 $this->assertNotRegExp('/secret=/', $query);
@@ -114,6 +114,89 @@ class HttpsAuthMiddlewareTest extends TestCase
         $comp = $stack->resolve();
 
         $promise = $comp(new Request('GET', 'http://example.com'), ['auth' => 'oauth']);
+        $this->assertInstanceOf(PromiseInterface::class, $promise);
+    }
+
+    public function testKeyAndSecretIsPassedToParamsWithPOST()
+    {
+        $handler = new MockHandler([
+            function (RequestInterface $request) {
+                parse_str($request->getBody()->__toString(), $body);
+                $this->assertEquals('key', $body['apiKey']);
+                $this->assertEquals('secret', $body['secret']);
+                return new Response(200);
+            },
+        ]);
+
+        $stack = new HandlerStack($handler);
+        $stack->push(HttpsAuthMiddleware::middleware('key', 'secret'));
+
+        $comp = $stack->resolve();
+
+        $promise = $comp(new Request('POST', 'https://example.com'), ['auth' => 'gigya']);
+        $this->assertInstanceOf(PromiseInterface::class, $promise);
+    }
+
+    public function testKeySecretAndUserKeyIsPassedToParamsWithPOST()
+    {
+        $handler = new MockHandler([
+            function (RequestInterface $request) {
+                parse_str($request->getBody()->__toString(), $body);
+                $this->assertEquals('key', $body['apiKey']);
+                $this->assertEquals('secret', $body['secret']);
+                $this->assertEquals('user', $body['userKey']);
+                return new Response(200);
+            },
+        ]);
+
+        $stack = new HandlerStack($handler);
+        $stack->push(HttpsAuthMiddleware::middleware('key', 'secret', 'user'));
+
+        $comp = $stack->resolve();
+
+        $promise = $comp(new Request('POST', 'https://example.com'), ['auth' => 'gigya']);
+        $this->assertInstanceOf(PromiseInterface::class, $promise);
+    }
+
+    public function testSubscriberDoesNotDoAnythingForNonHttpsRequestsWithPOST()
+    {
+        $handler = new MockHandler([
+            function (RequestInterface $request) {
+                parse_str($request->getBody()->__toString(), $body);
+                $this->assertArrayNotHasKey('apiKey', $body);
+                $this->assertArrayNotHasKey('secret', $body);
+                $this->assertArrayNotHasKey('userKey', $body);
+                return new Response(200);
+            },
+        ]);
+
+        $stack = new HandlerStack($handler);
+        $stack->push(HttpsAuthMiddleware::middleware('key', 'secret', 'user'));
+
+        $comp = $stack->resolve();
+
+        $promise = $comp(new Request('POST', 'http://example.com'), ['auth' => 'gigya']);
+        $this->assertInstanceOf(PromiseInterface::class, $promise);
+    }
+
+    public function testSubscriberDoesNotDoAnythingForNonGigyaAuthRequestsWithPOST()
+    {
+        $handler = new MockHandler([
+            function (RequestInterface $request) {
+                parse_str($request->getBody()->__toString(), $body);
+                $this->assertArrayNotHasKey('apiKey', $body);
+                $this->assertArrayNotHasKey('secret', $body);
+                $this->assertArrayNotHasKey('userKey', $body);
+                return new Response(200);
+            },
+        ]);
+
+        $stack = new HandlerStack($handler);
+        $stack->push(HttpsAuthMiddleware::middleware('key', 'secret', 'user'));
+
+        $comp = $stack->resolve();
+
+        $promise = $comp(new Request('POST', 'http://example.com'), ['auth' => 'oauth']);
         $this->assertInstanceOf(PromiseInterface::class, $promise);
     }
 }

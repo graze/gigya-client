@@ -25,6 +25,15 @@ use Psr\Http\Message\RequestInterface;
 
 class CredentialsAuthMiddlewareTest extends TestCase
 {
+    public function testAccessors()
+    {
+        $auth = new CredentialsAuthMiddleware(function () {
+        }, 'key', 'client_secret', 'user');
+        static::assertEquals('key', $auth->getApiKey());
+        static::assertEquals('client_secret', $auth->getSecret());
+        static::assertEquals('user', $auth->getUserKey());
+    }
+
     public function testKeyAndSecretIsPassedToParams()
     {
         $handler = new MockHandler([
@@ -65,15 +74,6 @@ class CredentialsAuthMiddlewareTest extends TestCase
         $this->assertInstanceOf(PromiseInterface::class, $promise);
     }
 
-    public function testAccessors()
-    {
-        $auth = new CredentialsAuthMiddleware(function () {
-        }, 'key', 'client_secret', 'user');
-        static::assertEquals('key', $auth->getApiKey());
-        static::assertEquals('client_secret', $auth->getSecret());
-        static::assertEquals('user', $auth->getUserKey());
-    }
-
     public function testSubscriberDoesNotDoAnythingForNonHttpsRequests()
     {
         $handler = new MockHandler([
@@ -111,6 +111,86 @@ class CredentialsAuthMiddlewareTest extends TestCase
         $comp = $stack->resolve();
 
         $promise = $comp(new Request('GET', 'https://example.com'), ['auth' => 'oauth']);
+        $this->assertInstanceOf(PromiseInterface::class, $promise);
+    }
+
+    public function testKeyAndSecretIsPassedToParamsWithPOST()
+    {
+        $handler = new MockHandler([
+            function (RequestInterface $request) {
+                parse_str($request->getBody()->__toString(), $body);
+                $this->assertEquals('key', $body['client_id']);
+                $this->assertEquals('client_secret', $body['client_secret']);
+                return new Response(200);
+            },
+        ]);
+
+        $stack = new HandlerStack($handler);
+        $stack->push(CredentialsAuthMiddleware::middleware('key', 'client_secret'));
+
+        $comp = $stack->resolve();
+
+        $promise = $comp(new Request('POST', 'https://example.com'), ['auth' => 'credentials']);
+        $this->assertInstanceOf(PromiseInterface::class, $promise);
+    }
+
+    public function testKeySecretAndUserKeyIsPassedToParamsWithPOST()
+    {
+        $handler = new MockHandler([
+            function (RequestInterface $request) {
+                parse_str($request->getBody()->__toString(), $body);
+                $this->assertEquals('user', $body['client_id']);
+                $this->assertEquals('client_secret', $body['client_secret']);
+                return new Response(200);
+            },
+        ]);
+
+        $stack = new HandlerStack($handler);
+        $stack->push(CredentialsAuthMiddleware::middleware('key', 'client_secret', 'user'));
+
+        $comp = $stack->resolve();
+
+        $promise = $comp(new Request('POST', 'https://example.com'), ['auth' => 'credentials']);
+        $this->assertInstanceOf(PromiseInterface::class, $promise);
+    }
+
+    public function testSubscriberDoesNotDoAnythingForNonHttpsRequestsWithPOST()
+    {
+        $handler = new MockHandler([
+            function (RequestInterface $request) {
+                parse_str($request->getBody()->__toString(), $body);
+                $this->assertArrayNotHasKey('client_id', $body);
+                $this->assertArrayNotHasKey('client_secret', $body);
+                return new Response(200);
+            },
+        ]);
+
+        $stack = new HandlerStack($handler);
+        $stack->push(CredentialsAuthMiddleware::middleware('key', 'secret', 'user'));
+
+        $comp = $stack->resolve();
+
+        $promise = $comp(new Request('POST', 'http://example.com'), ['auth' => 'credentials']);
+        $this->assertInstanceOf(PromiseInterface::class, $promise);
+    }
+
+    public function testSubscriberDoesNotDoAnythingForNonGigyaAuthRequestsWithPOST()
+    {
+        $handler = new MockHandler([
+            function (RequestInterface $request) {
+                parse_str($request->getBody()->__toString(), $body);
+                $this->assertArrayNotHasKey('client_id', $body);
+                $this->assertArrayNotHasKey('client_secret', $body);
+                return new Response(200);
+            },
+        ]);
+
+        $stack = new HandlerStack($handler);
+        $stack->push(CredentialsAuthMiddleware::middleware('key', 'secret', 'user'));
+
+        $comp = $stack->resolve();
+
+        $promise = $comp(new Request('POST', 'https://example.com'), ['auth' => 'oauth']);
         $this->assertInstanceOf(PromiseInterface::class, $promise);
     }
 }

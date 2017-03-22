@@ -123,7 +123,7 @@ class GigyaTest extends TestCase
         static::assertCount(1, $store);
         $log = array_pop($store);
         static::assertEquals(
-            "https://accounts.eu1.gigya.com/accounts.getAccountInfo?uid=$uid&apiKey=key&secret=secret",
+            "https://accounts.eu1.gigya.com/accounts.getAccountInfo?apiKey=key&secret=secret",
             $log['request']->getUri()->__toString()
         );
 

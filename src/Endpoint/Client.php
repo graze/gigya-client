@@ -143,8 +143,8 @@ class Client
     public function request($method, array $params = [], array $options = [])
     {
         $requestOptions = array_merge($this->options, $options);
-        $requestOptions['query'] = $params;
-        $guzzleResponse = $this->client->get($this->getEndpoint($method), $requestOptions);
+        $requestOptions['form_params'] = $params;
+        $guzzleResponse = $this->client->post($this->getEndpoint($method), $requestOptions);
         $response = $this->factory->getResponse($guzzleResponse);
 
         $this->assert($response);

@@ -69,6 +69,7 @@ class GigyaTest extends TestCase
             'apiKey=key&secret=secret',
             $log['request']->getBody()->__toString()
         );
+        static::assertEquals(['application/x-www-form-urlencoded'], $log['request']->getHeader('Content-Type'));
     }
 
     public function testAuthInjectsKeySecretAndUserKeyIntoParams()
@@ -95,6 +96,7 @@ class GigyaTest extends TestCase
             'apiKey=key&secret=secret&userKey=userKey',
             $log['request']->getBody()->__toString()
         );
+        static::assertEquals(['application/x-www-form-urlencoded'], $log['request']->getHeader('Content-Type'));
     }
 
     public function testUidSignatureWhenValidDoesNotThrowException()
@@ -138,6 +140,7 @@ class GigyaTest extends TestCase
             "uid=$uid&apiKey=key&secret=secret",
             $log['request']->getBody()->__toString()
         );
+        static::assertEquals(['application/x-www-form-urlencoded'], $log['request']->getHeader('Content-Type'));
 
         $data = $response->getData();
         static::assertEquals($uid, $data->get('UID'));

@@ -1,30 +1,31 @@
 SHELL = /bin/sh
 
 DOCKER ?= $(shell which docker)
-DOCKER_REPOSITORY := graze/php-alpine
 VOLUME := /srv
-VOLUME_MAP := -v $$(pwd):${VOLUME}
-DOCKER_TAG := test
-DOCKER_RUN_BASE := ${DOCKER} run --rm -t ${VOLUME_MAP} -w ${VOLUME}
-DOCKER_RUN := ${DOCKER_RUN_BASE} ${DOCKER_REPOSITORY}:${DOCKER_TAG}
+IMAGE ?= graze/php-alpine:test
+DOCKER_RUN := ${DOCKER} run --rm -t -v $$(pwd):${VOLUME} -w ${VOLUME} ${IMAGE}
 
-.PHONY: install composer clean help
-.PHONY: test lint lint-fix test-unit test-integration test-matrix test-coverage test-coverage-html test-coverage-clover
+PREFER_LOWEST ?=
+
+.PHONY: build build-update composer-% clean help run
+.PHONY: lint lint-fix
+.PHONY: test test-unit test-integration test-lowest test-matrix test-coverage test-coverage-html test-coverage-clover
 
 .SILENT: help
-.DEFAULT_GOAL=help
 
 # Building
 
-install: ## Download the dependencies then build the image 🚀
-	make 'composer-install --optimize-autoloader --ignore-platform-reqs'
+build: ## Download the dependencies then build the image :rocket:.
+	make 'composer-install --prefer-dist --optimize-autoloader'
+
+build-update: ## Update all dependencies
+	make 'composer-update --prefer-dist --optimize-autoloader ${PREFER_LOWEST}'
 
 composer-%: ## Run a composer command, `make "composer-<command> [...]"`.
 	${DOCKER} run -t --rm \
         -v $$(pwd):/app \
-        -v ~/.composer:/root/composer \
-        -v ~/.ssh:/root/.ssh:ro \
-        composer/composer:alpine --ansi --no-interaction $* $(filter-out $@,$(MAKECMDGOALS))
+        -v ~/.composer:/tmp \
+        composer --ansi --no-interaction $* $(filter-out $@,$(MAKECMDGOALS))
 
 # Testing
 
@@ -32,35 +33,40 @@ test: ## Run the unit and integration testsuites.
 test: lint test-unit test-integration
 
 lint: ## Run phpcs against the code.
-	$(DOCKER_RUN) vendor/bin/phpcs -p --warning-severity=0 src/ tests/
+	${DOCKER_RUN} vendor/bin/phpcs -p --warning-severity=0 src/ tests/
 
-lint-fix: ## Run phpcsf and fix lint errors.
-	$(DOCKER_RUN) vendor/bin/phpcbf -p src/ tests/
+lint-fix: ## Run phpcsf and fix possible lint errors.
+	${DOCKER_RUN} vendor/bin/phpcbf -p src/ tests/
 
 test-unit: ## Run the unit testsuite.
-	$(DOCKER_RUN) vendor/bin/phpunit --colors=always --testsuite unit
+	${DOCKER_RUN} vendor/bin/phpunit --testsuite unit
+
+test-integration: ## Run the unit testsuite.
+	${DOCKER_RUN} vendor/bin/phpunit --testsuite integration
+
+test-lowest: ## Test using the lowest possible versions of the dependencies
+test-lowest: PREFER_LOWEST=--prefer-lowest --prefer-stable
+test-lowest: build-update test
 
 test-matrix: ## Run the unit tests against multiple targets.
-	make DOCKER_RUN="${DOCKER_RUN_BASE} php:5.6-alpine" test
-	make DOCKER_RUN="${DOCKER_RUN_BASE} php:7.0-alpine" test
-	make DOCKER_RUN="${DOCKER_RUN_BASE} php:7.1-alpine" test
-	make DOCKER_RUN="${DOCKER_RUN_BASE} diegomarangoni/hhvm:cli" test
+	${MAKE} IMAGE="php:5.6-alpine" test
+	${MAKE} IMAGE="php:7.0-alpine" test
+	${MAKE} IMAGE="php:7.1-alpine" test
+	${MAKE} IMAGE="hhvm/hhvm:latest" test
 
-test-integration: ## Run the integration testsuite.
-	$(DOCKER_RUN) vendor/bin/phpunit --colors=always --testsuite integration
-
-test-performance: ## Run the performance testsuite.
-	$(DOCKER_RUN) vendor/bin/phpunit --colors=always --testsuite performance
+test-matrix-lowest: ## Run the unit tests against
+	${MAKE} build-update PREFER_LOWEST='--prefer-lowest --prefer-stable'
+	${MAKE} test-matrix
+	${MAKE} build-update
 
 test-coverage: ## Run all tests and output coverage to the console.
-	$(DOCKER_RUN) phpdbg7 -qrr vendor/bin/phpunit --coverage-text --testsuite coverage
+	${DOCKER_RUN} phpdbg7 -qrr vendor/bin/phpunit --coverage-text
 
-test-coverage-html: ## Run all tests and output html results
-	$(DOCKER_RUN) phpdbg7 -qrr vendor/bin/phpunit --coverage-html ./tests/report/html --testsuite coverage
+test-coverage-html: ## Run all tests and output coverage to html.
+	${DOCKER_RUN} phpdbg7 -qrr vendor/bin/phpunit --coverage-html=./tests/report/html
 
 test-coverage-clover: ## Run all tests and output clover coverage to file.
-	$(DOCKER_RUN) phpdbg7 -qrr vendor/bin/phpunit --coverage-clover=./tests/report/coverage.clover --testsuite coverage
-
+	${DOCKER_RUN} phpdbg7 -qrr vendor/bin/phpunit --coverage-clover=./tests/report/coverage.clover
 
 # Help
 

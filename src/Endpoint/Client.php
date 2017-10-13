@@ -19,7 +19,6 @@ use Graze\Gigya\Response\ResponseFactoryInterface;
 use Graze\Gigya\Response\ResponseInterface;
 use Graze\Gigya\Validation\ResponseValidatorInterface;
 use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Exception\RequestException;
 
 class Client
 {
@@ -132,19 +131,19 @@ class Client
 
     /**
      * @param string $method
-     * @param array  $params  Parameters to pass as part the of the uri
+     * @param array  $params  Parameters to pass as part the of the request
      * @param array  $options Extra options to be passed to guzzle. These will overwrite any existing options defined
      *                        by using addOption
      *
-     * @throws RequestException When an error is encountered
+     * @return ResponseInterface When an error is encountered
      *
-     * @return ResponseInterface
+     * @throws Exception
      */
     public function request($method, array $params = [], array $options = [])
     {
         $requestOptions = array_merge($this->options, $options);
-        $requestOptions['query'] = $params;
-        $guzzleResponse = $this->client->get($this->getEndpoint($method), $requestOptions);
+        $requestOptions['form_params'] = $params;
+        $guzzleResponse = $this->client->post($this->getEndpoint($method), $requestOptions);
         $response = $this->factory->getResponse($guzzleResponse);
 
         $this->assert($response);
@@ -156,9 +155,8 @@ class Client
      * @param string $method
      * @param array  $arguments [params, options]
      *
-     * @throws RequestException
-     *
      * @return ResponseInterface
+     * @throws Exception
      */
     public function __call($method, array $arguments = [])
     {

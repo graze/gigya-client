@@ -62,8 +62,8 @@ class GigyaTest extends TestCase
         static::assertCount(1, $store);
         $log = array_pop($store);
         static::assertEquals(
-            'https://accounts.eu1.gigya.com/accounts.getAccountInfo?apiKey=key&secret=secret',
-            $log['request']->getUri()->__toString()
+            'apiKey=key&secret=secret',
+            $log['request']->getBody()->__toString()
         );
     }
 
@@ -84,8 +84,8 @@ class GigyaTest extends TestCase
         $request = $log['request'];
         static::assertInstanceOf(RequestInterface::class, $request);
         static::assertEquals(
-            'https://accounts.eu1.gigya.com/accounts.getAccountInfo?apiKey=key&secret=secret&userKey=userKey',
-            $request->getUri()->__toString()
+            'apiKey=key&secret=secret&userKey=userKey',
+            $request->getBody()->__toString()
         );
     }
 
@@ -123,7 +123,7 @@ class GigyaTest extends TestCase
         static::assertCount(1, $store);
         $log = array_pop($store);
         static::assertEquals(
-            "https://accounts.eu1.gigya.com/accounts.getAccountInfo?uid=$uid&apiKey=key&secret=secret",
+            "https://accounts.eu1.gigya.com/accounts.getAccountInfo?uid=$uid",
             $log['request']->getUri()->__toString()
         );
 

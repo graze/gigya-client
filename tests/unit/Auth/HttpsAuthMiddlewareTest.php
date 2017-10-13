@@ -29,9 +29,9 @@ class HttpsAuthMiddlewareTest extends TestCase
     {
         $handler = new MockHandler([
             function (RequestInterface $request) {
-                $query = $request->getUri()->getQuery();
-                $this->assertRegExp('/apiKey=key/', $query);
-                $this->assertRegExp('/secret=secret/', $query);
+                $body = $request->getBody()->__toString();
+                $this->assertRegExp('/apiKey=key/', $body);
+                $this->assertRegExp('/secret=secret/', $body);
                 return new Response(200);
             },
         ]);
@@ -49,10 +49,10 @@ class HttpsAuthMiddlewareTest extends TestCase
     {
         $handler = new MockHandler([
             function (RequestInterface $request) {
-                $query = $request->getUri()->getQuery();
-                $this->assertRegExp('/apiKey=key/', $query);
-                $this->assertRegExp('/secret=secret/', $query);
-                $this->assertRegExp('/userKey=user/', $query);
+                $body = $request->getBody()->__toString();
+                $this->assertRegExp('/apiKey=key/', $body);
+                $this->assertRegExp('/secret=secret/', $body);
+                $this->assertRegExp('/userKey=user/', $body);
                 return new Response(200);
             },
         ]);

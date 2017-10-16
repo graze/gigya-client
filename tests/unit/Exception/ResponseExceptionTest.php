@@ -30,6 +30,11 @@ class ResponseExceptionTest extends TestCase
         static::assertInstanceOf('RuntimeException', $exception);
     }
 
+    /**
+     * @expectedException \Graze\Gigya\Exception\ResponseException
+     * @expectedExceptionCode    100001
+     * @expectedExceptionMessage some description from the response
+     */
     public function testExceptionIncludeResponseStringAndCode()
     {
         $response = m::mock(ResponseInterface::class);
@@ -38,10 +43,6 @@ class ResponseExceptionTest extends TestCase
         $response->shouldReceive('__toString')
                  ->andReturn('some description from the response');
         $exception = new ResponseException($response);
-
-        static::expectException(ResponseException::class);
-        static::expectExceptionMessage('some description from the response');
-        static::expectExceptionCode(100001);
 
         throw $exception;
     }

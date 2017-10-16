@@ -20,21 +20,24 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Mockery as m;
 use Psr\Http\Message\RequestInterface;
 
 class HttpsAuthMiddlewareTest extends TestCase
 {
     public function testKeyAndSecretIsPassedToParams()
     {
-        $handler = new MockHandler([
-            function (RequestInterface $request) {
-                $query = $request->getUri()->getQuery();
-                $this->assertRegExp('/apiKey=key/', $query);
-                $this->assertRegExp('/secret=secret/', $query);
-                return new Response(200);
-            },
-        ]);
+        $handler = new MockHandler(
+            [
+                function (RequestInterface $request) {
+                    $params = \GuzzleHttp\Psr7\parse_query($request->getBody());
+                    $this->assertArrayHasKey('apiKey', $params);
+                    $this->assertEquals('key', $params['apiKey']);
+                    $this->assertArrayHasKey('secret', $params);
+                    $this->assertEquals('secret', $params['secret']);
+                    return new Response(200);
+                },
+            ]
+        );
 
         $stack = new HandlerStack($handler);
         $stack->push(HttpsAuthMiddleware::middleware('key', 'secret'));
@@ -47,15 +50,20 @@ class HttpsAuthMiddlewareTest extends TestCase
 
     public function testKeySecretAndUserKeyIsPassedToParams()
     {
-        $handler = new MockHandler([
-            function (RequestInterface $request) {
-                $query = $request->getUri()->getQuery();
-                $this->assertRegExp('/apiKey=key/', $query);
-                $this->assertRegExp('/secret=secret/', $query);
-                $this->assertRegExp('/userKey=user/', $query);
-                return new Response(200);
-            },
-        ]);
+        $handler = new MockHandler(
+            [
+                function (RequestInterface $request) {
+                    $params = \GuzzleHttp\Psr7\parse_query($request->getBody());
+                    $this->assertArrayHasKey('apiKey', $params);
+                    $this->assertEquals('key', $params['apiKey']);
+                    $this->assertArrayHasKey('secret', $params);
+                    $this->assertEquals('secret', $params['secret']);
+                    $this->assertArrayHasKey('userKey', $params);
+                    $this->assertEquals('user', $params['userKey']);
+                    return new Response(200);
+                },
+            ]
+        );
 
         $stack = new HandlerStack($handler);
         $stack->push(HttpsAuthMiddleware::middleware('key', 'secret', 'user'));
@@ -68,8 +76,13 @@ class HttpsAuthMiddlewareTest extends TestCase
 
     public function testAccessors()
     {
-        $auth = new HttpsAuthMiddleware(function () {
-        }, 'key', 'secret', 'user');
+        $auth = new HttpsAuthMiddleware(
+            function () {
+            },
+            'key',
+            'secret',
+            'user'
+        );
         static::assertEquals('key', $auth->getApiKey());
         static::assertEquals('secret', $auth->getSecret());
         static::assertEquals('user', $auth->getUserKey());
@@ -77,15 +90,17 @@ class HttpsAuthMiddlewareTest extends TestCase
 
     public function testSubscriberDoesNotDoAnythingForNonHttpsRequests()
     {
-        $handler = new MockHandler([
-            function (RequestInterface $request) {
-                $query = $request->getUri()->getQuery();
-                $this->assertNotRegExp('/apiKey=/', $query);
-                $this->assertNotRegExp('/secret=/', $query);
-                $this->assertNotRegExp('/userKey=/', $query);
-                return new Response(200);
-            },
-        ]);
+        $handler = new MockHandler(
+            [
+                function (RequestInterface $request) {
+                    $params = \GuzzleHttp\Psr7\parse_query($request->getBody());
+                    $this->assertArrayNotHasKey('apiKey', $params);
+                    $this->assertArrayNotHasKey('secret', $params);
+                    $this->assertArrayNotHasKey('userKey', $params);
+                    return new Response(200);
+                },
+            ]
+        );
 
         $stack = new HandlerStack($handler);
         $stack->push(HttpsAuthMiddleware::middleware('key', 'secret', 'user'));
@@ -98,15 +113,17 @@ class HttpsAuthMiddlewareTest extends TestCase
 
     public function testSubscriberDoesNotDoAnythingForNonGigyaAuthRequests()
     {
-        $handler = new MockHandler([
-            function (RequestInterface $request, array $options) {
-                $query = $request->getUri()->getQuery();
-                $this->assertNotRegExp('/apiKey=/', $query);
-                $this->assertNotRegExp('/secret=/', $query);
-                $this->assertNotRegExp('/userKey=/', $query);
-                return new Response(200);
-            },
-        ]);
+        $handler = new MockHandler(
+            [
+                function (RequestInterface $request, array $options) {
+                    $params = \GuzzleHttp\Psr7\parse_query($request->getBody());
+                    $this->assertArrayNotHasKey('apiKey', $params);
+                    $this->assertArrayNotHasKey('secret', $params);
+                    $this->assertArrayNotHasKey('userKey', $params);
+                    return new Response(200);
+                },
+            ]
+        );
 
         $stack = new HandlerStack($handler);
         $stack->push(HttpsAuthMiddleware::middleware('key', 'secret', 'user'));

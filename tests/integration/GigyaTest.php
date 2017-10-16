@@ -13,8 +13,6 @@
 
 namespace Graze\Gigya\Test\Integration;
 
-use Graze\Gigya\Exception\InvalidTimestampException;
-use Graze\Gigya\Exception\InvalidUidSignatureException;
 use Graze\Gigya\Gigya;
 use Graze\Gigya\Test\TestCase;
 use Graze\Gigya\Test\TestFixtures;
@@ -23,8 +21,6 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Response;
-use Illuminate\Support\Collection;
-use Mockery as m;
 use Psr\Http\Message\RequestInterface;
 
 class GigyaTest extends TestCase
@@ -62,9 +58,14 @@ class GigyaTest extends TestCase
         static::assertCount(1, $store);
         $log = array_pop($store);
         static::assertEquals(
-            'https://accounts.eu1.gigya.com/accounts.getAccountInfo?apiKey=key&secret=secret',
+            'https://accounts.eu1.gigya.com/accounts.getAccountInfo',
             $log['request']->getUri()->__toString()
         );
+        static::assertEquals(
+            'apiKey=key&secret=secret',
+            $log['request']->getBody()->__toString()
+        );
+        static::assertEquals(['application/x-www-form-urlencoded'], $log['request']->getHeader('Content-Type'));
     }
 
     public function testAuthInjectsKeySecretAndUserKeyIntoParams()
@@ -84,9 +85,14 @@ class GigyaTest extends TestCase
         $request = $log['request'];
         static::assertInstanceOf(RequestInterface::class, $request);
         static::assertEquals(
-            'https://accounts.eu1.gigya.com/accounts.getAccountInfo?apiKey=key&secret=secret&userKey=userKey',
+            'https://accounts.eu1.gigya.com/accounts.getAccountInfo',
             $request->getUri()->__toString()
         );
+        static::assertEquals(
+            'apiKey=key&secret=secret&userKey=userKey',
+            $log['request']->getBody()->__toString()
+        );
+        static::assertEquals(['application/x-www-form-urlencoded'], $log['request']->getHeader('Content-Type'));
     }
 
     public function testUidSignatureWhenValidDoesNotThrowException()
@@ -123,9 +129,14 @@ class GigyaTest extends TestCase
         static::assertCount(1, $store);
         $log = array_pop($store);
         static::assertEquals(
-            "https://accounts.eu1.gigya.com/accounts.getAccountInfo?uid=$uid&apiKey=key&secret=secret",
+            "https://accounts.eu1.gigya.com/accounts.getAccountInfo",
             $log['request']->getUri()->__toString()
         );
+        static::assertEquals(
+            "uid=$uid&apiKey=key&secret=secret",
+            $log['request']->getBody()->__toString()
+        );
+        static::assertEquals(['application/x-www-form-urlencoded'], $log['request']->getHeader('Content-Type'));
 
         $data = $response->getData();
         static::assertEquals($uid, $data->get('UID'));
@@ -133,6 +144,9 @@ class GigyaTest extends TestCase
         static::assertEquals($timestamp, $data->get('signatureTimestamp'));
     }
 
+    /**
+     * @expectedException \Graze\Gigya\Exception\InvalidTimestampException
+     */
     public function testUidSignatureWhenIncorrectTimestampThrowsAnException()
     {
         $uid = 'diofu90ifgdf';
@@ -160,11 +174,12 @@ class GigyaTest extends TestCase
         $handler = $this->setupHandler($body);
         $client = new Gigya('key', 'secret', null, null, ['guzzle' => ['handler' => $handler]]);
 
-        static::expectException(InvalidTimestampException::class);
-
         $client->accounts()->getAccountInfo(['uid' => $uid]);
     }
 
+    /**
+     * @expectedException \Graze\Gigya\Exception\InvalidUidSignatureException
+     */
     public function testUidSignatureWhenInvalidSignatureThrowsAnException()
     {
         $uid = 'diofu90ifgdf';
@@ -189,11 +204,12 @@ class GigyaTest extends TestCase
         $handler = $this->setupHandler($body);
         $client = new Gigya('key', 'secret', null, null, ['guzzle' => ['handler' => $handler]]);
 
-        static::expectException(InvalidUidSignatureException::class);
-
         $client->accounts()->getAccountInfo(['uid' => $uid]);
     }
 
+    /**
+     * @expectedException \Graze\Gigya\Exception\InvalidTimestampException
+     */
     public function testRequestWillThrowTimestampExceptionWhenBothTimestampAndSignatureAreInvalid()
     {
         $uid = 'diofu90ifgdf';
@@ -217,8 +233,6 @@ class GigyaTest extends TestCase
 
         $handler = $this->setupHandler($body);
         $client = new Gigya('key', 'secret', null, null, ['guzzle' => ['handler' => $handler]]);
-
-        static::expectException(InvalidTimestampException::class);
 
         $client->accounts()->getAccountInfo(['uid' => $uid]);
     }

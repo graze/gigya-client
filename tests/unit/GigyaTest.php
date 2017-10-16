@@ -40,6 +40,7 @@ class GigyaTest extends TestCase
 
     public function setUp()
     {
+        parent::setUp();
         $this->guzzleClient = m::mock('overload:GuzzleHttp\Client');
         $this->handlerStack = m::mock(new HandlerStack())->makePartial();
         $this->factory = m::mock(ResponseFactoryInterface::class);

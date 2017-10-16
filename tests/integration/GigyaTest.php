@@ -13,8 +13,6 @@
 
 namespace Graze\Gigya\Test\Integration;
 
-use Graze\Gigya\Exception\InvalidTimestampException;
-use Graze\Gigya\Exception\InvalidUidSignatureException;
 use Graze\Gigya\Gigya;
 use Graze\Gigya\Test\TestCase;
 use Graze\Gigya\Test\TestFixtures;
@@ -23,8 +21,6 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Response;
-use Illuminate\Support\Collection;
-use Mockery as m;
 use Psr\Http\Message\RequestInterface;
 
 class GigyaTest extends TestCase

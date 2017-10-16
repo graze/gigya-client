@@ -404,11 +404,12 @@ class GigyaTest extends TestCase
         static::assertSame($gigyaResponse, $result);
     }
 
+    /**
+     * @expectedException \BadMethodCallException
+     * @expectedExceptionMessage No Arguments should be supplied for Gigya call
+     */
     public function testCallingMagicMethodWithArgumentsThrowsAnException()
     {
-        static::expectException('BadMethodCallException');
-        static::expectExceptionMessage('No Arguments should be supplied for Gigya call');
-
         $client = $this->createClient();
         $client->custom('params');
     }
@@ -707,6 +708,9 @@ class GigyaTest extends TestCase
         static::assertSame($response, $client->accounts()->getAccountInfo());
     }
 
+    /**
+     * @expectedException \Exception
+     */
     public function testTheValidatorThrowingAnExceptionWillPassthrough()
     {
         $response = $this->setupCall(
@@ -731,8 +735,6 @@ class GigyaTest extends TestCase
         $validator->shouldReceive('assert')
                   ->with($response)
                   ->andThrow($exception);
-
-        static::expectException(Exception::class);
 
         $client->accounts()->getAccountInfo();
     }

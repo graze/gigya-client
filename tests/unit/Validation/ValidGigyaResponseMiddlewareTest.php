@@ -20,15 +20,16 @@ use Graze\Gigya\Validation\ValidGigyaResponseMiddleware;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Mockery as m;
 
 class ValidGigyaResponseMiddlewareTest extends TestCase
 {
     public function testValidResponse()
     {
-        $handler = new MockHandler([
-            new Response(200, [], TestFixtures::getFixture('accounts.search_simple')),
-        ]);
+        $handler = new MockHandler(
+            [
+                new Response(200, [], TestFixtures::getFixture('accounts.search_simple')),
+            ]
+        );
 
         $middleware = ValidGigyaResponseMiddleware::middleware();
 
@@ -36,14 +37,18 @@ class ValidGigyaResponseMiddlewareTest extends TestCase
         $func(new Request('GET', 'https://foo.com'), [])->wait();
     }
 
+    /**
+     * @expectedException \Graze\Gigya\Exception\UnknownResponseException
+     * @expectedExceptionMessage The contents of the response could not be determined. Missing required field:
+     *                           'statusReason'
+     */
     public function testMissingFieldWillThrowAnException()
     {
-        $handler = new MockHandler([
-            new Response(200, [], TestFixtures::getFixture('missing_field')),
-        ]);
-
-        $this->expectException(UnknownResponseException::class);
-        $this->expectExceptionMessage("The contents of the response could not be determined. Missing required field: 'statusReason'");
+        $handler = new MockHandler(
+            [
+                new Response(200, [], TestFixtures::getFixture('missing_field')),
+            ]
+        );
 
         $middleware = ValidGigyaResponseMiddleware::middleware();
 
@@ -51,14 +56,17 @@ class ValidGigyaResponseMiddlewareTest extends TestCase
         $func(new Request('GET', 'https://foo.com'), [])->wait();
     }
 
+    /**
+     * @expectedException \Graze\Gigya\Exception\UnknownResponseException
+     * @expectedExceptionMessage The contents of the response could not be determined
+     */
     public function testNoBodyWillFail()
     {
-        $handler = new MockHandler([
-            new Response(200),
-        ]);
-
-        $this->expectException(UnknownResponseException::class);
-        $this->expectExceptionMessage('The contents of the response could not be determined');
+        $handler = new MockHandler(
+            [
+                new Response(200),
+            ]
+        );
 
         $middleware = ValidGigyaResponseMiddleware::middleware();
 
@@ -66,14 +74,17 @@ class ValidGigyaResponseMiddlewareTest extends TestCase
         $func(new Request('GET', 'https://foo.com'), [])->wait();
     }
 
+    /**
+     * @expectedException \Graze\Gigya\Exception\UnknownResponseException
+     * @expectedExceptionMessage The contents of the response could not be determined. Could not decode the body
+     */
     public function testInvalidBody()
     {
-        $handler = new MockHandler([
-            new Response(200, [], TestFixtures::getFixture('invalid_json')),
-        ]);
-
-        $this->expectException(UnknownResponseException::class);
-        $this->expectExceptionMessage('The contents of the response could not be determined. Could not decode the body');
+        $handler = new MockHandler(
+            [
+                new Response(200, [], TestFixtures::getFixture('invalid_json')),
+            ]
+        );
 
         $middleware = ValidGigyaResponseMiddleware::middleware();
 

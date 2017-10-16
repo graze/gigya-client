@@ -13,8 +13,6 @@
 
 namespace Graze\Gigya\Test\Unit\Validation;
 
-use Graze\Gigya\Exception\InvalidTimestampException;
-use Graze\Gigya\Exception\InvalidUidSignatureException;
 use Graze\Gigya\Response\ResponseInterface;
 use Graze\Gigya\Test\TestCase;
 use Graze\Gigya\Validation\ResponseValidatorInterface;
@@ -83,6 +81,9 @@ class UidSignatureValidatorTest extends TestCase
         static::assertTrue($this->validator->validate($response));
     }
 
+    /**
+     * @expectedException \Graze\Gigya\Exception\InvalidUidSignatureException
+     */
     public function testInvalidUidSignature()
     {
         $response = m::mock(ResponseInterface::class);
@@ -120,10 +121,12 @@ class UidSignatureValidatorTest extends TestCase
         $response->shouldReceive('getErrorCode')
                  ->andReturn(0);
 
-        static::expectException(InvalidUidSignatureException::class);
         $this->validator->assert($response);
     }
 
+    /**
+     * @expectedException \Graze\Gigya\Exception\InvalidTimestampException
+     */
     public function testInvalidTimestamp()
     {
         $response = m::mock(ResponseInterface::class);
@@ -158,7 +161,6 @@ class UidSignatureValidatorTest extends TestCase
         $response->shouldReceive('getErrorCode')
                  ->andReturn(0);
 
-        static::expectException(InvalidTimestampException::class);
         $this->validator->assert($response);
     }
 

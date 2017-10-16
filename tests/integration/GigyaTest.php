@@ -148,6 +148,9 @@ class GigyaTest extends TestCase
         static::assertEquals($timestamp, $data->get('signatureTimestamp'));
     }
 
+    /**
+     * @expectedException \Graze\Gigya\Exception\InvalidTimestampException
+     */
     public function testUidSignatureWhenIncorrectTimestampThrowsAnException()
     {
         $uid = 'diofu90ifgdf';
@@ -175,11 +178,12 @@ class GigyaTest extends TestCase
         $handler = $this->setupHandler($body);
         $client = new Gigya('key', 'secret', null, null, ['guzzle' => ['handler' => $handler]]);
 
-        static::expectException(InvalidTimestampException::class);
-
         $client->accounts()->getAccountInfo(['uid' => $uid]);
     }
 
+    /**
+     * @expectedException \Graze\Gigya\Exception\InvalidUidSignatureException
+     */
     public function testUidSignatureWhenInvalidSignatureThrowsAnException()
     {
         $uid = 'diofu90ifgdf';
@@ -204,11 +208,12 @@ class GigyaTest extends TestCase
         $handler = $this->setupHandler($body);
         $client = new Gigya('key', 'secret', null, null, ['guzzle' => ['handler' => $handler]]);
 
-        static::expectException(InvalidUidSignatureException::class);
-
         $client->accounts()->getAccountInfo(['uid' => $uid]);
     }
 
+    /**
+     * @expectedException \Graze\Gigya\Exception\InvalidTimestampException
+     */
     public function testRequestWillThrowTimestampExceptionWhenBothTimestampAndSignatureAreInvalid()
     {
         $uid = 'diofu90ifgdf';
@@ -232,8 +237,6 @@ class GigyaTest extends TestCase
 
         $handler = $this->setupHandler($body);
         $client = new Gigya('key', 'secret', null, null, ['guzzle' => ['handler' => $handler]]);
-
-        static::expectException(InvalidTimestampException::class);
 
         $client->accounts()->getAccountInfo(['uid' => $uid]);
     }

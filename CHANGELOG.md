@@ -7,8 +7,8 @@ All Notable changes to `gigya-client` will be documented in this file
 ### Changed
 
 - [BC] Move all requests to use POST instead of GET to gigya.
-  - Prevents email/password leakage and some people are having issues with credentials in query params
-  - If you use any customer `Handlers` that assume GET request or look at query params then they will need to change
+  - Prevents email/password leakage and some people are having issues with credentials in query params.
+  - If you use any custom `Handler`s that assume GET request or look at query params then they will need to change.
 
 ## 1.0 - 2016-12-02
 

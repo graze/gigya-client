@@ -89,6 +89,10 @@ use Graze\Gigya\Response\ResponseInterface;
  *         http://developers.gigya.com/display/GD/accounts.unregisterCounters+REST
  * @method ResponseInterface verifyLogin(array $params = [], array $options = []) @link
  *         http://developers.gigya.com/display/GD/accounts.verifyLogin+REST
+ * @method ResponseInterface getJWT(array $params = [], array $options = []) @link
+ *         https://developers.gigya.com/display/GD/accounts.getJWT+REST
+ * @method ResponseInterface getJWTPublicKey(array $params = [], array $options = []) @link
+ *         https://developers.gigya.com/display/GD/accounts.getJWTPublicKey+REST
  */
 class Accounts extends Client
 {

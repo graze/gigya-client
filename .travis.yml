@@ -23,6 +23,7 @@ matrix:
     - php: nightly
 
 before_script:
+  - composer config platform.php $(php -r "echo PHP_VERSION;")
   - travis_retry composer update --no-interaction --prefer-dist $PREFER_LOWEST
 
 script:

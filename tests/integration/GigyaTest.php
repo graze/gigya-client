@@ -265,4 +265,40 @@ class GigyaTest extends TestCase
 
         $this->assertEquals(1, $called);
     }
+
+    public function testBodyIsEncodedWithChildren()
+    {
+        $handler = $this->setupHandler();
+        $client = new Gigya('key', 'secret', null, 'userKey', ['guzzle' => ['handler' => $handler]]);
+        $store = [];
+        $handler->push(Middleware::history($store));
+
+        $response = $client->accounts()->register([
+            'email' => 'foo@bar.com',
+            'profile' => [
+                'email' => 'foo@bar.com',
+                'firstName' => 'foo',
+                'lastName' => 'bar',
+                'gender' => 'Magic',
+                'UID' => 'ds8a9d8sa08d90as8d0',
+            ],
+        ]);
+
+        static::assertEquals(0, $response->getErrorCode());
+        static::assertCount(1, $store);
+        $log = array_pop($store);
+        static::assertArrayHasKey('request', $log);
+        /** @var RequestInterface $request */
+        $request = $log['request'];
+        static::assertInstanceOf(RequestInterface::class, $request);
+        static::assertEquals(
+            'https://accounts.eu1.gigya.com/accounts.register',
+            $request->getUri()->__toString()
+        );
+        static::assertEquals(
+            'email=foo%40bar.com&profile%5Bemail%5D=foo%40bar.com&profile%5BfirstName%5D=foo&profile%5BlastName%5D=bar&profile%5Bgender%5D=Magic&profile%5BUID%5D=ds8a9d8sa08d90as8d0&apiKey=key&secret=secret&userKey=userKey',
+            $log['request']->getBody()->__toString()
+        );
+        static::assertEquals(['application/x-www-form-urlencoded'], $log['request']->getHeader('Content-Type'));
+    }
 }

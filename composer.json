@@ -22,7 +22,7 @@
         }
     ],
     "require": {
-        "php": ">=5.5.0|^7.0",
+        "php": "^5.5|^7.0",
         "guzzlehttp/guzzle": "^6.2",
         "illuminate/support": "^5.0"
     },
@@ -43,6 +43,11 @@
             "Graze\\Gigya\\Test\\Unit\\": "tests/unit",
             "Graze\\Gigya\\Test\\Integration\\": "tests/integration",
             "Graze\\Gigya\\Test\\Performance\\": "tests/performance"
+        }
+    },
+    "config": {
+        "platform": {
+            "php": "7.2"
         }
     }
 }

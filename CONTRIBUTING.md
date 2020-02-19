@@ -43,7 +43,7 @@ Or run individual suites using:
 ```shell
 $ make test-unit
 $ make test-integration
-£ make test-performance
+$ make test-performance
 $ make test-matrix
 ```
 
